@@ -1,4 +1,12 @@
-'use client';
+const fs = require('fs');
+
+const originalFile = fs.readFileSync('src/app/(app)/settings/page.tsx', 'utf8');
+
+const appearanceIndex = originalFile.indexOf(`{activeSection === 'appearance' && (`);
+const appearanceAndBelow = originalFile.substring(appearanceIndex);
+
+// We will construct the new first half
+const newFirstHalf = `'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -168,7 +176,7 @@ export default function SettingsPage() {
 
       if (avatarFile) {
         const ext = avatarFile.name.split('.').pop();
-        const path = `avatars/${profile.id}/${Date.now()}.${ext}`;
+        const path = \`avatars/\${profile.id}/\${Date.now()}.\${ext}\`;
         
         const { error: uploadError } = await supabase.storage
           .from('attachments')
@@ -497,171 +505,6 @@ export default function SettingsPage() {
                 )}
               </div>
             )}
-{activeSection === 'appearance' && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA]">Appearance</h2>
-                  <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-1">Choose how connectX looks to you.</p>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {[
-                    { id: 'light', icon: Sun, label: 'Light' },
-                    { id: 'dark', icon: Moon, label: 'Dark' },
-                    { id: 'system', icon: Monitor, label: 'System' },
-                  ].map((t) => (
-                    <button
-                      key={t.id}
-                      onClick={() => setTheme(t.id)}
-                      className={cn(
-                        'flex flex-col items-center justify-center gap-2 h-[88px] rounded-[12px] border transition-colors',
-                        theme === t.id
-                          ? 'border-[#8B5CF6] bg-[#8B5CF6]/5 text-[#8B5CF6]'
-                          : 'border-[#EAECF0] dark:border-[#252A34] bg-white dark:bg-[#151922] text-[#667085] dark:text-[#98A2B3] hover:border-[#8B5CF6]/50 hover:bg-[#F8FAFC] dark:hover:bg-[#1A1F2B]'
-                      )}
-                    >
-                      <t.icon size={24} strokeWidth={1.5} />
-                      <span className="text-[13px] font-medium">{t.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+`;
 
-            {activeSection === 'privacy' && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA]">Privacy</h2>
-                  <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-1">Control who can see your information.</p>
-                </div>
-                
-                <div className="space-y-3">
-                  {[
-                    { key: 'show_online_status', label: 'Online Status', desc: 'Who can see when you are online' },
-                    { key: 'show_last_seen', label: 'Last Seen', desc: 'Who can see your last seen time' },
-                    { key: 'profile_visibility', label: 'Profile Visibility', desc: 'Who can view your profile' },
-                  ].map(item => (
-                    <div key={item.key} className="flex items-center justify-between p-4 bg-[#F8FAFC] dark:bg-[#151922] rounded-[12px] border border-[#EAECF0] dark:border-[#252A34]">
-                      <div>
-                        <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</p>
-                        <p className="text-[13px] text-[#667085] dark:text-[#98A2B3]">{item.desc}</p>
-                      </div>
-                      <select
-                        value={localSettings[item.key as keyof UserSettings] as string || 'everyone'}
-                        onChange={e => setLocalSettings({ ...localSettings, [item.key]: e.target.value })}
-                        className="bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#374151] text-[#101828] dark:text-[#F5F7FA] text-[13px] font-medium rounded-[8px] py-2 px-3 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]"
-                      >
-                        <option value="everyone">Everyone</option>
-                        <option value="contacts">My Friends</option>
-                        <option value="nobody">Nobody</option>
-                      </select>
-                    </div>
-                  ))}
-                </div>
-                <button onClick={handleSaveSettings} disabled={isSaving} className="bg-[#8B5CF6] text-white text-[14px] font-medium px-4 py-2 rounded-[8px] hover:bg-[#7C3AED] transition-colors flex items-center gap-2 h-[40px]">
-                  {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                  Save Privacy Settings
-                </button>
-              </div>
-            )}
-
-            {activeSection === 'notifications' && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA]">Notifications</h2>
-                  <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-1">Manage your notification preferences.</p>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { key: 'notifications_enabled', label: 'Push Notifications', desc: 'Receive push notifications' },
-                    { key: 'message_notifications', label: 'Message Alerts', desc: 'Get notified for new messages' },
-                    { key: 'group_notifications', label: 'Group Alerts', desc: 'Get notified for group activity' },
-                    { key: 'notification_sound', label: 'Sound', desc: 'Play sound on new notifications' },
-                  ].map(item => (
-                    <div key={item.key} className="flex items-center justify-between p-4 bg-[#F8FAFC] dark:bg-[#151922] rounded-[12px] border border-[#EAECF0] dark:border-[#252A34]">
-                      <div>
-                        <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</p>
-                        <p className="text-[13px] text-[#667085] dark:text-[#98A2B3]">{item.desc}</p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={localSettings[item.key as keyof UserSettings] as boolean || false}
-                          onChange={e => setLocalSettings({ ...localSettings, [item.key]: e.target.checked })}
-                        />
-                        <div className="w-9 h-5 bg-[#EAECF0] dark:bg-[#374151] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#8B5CF6]/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#8B5CF6]"></div>
-                      </label>
-                    </div>
-                  ))}
-                </div>
-                <button onClick={handleSaveSettings} disabled={isSaving} className="bg-[#8B5CF6] text-white text-[14px] font-medium px-4 py-2 rounded-[8px] hover:bg-[#7C3AED] transition-colors flex items-center gap-2 h-[40px]">
-                  {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                  Save Notifications
-                </button>
-              </div>
-            )}
-
-            {activeSection === 'security' && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA] flex items-center gap-2">
-                    <Shield size={18} className="text-[#12B76A]" />
-                    Security & Privacy
-                  </h2>
-                  <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-1">Manage your account security and encryption settings.</p>
-                </div>
-
-                <div className="bg-[#F8FAFC] dark:bg-[#151922] rounded-[12px] p-5 border border-[#EAECF0] dark:border-[#252A34] space-y-3">
-                  <div className="flex items-start gap-4">
-                    <div className="p-2 bg-[#12B76A]/10 text-[#12B76A] rounded-[8px]">
-                      <Lock size={18} />
-                    </div>
-                    <div>
-                      <h3 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA]">End-to-End Encryption</h3>
-                      <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-1 leading-relaxed">
-                        Your private conversations and files are protected by end-to-end encryption (E2EE) using WebCrypto AES-GCM & RSA-OAEP. Only the intended participants can decrypt them.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-[#F8FAFC] dark:bg-[#151922] rounded-[12px] p-5 border border-[#EAECF0] dark:border-[#252A34] space-y-3">
-                  <h3 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] border-b border-[#EAECF0] dark:border-[#252A34] pb-3">Active Sessions</h3>
-                  <div className="flex items-center justify-between py-2">
-                    <div className="flex items-center gap-3">
-                      <Monitor size={18} className="text-[#667085] dark:text-[#98A2B3]" />
-                      <div>
-                        <p className="font-medium text-[#101828] dark:text-[#F5F7FA] text-[14px]">Current Device</p>
-                        <p className="text-[12px] text-[#12B76A]">Active now</p>
-                      </div>
-                    </div>
-                    <div className="text-[12px] font-medium text-[#667085] dark:text-[#98A2B3] bg-[#EAECF0]/50 dark:bg-[#252A34] px-2.5 py-1 rounded-md">
-                      This device
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4 pt-2">
-                  <h3 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA]">Change Password</h3>
-                  <div className="space-y-1.5">
-                    <label className="text-[13px] font-medium text-[#101828] dark:text-[#F5F7FA]">New Password</label>
-                    <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="New password (min 8 chars)" className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#98A2B3] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[13px] font-medium text-[#101828] dark:text-[#F5F7FA]">Confirm New Password</label>
-                    <input type="password" value={confirmNewPassword} onChange={e => setConfirmNewPassword(e.target.value)} placeholder="Repeat new password" className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#98A2B3] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm" />
-                  </div>
-                  <button onClick={handleChangePassword} disabled={isChangingPassword || !newPassword} className="bg-[#8B5CF6] text-white text-[14px] font-medium px-4 py-2 rounded-[8px] hover:bg-[#7C3AED] transition-colors flex items-center justify-center gap-2 h-[40px] disabled:opacity-50">
-                    {isChangingPassword ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} />}
-                    Update Password
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+fs.writeFileSync('src/app/(app)/settings/page.tsx', newFirstHalf + appearanceAndBelow);
