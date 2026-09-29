@@ -165,7 +165,7 @@ export function MessageList({ conversationId }: MessageListProps) {
 
     
     const channel = supabase
-      .channel(`messages:${conversationId}:${Math.random().toString(36).substring(7)}`)
+      .channel(`room:${conversationId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` },
         async (payload) => {
           setLatestLocalMessageId(payload.new.id);
