@@ -18,6 +18,7 @@ interface ChatState {
   setMessages: (conversationId: string, messages: Message[]) => void;
   addMessage: (conversationId: string, message: Message) => void;
   updateMessage: (conversationId: string, messageId: string, updates: Partial<Message>) => void;
+  bulkUpdateMessages: (conversationId: string, updates: { id: string; changes: Partial<Message> }[]) => void;
   removeMessage: (conversationId: string, messageId: string) => void;
   prependMessages: (conversationId: string, messages: Message[]) => void;
   setTypingUsers: (users: TypingUser[]) => void;
@@ -57,6 +58,29 @@ export const useChatStore = create<ChatState>()(set => ({
         [conversationId]: [...(state.messages[conversationId] || []), message],
       },
     })),
+  bulkUpdateMessages: (conversationId, updatesList) => set((state) => {
+    const messages = state.messages[conversationId] || [];
+    const newMessages = [...messages];
+    
+    let hasChanges = false;
+    updatesList.forEach(update => {
+      const idx = newMessages.findIndex((m) => m.id === update.id);
+      if (idx !== -1) {
+        newMessages[idx] = { ...newMessages[idx], ...update.changes };
+        hasChanges = true;
+      }
+    });
+
+    if (!hasChanges) return state;
+
+    return {
+      messages: {
+        ...state.messages,
+        [conversationId]: newMessages,
+      },
+    };
+  }),
+
   updateMessage: (conversationId, messageId, updates) =>
     set(state => ({
       messages: {

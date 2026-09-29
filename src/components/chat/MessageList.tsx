@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useChatStore } from '@/store/useChatStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { MessageBubble } from './MessageBubble';
+import { useE2EE } from '@/hooks/useE2EE';
 import { TypingIndicator } from '@/components/ui/TypingIndicator';
 import { MessageSkeleton } from '@/components/ui/SkeletonLoader';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -44,6 +45,7 @@ export function MessageList({ conversationId }: MessageListProps) {
   const setReplyToMessage = useChatStore(s => s.setReplyToMessage);
   const addTypingUser = useChatStore(s => s.addTypingUser);
   const removeTypingUser = useChatStore(s => s.removeTypingUser);
+  const bulkUpdateMessages = useChatStore(s => s.bulkUpdateMessages);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -54,6 +56,42 @@ export function MessageList({ conversationId }: MessageListProps) {
   const [isReconnecting, setIsReconnecting] = useState(false);
   const [latestLocalMessageId, setLatestLocalMessageId] = useState<string | null>(null);
   const isFirstLoad = useRef(true);
+  const { isReady, decrypt } = useE2EE(conversationId);
+
+  useEffect(() => {
+    if (!isReady || messages.length === 0) return;
+    
+    const toDecrypt = messages.filter(m => 
+      m.content && 
+      m.decrypted_content === undefined && 
+      m.status !== 'sending' && 
+      m.status !== 'failed' &&
+      m.type !== 'system'
+    );
+    
+    if (toDecrypt.length === 0) return;
+
+    let isMounted = true;
+    
+    const processBatch = async () => {
+      const updates = await Promise.all(toDecrypt.map(async msg => {
+        try {
+          const decrypted = await decrypt(msg.content!);
+          return { id: msg.id, changes: { decrypted_content: decrypted } };
+        } catch (e) {
+          return { id: msg.id, changes: { decrypted_content: '[Unable to decrypt message]' } };
+        }
+      }));
+      
+      if (isMounted) {
+        bulkUpdateMessages(conversationId, updates);
+      }
+    };
+    
+    processBatch();
+    
+    return () => { isMounted = false; };
+  }, [messages, isReady, conversationId, bulkUpdateMessages, decrypt]);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
     messagesEndRef.current?.scrollIntoView({ behavior });

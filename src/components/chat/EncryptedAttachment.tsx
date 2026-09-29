@@ -45,7 +45,7 @@ export function EncryptedAttachment({ attachment, isOwn }: { attachment: Attachm
   if (!objectUrl) {
     return (
       <div className="flex items-center gap-2 px-3 py-2 text-xs opacity-70">
-        <Loader2 className="w-4 h-4 animate-spin" /> Decrypting...
+        <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white/80 animate-spin" />
       </div>
     );
   }

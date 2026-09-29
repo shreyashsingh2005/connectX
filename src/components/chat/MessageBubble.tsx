@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useE2EE } from '@/hooks/useE2EE';
+
 import Image from 'next/image';
 import { Message, Profile } from '@/types';
 import { UserAvatar } from '@/components/ui/UserAvatar';
@@ -59,20 +59,8 @@ export function MessageBubble({
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const bubbleRef = useRef<HTMLDivElement>(null);
 
-  const { isReady, decrypt } = useE2EE(message.conversation_id);
-  const [decryptedContent, setDecryptedContent] = useState<string | null>(
-    (message.status === 'sending' || message.status === 'failed') ? message.content : null
-  );
-
-  useEffect(() => {
-    if (message.content && isReady && !decryptedContent && message.status !== 'sending' && message.status !== 'failed') {
-      decrypt(message.content)
-        .then(setDecryptedContent)
-        .catch(() => setDecryptedContent('[Unable to decrypt this message.]'));
-    }
-  }, [message.content, isReady, decryptedContent, message.status]);
-
-  const displayContent = decryptedContent || (message.content ? 'Decrypting...' : null);
+  const needsDecryption = !!message.content && message.status !== 'sending' && message.status !== 'failed' && message.type !== 'system' && message.decrypted_content === undefined;
+  const displayContent = needsDecryption ? null : (message.decrypted_content ?? message.content);
 
 
   if (message.is_deleted) {
@@ -148,7 +136,19 @@ export function MessageBubble({
         >
           {/* Text content */}
           {message.type === 'text' && message.content && (
-            <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{displayContent}</p>
+            needsDecryption ? (
+              <div className="flex flex-col gap-1.5 w-32 py-1 animate-pulse transition-opacity duration-200">
+                <div className={cn("h-2.5 rounded-full", isOwn ? "bg-white/30" : "bg-gray-300 dark:bg-gray-600")}></div>
+                <div className={cn("h-2.5 w-4/5 rounded-full", isOwn ? "bg-white/30" : "bg-gray-300 dark:bg-gray-600")}></div>
+              </div>
+            ) : (
+              <p className={cn(
+                "text-[15px] leading-relaxed whitespace-pre-wrap break-words",
+                displayContent?.startsWith('[Unable') && "italic opacity-80 text-[13px]"
+              )}>
+                {displayContent}
+              </p>
+            )
           )}
 
           {/* Image attachment */}
