@@ -45,11 +45,10 @@ export function useConversations() {
             user_id, role,
             profile:profiles(id, username, display_name, avatar_url, is_online, last_seen)
           ),
-          last_message:messages(id, content, type, created_at, sender_id, is_deleted)
+          last_message:messages!fk_last_message(id, content, type, created_at, sender_id, is_deleted)
         `)
         .in('id', conversationIds)
-        .order('last_message_at', { ascending: false })
-        .limit(1, { foreignTable: 'messages' });
+        .order('last_message_at', { ascending: false });
 
       if (!convData) return;
 
