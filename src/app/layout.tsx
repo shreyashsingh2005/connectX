@@ -3,6 +3,15 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 
+import type { Viewport } from 'next';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
   title: 'connectX - Connect. Chat. Share.',
   description: 'A modern real-time communication platform. Connect with friends, share moments, and collaborate in real time.',
