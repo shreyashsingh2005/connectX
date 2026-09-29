@@ -1,0 +1,264 @@
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { useE2EE } from '@/hooks/useE2EE';
+import Image from 'next/image';
+import { Message, Profile } from '@/types';
+import { UserAvatar } from '@/components/ui/UserAvatar';
+import { EncryptedAttachment } from '@/components/chat/EncryptedAttachment';
+import { cn, formatMessageTime, formatFileSize } from '@/lib/utils';
+import {
+  Check,
+  CheckCheck,
+  Clock,
+  Edit2,
+  Trash2,
+  Reply,
+  Copy,
+  MoreHorizontal,
+  Download,
+  FileText,
+  Music,
+  Video,
+} from 'lucide-react';
+
+interface MessageBubbleProps {
+  message: Message;
+  isOwn: boolean;
+  showAvatar?: boolean;
+  showSender?: boolean;
+  currentUserId: string;
+  onReply?: (message: Message) => void;
+  onEdit?: (message: Message) => void;
+  onDelete?: (messageId: string) => void;
+  onReact?: (messageId: string, emoji: string) => void;
+}
+
+const QUICK_EMOJIS = ['❤️', '😂', '👍', '😮', '😢', '🙏'];
+
+function DeliveryIcon({ status }: { status: Message['status'] }) {
+  if (status === 'sending') return <Clock className="w-3 h-3 text-gray-600 dark:text-gray-400" />;
+  if (status === 'sent') return <Check className="w-3 h-3 text-gray-600 dark:text-gray-400" />;
+  if (status === 'delivered') return <CheckCheck className="w-3 h-3 text-gray-600 dark:text-gray-400" />;
+  if (status === 'read') return <CheckCheck className="w-3 h-3 text-pink-400" />;
+  return null;
+}
+
+export function MessageBubble({
+  message,
+  isOwn,
+  showAvatar = true,
+  showSender = false,
+  currentUserId,
+  onReply,
+  onEdit,
+  onDelete,
+  onReact,
+}: MessageBubbleProps) {
+  const [showActions, setShowActions] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+
+  const { isReady, decrypt } = useE2EE(message.conversation_id);
+  const [decryptedContent, setDecryptedContent] = useState<string | null>(
+    (message.status === 'sending' || message.status === 'failed') ? message.content : null
+  );
+
+  useEffect(() => {
+    if (message.content && isReady && !decryptedContent && message.status !== 'sending' && message.status !== 'failed') {
+      decrypt(message.content)
+        .then(setDecryptedContent)
+        .catch(() => setDecryptedContent('[Unable to decrypt this message.]'));
+    }
+  }, [message.content, isReady, decryptedContent, message.status]);
+
+  const displayContent = decryptedContent || (message.content ? 'Decrypting...' : null);
+
+
+  if (message.is_deleted) {
+    return (
+      <div className={cn('flex gap-2 mb-1', isOwn ? 'flex-row-reverse' : 'flex-row')}>
+        {!isOwn && showAvatar && (
+          <div className="w-8 flex-shrink-0" />
+        )}
+        <div className={cn(
+          'max-w-[70%] rounded-2xl px-4 py-2.5 italic text-gray-500 text-sm border',
+          isOwn ? 'border-[#2A2F45]' : 'border-gray-200 dark:border-[#1F2937]',
+          'bg-gray-100 dark:bg-[#171E2D]'
+        )}>
+          🚫 This message was deleted
+        </div>
+      </div>
+    );
+  }
+
+  const hasReactions = message.reactions && message.reactions.length > 0;
+  const groupedReactions = message.reactions?.reduce((acc, r) => {
+    acc[r.emoji] = (acc[r.emoji] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return (
+    <div
+      className={cn('flex gap-2 mb-1 group', isOwn ? 'flex-row-reverse' : 'flex-row')}
+      onMouseEnter={() => setShowActions(true)}
+      onMouseLeave={() => { setShowActions(false); setShowEmojiPicker(false); }}
+    >
+      {/* Avatar */}
+      {!isOwn && showAvatar && (
+        <UserAvatar
+          src={message.sender?.avatar_url}
+          name={message.sender?.display_name || 'User'}
+          size="sm"
+          className="self-end flex-shrink-0 mb-5"
+        />
+      )}
+      {!isOwn && !showAvatar && <div className="w-7 flex-shrink-0" />}
+
+      <div className={cn('flex flex-col max-w-[70%]', isOwn ? 'items-end' : 'items-start')}>
+        {/* Sender name (group) */}
+        {showSender && !isOwn && (
+          <span className="text-xs font-medium text-pink-400 mb-1 ml-1">
+            {message.sender?.display_name}
+          </span>
+        )}
+
+        {/* Reply preview */}
+        {message.reply_to && (
+          <div className={cn(
+            'flex items-start gap-2 mb-1 px-3 py-1.5 rounded-xl text-xs border-l-2 border-pink-400 max-w-full w-full',
+            'bg-gray-200 dark:bg-[#1F2937] text-gray-600 dark:text-gray-400 cursor-pointer hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors'
+          )}>
+            <div className="min-w-0">
+              <span className="font-medium text-pink-400 block">{message.reply_to.sender?.display_name}</span>
+              <span className="truncate block">{message.reply_to.content || '📎 Attachment'}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Message bubble */}
+        <div
+          ref={bubbleRef}
+          className={cn(
+            'relative rounded-2xl px-4 py-2.5 message-animate',
+            isOwn
+              ? 'gradient-bg text-white rounded-br-sm'
+              : 'bg-gray-200 dark:bg-[#1F2937] text-gray-100 rounded-bl-sm',
+          )}
+        >
+          {/* Text content */}
+          {message.type === 'text' && message.content && (
+            <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{displayContent}</p>
+          )}
+
+          {/* Image attachment */}
+          {message.attachments && message.attachments.length > 0 && (<div className="flex flex-col gap-2 mt-2">{message.attachments.map(att => (<EncryptedAttachment key={att.id} attachment={att} isOwn={isOwn} />))}</div>)}
+
+          {/* Timestamp + status */}
+          <div className={cn(
+            'flex items-center gap-1 mt-1',
+            isOwn ? 'justify-end' : 'justify-start'
+          )}>
+            {message.is_edited && (
+              <span className="text-[10px] opacity-50">edited</span>
+            )}
+            <span className="text-[10px] opacity-60">
+              {formatMessageTime(message.created_at)}
+            </span>
+            {isOwn && <DeliveryIcon status={message.status} />}
+          </div>
+        </div>
+
+        {/* Reactions */}
+        {hasReactions && groupedReactions && (
+          <div className="flex flex-wrap gap-1 mt-1">
+            {Object.entries(groupedReactions).map(([emoji, count]) => (
+              <button
+                key={emoji}
+                onClick={() => onReact?.(message.id, emoji)}
+                className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gray-200 dark:bg-[#1F2937] border border-gray-300 dark:border-[#374151] hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors text-xs"
+              >
+                <span>{emoji}</span>
+                {count > 1 && <span className="text-gray-600 dark:text-gray-400 text-[10px]">{count}</span>}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Actions (hover) */}
+      {showActions && (
+        <div className={cn(
+          'flex items-center gap-1 self-center transition-opacity',
+          isOwn ? 'mr-1 flex-row-reverse' : 'ml-1'
+        )}>
+          {/* Quick emoji */}
+          <div className="relative">
+            <button
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#1F2937] transition-all text-base"
+            >
+              😊
+            </button>
+            {showEmojiPicker && (
+              <div className={cn(
+                'absolute bottom-full mb-1 flex gap-1 p-2 bg-gray-100 dark:bg-[#171E2D] border border-gray-300 dark:border-[#374151] rounded-xl shadow-xl z-10',
+                isOwn ? 'right-0' : 'left-0'
+              )}>
+                {QUICK_EMOJIS.map(emoji => (
+                  <button
+                    key={emoji}
+                    onClick={() => { onReact?.(message.id, emoji); setShowEmojiPicker(false); }}
+                    className="text-lg hover:scale-125 transition-transform"
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => onReply?.(message)}
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#1F2937] hover:text-gray-800 dark:text-gray-200 transition-all"
+            title="Reply"
+          >
+            <Reply className="w-3.5 h-3.5" />
+          </button>
+
+          {isOwn && (
+            <>
+              <button
+                onClick={() => onEdit?.(message)}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#1F2937] hover:text-gray-800 dark:text-gray-200 transition-all"
+                title="Edit"
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => onDelete?.(message.id)}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-all"
+                title="Delete"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </>
+          )}
+
+          <button
+            onClick={() => navigator.clipboard.writeText(displayContent || '')}
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#1F2937] hover:text-gray-800 dark:text-gray-200 transition-all"
+            title="Copy"
+          >
+            <Copy className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+
+
+

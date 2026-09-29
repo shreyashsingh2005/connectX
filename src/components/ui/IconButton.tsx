@@ -1,0 +1,64 @@
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'; // Need to check if tooltip exists
+
+export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  icon: React.ElementType;
+  variant?: 'default' | 'ghost' | 'active' | 'destructive';
+  size?: 'sm' | 'md' | 'lg';
+  tooltip?: string;
+}
+
+const variantStyles = {
+  default: 'bg-gray-100 dark:bg-[#1F2937] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#374151]',
+  ghost: 'bg-transparent text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-[#1F2937]',
+  active: 'gradient-bg text-white shadow-md shadow-pink-500/20',
+  destructive: 'bg-transparent text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10',
+};
+
+const sizeStyles = {
+  sm: 'w-8 h-8 p-1.5',
+  md: 'w-10 h-10 p-2',
+  lg: 'w-12 h-12 p-2.5',
+};
+
+const iconSizes = {
+  sm: 'w-4 h-4',
+  md: 'w-5 h-5',
+  lg: 'w-6 h-6',
+};
+
+export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
+  ({ className, variant = 'ghost', size = 'md', icon: Icon, tooltip, disabled, ...props }, ref) => {
+    const button = (
+      <button
+        ref={ref}
+        disabled={disabled}
+        className={cn(
+          'inline-flex items-center justify-center rounded-xl transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 disabled:opacity-50 disabled:pointer-events-none active:scale-95',
+          variantStyles[variant],
+          sizeStyles[size],
+          className
+        )}
+        {...props}
+      >
+        <Icon className={iconSizes[size]} strokeWidth={variant === 'active' ? 2.5 : 2} />
+      </button>
+    );
+
+    if (!tooltip) return button;
+
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>{button}</TooltipTrigger>
+          <TooltipContent side="top" align="center" sideOffset={8}>
+            <p className="text-xs font-medium">{tooltip}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+);
+
+IconButton.displayName = 'IconButton';
