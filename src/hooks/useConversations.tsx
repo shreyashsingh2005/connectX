@@ -175,16 +175,21 @@ export function useConversations() {
           useChatStore.getState().setConversations(sorted);
 
           if (isActive && !isOwn) {
-            // Fetch full message for the active chat view
-            const { data } = await supabase.from('messages').select('*, sender:profiles(id, username, display_name, avatar_url), attachments(*), reactions:message_reactions(*)').eq('id', newMsgRaw.id).single();
-            if (data) {
-              useChatStore.getState().addMessage(newMsgRaw.conversation_id, data);
-              await supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', newMsgRaw.conversation_id).eq('user_id', profile.id);
-              // Broadcast read
-              try {
-                (window as any).__chat_channel?.send({ type: 'broadcast', event: 'read', payload: { userId: profile.id } });
-              } catch {}
-            }
+            // Construct full message locally to avoid replication lag / read replica race conditions
+            const newMessage = {
+              ...newMsgRaw,
+              sender: conv.type === 'direct' ? conv.other_member : undefined,
+              attachments: [],
+              reactions: [],
+            };
+            useChatStore.getState().addMessage(newMsgRaw.conversation_id, newMessage as any);
+            await supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', newMsgRaw.conversation_id).eq('user_id', profile.id);
+            // Also explicitly mark it as read in the DB so other clients know
+            await supabase.from('messages').update({ status: 'read' }).eq('id', newMsgRaw.id);
+            // Broadcast read
+            try {
+              (window as any).__chat_channel?.send({ type: 'broadcast', event: 'read', payload: { userId: profile.id } });
+            } catch {}
           } else if (!isActive && !isOwn) {
             let senderName = 'Someone';
             let senderAvatar = null;
@@ -219,6 +224,56 @@ export function useConversations() {
           }
         }
       )
+      
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'message_reactions',
+        },
+        async (payload) => {
+          // If we receive a reaction update, we need to fetch it or patch it
+          const reaction = (payload.new || payload.old) as any;
+          if (!reaction || !reaction.message_id) return;
+          
+          // Find conversation ID by searching messages (inefficient but works for active chat)
+          const state = useChatStore.getState();
+          let convId = null;
+          let msgToUpdate = null;
+          
+          for (const [cId, msgs] of Object.entries(state.messages)) {
+            const m = msgs.find(msg => msg.id === reaction.message_id);
+            if (m) {
+              convId = cId;
+              msgToUpdate = m;
+              break;
+            }
+          }
+          
+          if (!convId || !msgToUpdate) return;
+          
+          let newReactions = [...(msgToUpdate.reactions || [])];
+          
+          if (payload.eventType === 'INSERT') {
+            // Check if it exists
+            if (!newReactions.find(r => r.id === reaction.id)) {
+              // We need the profile, but we can just use a dummy one or fetch it
+              // Actually, other_member is usually the one reacting if it's direct!
+              const conv = state.conversations.find(c => c.id === convId);
+              let profile = undefined;
+              if (conv && conv.type === 'direct' && conv.other_member?.id === reaction.user_id) {
+                profile = conv.other_member;
+              }
+              newReactions.push({ ...reaction, profile } as any);
+            }
+          } else if (payload.eventType === 'DELETE') {
+            newReactions = newReactions.filter(r => r.id !== payload.old.id && !(r.message_id === payload.old.message_id && r.user_id === payload.old.user_id && r.emoji === payload.old.emoji));
+          }
+          
+          state.updateMessage(convId, reaction.message_id, { reactions: newReactions });
+        }
+      )
       .on(
         'postgres_changes',
         {
@@ -229,6 +284,32 @@ export function useConversations() {
         },
         () => {
           debouncedLoad();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+        },
+        (payload) => {
+          const updatedProfile = payload.new;
+          const currentConvs = useChatStore.getState().conversations;
+          let changed = false;
+          
+          currentConvs.forEach(conv => {
+            if (conv.type === 'direct' && conv.other_member?.id === updatedProfile.id) {
+              useChatStore.getState().updateConversation(conv.id, {
+                other_member: { ...conv.other_member, ...updatedProfile } as any
+              });
+              changed = true;
+            }
+          });
+          
+          if (changed && typeof window !== 'undefined') {
+            // Trigger a react state update if needed, but Zustand updateConversation should be enough
+          }
         }
       )
       .subscribe();
