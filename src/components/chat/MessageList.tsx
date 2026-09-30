@@ -223,6 +223,7 @@ export function MessageList({ conversationId }: MessageListProps) {
         if (status === 'SUBSCRIBED') {
           if (profile && unreadCount > 0) {
             supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', conversationId).eq('user_id', profile.id).then();
+              supabase.from('messages').update({ status: 'read' }).eq('conversation_id', conversationId).neq('sender_id', profile.id).neq('status', 'read').then();
             updateConversation(conversationId, { unread_count: 0 });
             channel.send({ type: 'broadcast', event: 'read', payload: { userId: profile.id } });
           }
@@ -364,10 +365,8 @@ export function MessageList({ conversationId }: MessageListProps) {
         if (item.type === 'date') return <DateSeparator key={`date-${index}`} date={item.date} />;
         const { message, showAvatar, showSender } = item;
         const isOwn = message.sender_id === profile?.id;
-        const msgStatus = (isOwn && otherMemberReadAt && new Date(message.created_at).getTime() <= new Date(otherMemberReadAt).getTime() + 60000) ? 'read' : message.status;
-        const msgProp = { ...message, status: msgStatus as any };
         return (
-          <MessageBubble key={msgProp.id} message={msgProp}
+          <MessageBubble key={message.id} message={message}
               isOwn={isOwn} showAvatar={showAvatar} showSender={showSender}
             currentUserId={profile?.id || ''} onReply={setReplyToMessage} onEdit={handleEdit}
             onDelete={handleDeleteClick} onReact={handleReact}

@@ -15,11 +15,12 @@ import { cn, formatConversationTime, truncateText } from '@/lib/utils';
 import { Search, Plus, Users, Pin } from 'lucide-react';
 import { Conversation } from '@/types';
 
-function DecryptedPreview({ content }: { content: string }) {
-  const { decrypt } = useE2EE();
+function DecryptedPreview({ content, conversationId }: { content: string, conversationId: string }) {
+  const { decrypt, isReady } = useE2EE(conversationId);
   const [text, setText] = useState('Decrypting...');
   
   useEffect(() => {
+    if (!isReady) return;
     let mounted = true;
     decrypt(content).then((res: string) => {
       if (mounted) setText(res);
@@ -27,7 +28,7 @@ function DecryptedPreview({ content }: { content: string }) {
       if (mounted) setText('Encrypted message');
     });
     return () => { mounted = false; };
-  }, [content, decrypt]);
+  }, [content, decrypt, isReady]);
   
   return <>{text.length > 40 ? text.substring(0, 40) + '...' : text}</>;
 }
@@ -73,7 +74,7 @@ export function ConversationList() {
              msg.type === 'video' ? '🎬 Video' :
              msg.type === 'audio' ? '🎵 Audio' : '📄 File';
     }
-    return <DecryptedPreview content={msg.content || ''} />;
+    return <DecryptedPreview content={msg.content || ''} conversationId={conv.id} />;
   }
 
   function handleSelectConversation(conv: Conversation) {
