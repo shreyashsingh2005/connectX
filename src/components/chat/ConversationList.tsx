@@ -86,16 +86,22 @@ export function ConversationList() {
   }
 
     function getLastMessagePreview(conv: Conversation) {
-    if (!conv.last_message) return 'No messages yet';
-    const msg = conv.last_message;
-    if (msg.is_deleted) return '🚫 Message deleted';
-    if (msg.type !== 'text' && msg.type !== 'system') {
-      return msg.type === 'image' ? '🖼️ Image' :
-             msg.type === 'video' ? '🎬 Video' :
-             msg.type === 'audio' ? '🎵 Audio' : '📄 File';
+      const clearedAt = clearedChats[conv.id];
+      if (conv.last_message && deletedLocalIds.includes(conv.last_message.id)) return 'No messages yet';
+      if (clearedAt && conv.last_message && new Date(conv.last_message.created_at) <= new Date(clearedAt)) {
+        return 'No messages yet';
+      }
+
+      if (!conv.last_message) return 'No messages yet';
+      const msg = conv.last_message;
+      if (msg.is_deleted) return 'Message deleted'; // removed emoji to avoid encoding bugs
+      if (msg.type !== 'text' && msg.type !== 'system') {
+        return msg.type === 'image' ? 'Image' :
+               msg.type === 'video' ? 'Video' :
+               msg.type === 'audio' ? 'Audio' : 'File';
+      }
+      return <DecryptedPreview content={msg.content || ''} conversationId={conv.id} />;
     }
-    return <DecryptedPreview content={msg.content || ''} conversationId={conv.id} />;
-  }
 
   function handleSelectConversation(conv: Conversation) {
     router.push(`/chat/${conv.id}`);
@@ -183,7 +189,9 @@ export function ConversationList() {
             const avatarUrl = getConversationAvatar(conv);
             const isOnline = conv.type === 'direct' ? conv.other_member?.is_online : false;
             const unreadCount = conv.unread_count || 0;
-            const lastMsgTime = conv.last_message_at ? formatConversationTime(conv.last_message_at) : '';
+            const clearedAt = clearedChats[conv.id];
+              const isCleared = clearedAt && conv.last_message_at && new Date(conv.last_message_at) <= new Date(clearedAt);
+              const lastMsgTime = (!isCleared && conv.last_message_at) ? formatConversationTime(conv.last_message_at) : '';
 
             return (
               <button
