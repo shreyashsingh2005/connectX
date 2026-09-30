@@ -131,7 +131,7 @@ export function MessageBubble({
             'relative rounded-2xl px-4 py-2.5 message-animate',
             isOwn
               ? 'gradient-bg text-white rounded-br-sm'
-              : 'bg-gray-200 dark:bg-[#1F2937] text-gray-100 rounded-bl-sm',
+              : 'bg-gray-200 dark:bg-[#1F2937] text-gray-900 dark:text-gray-100 rounded-bl-sm',
           )}
         >
           {/* Text content */}
