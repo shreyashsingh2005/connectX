@@ -315,7 +315,8 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         updateMessage(conversationId, tempId, { 
           ...newMessage, 
           status: 'sent',
-          sender: profile 
+          sender: profile,
+          decrypted_content: content || null
         });
     } catch (error) {
       console.error('Send error:', error);
