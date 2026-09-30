@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { useE2EE } from '@/hooks/useE2EE';
+import EmojiPicker, { Theme } from 'emoji-picker-react';
 
 interface MessageComposerProps {
   conversationId: string;
@@ -31,6 +32,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -339,8 +341,22 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   };
 
   return (
-    <div
-      className="border-t border-[#EAECF0] dark:border-[#252A34] bg-white dark:bg-[#0B0D12] flex-shrink-0 px-4 py-3"
+    <>
+      {showEmojiPicker && (
+        <div className="absolute bottom-full right-0 mb-2 z-50 shadow-2xl rounded-2xl overflow-hidden border border-[#EAECF0] dark:border-[#252A34]">
+          <EmojiPicker
+            theme={Theme.DARK}
+            onEmojiClick={(emojiData) => {
+              setText(prev => prev + emojiData.emoji);
+              setShowEmojiPicker(false);
+              textareaRef.current?.focus();
+            }}
+          />
+        </div>
+      )}
+      <div
+        className="border-t border-[#EAECF0] dark:border-[#252A34] bg-white dark:bg-[#0B0D12] flex-shrink-0 px-4 py-3 relative"
+
       onDrop={handleDrop}
       onDragOver={e => e.preventDefault()}
     >
@@ -407,8 +423,15 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
             rows={1}
             style={{ minHeight: '44px' }}
           />
-          <input
-            type="file"
+          
+            <button
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="w-[36px] h-[36px] flex-shrink-0 flex items-center justify-center rounded-[10px] text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] transition-colors"
+            >
+              <Smile size={18} strokeWidth={2} />
+            </button>
+            <input
+
             ref={fileInputRef}
             onChange={handleFileSelect}
             className="hidden"
@@ -436,6 +459,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         )}
       </div>
     </div>
+    </>
   );
 }
 
