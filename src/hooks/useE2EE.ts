@@ -86,6 +86,7 @@ export function useE2EE(conversationId?: string) {
         }
         
         setConversationKey(aesKey);
+        if (conversationId) E2EE.conversationKeyCache.set(conversationId, aesKey);
         setIsReady(true);
       } catch (err: any) {
         console.error("E2EE Conv init failed:", err);

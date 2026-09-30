@@ -7,6 +7,8 @@
 const DB_NAME = 'connectx_e2ee';
 const STORE_NAME = 'keypair';
 
+export const conversationKeyCache = new Map<string, CryptoKey>();
+
 export async function initDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 1);

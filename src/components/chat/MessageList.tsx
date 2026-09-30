@@ -40,6 +40,7 @@ export function MessageList({ conversationId }: MessageListProps) {
   const setMessages = useChatStore(s => s.setMessages);
   const addMessage = useChatStore(s => s.addMessage);
   const updateMessage = useChatStore(s => s.updateMessage);
+  const updateConversation = useChatStore(s => s.updateConversation);
   const prependMessages = useChatStore(s => s.prependMessages);
   const setIsLoadingMessages = useChatStore(s => s.setIsLoadingMessages);
   const setReplyToMessage = useChatStore(s => s.setReplyToMessage);
@@ -166,20 +167,6 @@ export function MessageList({ conversationId }: MessageListProps) {
     
     const channel = supabase
       .channel(`room:${conversationId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` },
-        async (payload) => {
-          setLatestLocalMessageId(payload.new.id);
-          const { data } = await supabase.from('messages').select('*, sender:profiles(id, username, display_name, avatar_url), attachments(*), reactions:message_reactions(*)').eq('id', payload.new.id).single();
-          if (data && data.sender_id !== profile.id) {
-            addMessage(conversationId, data);
-            scrollToBottom();
-            await supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', conversationId).eq('user_id', profile.id);
-          }
-        }
-      )
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` },
-        (payload) => { updateMessage(conversationId, payload.new.id, payload.new); }
-      )
       .on('broadcast', { event: 'typing' }, ({ payload }) => {
         if (payload.userId !== profile.id) {
           addTypingUser({ userId: payload.userId, username: payload.username, conversationId });
