@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import * as E2EE from '@/lib/e2ee';
 
+const initPromises = new Map<string, Promise<void>>();
+
 export function useE2EE(conversationId?: string) {
   const profile = useAuthStore(s => s.profile);
   const [isReady, setIsReady] = useState(false);
@@ -41,63 +43,84 @@ export function useE2EE(conversationId?: string) {
     if (!profile || !conversationId || !identityReady) return;
 
     async function loadConvKey() {
-      try {
-        // 1. Fetch our conversation_member row
-        const { data: member, error: memberErr } = await supabase
-          .from('conversation_members')
-          .select('id, encrypted_key')
-          .eq('conversation_id', conversationId)
-          .eq('user_id', profile!.id)
-          .single();
+      if (initPromises.has(conversationId!)) {
+        await initPromises.get(conversationId!);
+        if (E2EE.conversationKeyCache.has(conversationId!)) {
+          setConversationKey(E2EE.conversationKeyCache.get(conversationId!)!);
+          setIsReady(true);
+        }
+        return;
+      }
 
-        if (memberErr && memberErr.code !== 'PGRST116') throw memberErr;
-
-        let aesKey: CryptoKey | null = null;
-        const keys = await E2EE.loadKeyPair(profile!.id);
-        if (!keys) throw new Error("Identity keys missing");
-
-        if (member?.encrypted_key) {
-          // Decrypt existing conversation key
-          try {
-            const rawAesBase64 = await E2EE.decryptConversationKey(member.encrypted_key, keys.privateKey);
-            aesKey = await E2EE.importConversationKey(rawAesBase64);
-          } catch (decryptErr) {
-            console.warn("Failed to decrypt conversation key (likely changed device or cleared cache). Generating a new key...", decryptErr);
+      const promise = (async () => {
+        try {
+          if (conversationId && E2EE.conversationKeyCache.has(conversationId!)) {
+            setConversationKey(E2EE.conversationKeyCache.get(conversationId!)!);
+            setIsReady(true);
+            return;
           }
-        } 
-        
-        if (!aesKey) {
-          // We need to generate a new key and distribute it!
-          aesKey = await E2EE.generateConversationKey();
-          const rawAesBase64 = await E2EE.exportConversationKey(aesKey);
 
-          // Get all members and their public keys
-          const { data: members, error: membersErr } = await supabase
+          // 1. Fetch our conversation_member row
+          const { data: member, error: memberErr } = await supabase
             .from('conversation_members')
-            .select('id, user_id, profiles(public_key)')
-            .eq('conversation_id', conversationId);
+            .select('id, encrypted_key')
+            .eq('conversation_id', conversationId)
+            .eq('user_id', profile!.id)
+            .single();
 
-          if (membersErr) throw membersErr;
+          if (memberErr && memberErr.code !== 'PGRST116') throw memberErr;
 
-          for (const m of members || []) {
-            const pubKey = (m.profiles as any)?.public_key;
-            if (pubKey) {
-              const encKey = await E2EE.encryptConversationKey(rawAesBase64, pubKey);
-              await supabase
-                .from('conversation_members')
-                .update({ encrypted_key: encKey })
-                .eq('id', m.id);
+          let aesKey: CryptoKey | null = null;
+          const keys = await E2EE.loadKeyPair(profile!.id);
+          if (!keys) throw new Error("Identity keys missing");
+
+          if (member?.encrypted_key) {
+            // Decrypt existing conversation key
+            try {
+              const rawAesBase64 = await E2EE.decryptConversationKey(member.encrypted_key, keys.privateKey);
+              aesKey = await E2EE.importConversationKey(rawAesBase64);
+            } catch (decryptErr) {
+              console.warn("Failed to decrypt conversation key (likely changed device or cleared cache). Generating a new key...", decryptErr);
+            }
+          } 
+          
+          if (!aesKey) {
+            // We need to generate a new key and distribute it!
+            aesKey = await E2EE.generateConversationKey();
+            const rawAesBase64 = await E2EE.exportConversationKey(aesKey);
+
+            // Get all members and their public keys
+            const { data: members, error: membersErr } = await supabase
+              .from('conversation_members')
+              .select('id, user_id, profiles(public_key)')
+              .eq('conversation_id', conversationId);
+
+            if (membersErr) throw membersErr;
+
+            for (const m of members || []) {
+              const pubKey = (m.profiles as any)?.public_key;
+              if (pubKey) {
+                const encKey = await E2EE.encryptConversationKey(rawAesBase64, pubKey);
+                await supabase
+                  .from('conversation_members')
+                  .update({ encrypted_key: encKey })
+                  .eq('id', m.id);
+              }
             }
           }
+          
+          setConversationKey(aesKey);
+          if (conversationId) E2EE.conversationKeyCache.set(conversationId, aesKey);
+          setIsReady(true);
+        } catch (err: any) {
+          console.error("E2EE Conv init failed:", err);
+          setError(err.message);
         }
-        
-        setConversationKey(aesKey);
-        if (conversationId) E2EE.conversationKeyCache.set(conversationId, aesKey);
-        setIsReady(true);
-      } catch (err: any) {
-        console.error("E2EE Conv init failed:", err);
-        setError(err.message);
-      }
+      })();
+      
+      initPromises.set(conversationId!, promise);
+      await promise;
+      setTimeout(() => initPromises.delete(conversationId!), 10000);
     }
 
     loadConvKey();
