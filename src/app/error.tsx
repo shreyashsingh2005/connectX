@@ -25,6 +25,10 @@ export default function Error({
       <p className="text-[14px] text-[#667085] dark:text-[#98A2B3] max-w-sm mb-8 leading-relaxed">
         We encountered an unexpected error. Don't worry, your data is safe.
         {error.digest && <span className="block mt-2 text-[12px] opacity-70">Reference: {error.digest}</span>}
+        <div className="mt-4 p-4 bg-red-100 dark:bg-red-900/20 text-left text-xs overflow-auto max-h-[300px] text-red-600 dark:text-red-400 font-mono rounded">
+          <p className="font-bold">{error.name}: {error.message}</p>
+          <pre className="mt-2">{error.stack}</pre>
+        </div>
       </p>
       
       <div className="flex items-center gap-3">
