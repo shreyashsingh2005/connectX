@@ -63,14 +63,13 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   // Click-away listener for emoji picker
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showEmojiPicker && 
-        emojiPickerRef.current && 
-        !emojiPickerRef.current.contains(event.target as Node) &&
-        emojiButtonRef.current &&
-        !emojiButtonRef.current.contains(event.target as Node)
-      ) {
-        setShowEmojiPicker(false);
+      if (showEmojiPicker && emojiPickerRef.current && emojiButtonRef.current) {
+        const isOutsidePicker = !emojiPickerRef.current.contains(event.target as Node);
+        const isOutsideButton = !emojiButtonRef.current.contains(event.target as Node);
+        
+        if (isOutsidePicker && isOutsideButton) {
+          setShowEmojiPicker(false);
+        }
       }
     };
     
@@ -78,8 +77,9 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showEmojiPicker]);
 
-  const handleEmojiClick = (emojiData: any) => {
-    const cursor = textareaRef.current?.selectionStart || text.length;
+  const handleEmojiClick = (emojiData: any, event: MouseEvent) => {
+    console.log("[EMOJI] picker=open selection=received emojiLength=" + emojiData?.emoji?.length + " codePointCount=" + Array.from(emojiData?.emoji || '').length);
+    const cursor = textareaRef.current?.selectionStart ?? text.length;
     const newText = text.slice(0, cursor) + emojiData.emoji + text.slice(cursor);
     setText(newText);
     
@@ -455,23 +455,14 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
           />
           
             <div className="relative flex items-center justify-center">
-              <button
-                ref={emojiButtonRef}
+              <button type="button" ref={emojiButtonRef}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 className="flex w-[36px] h-[36px] flex-shrink-0 items-center justify-center rounded-[10px] text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922] transition-colors"
               >
                 <Smile size={20} strokeWidth={2} />
               </button>
               
-              {showEmojiPicker && (
-                <div ref={emojiPickerRef} className="absolute bottom-[110%] right-0 mb-2 z-[9999] shadow-xl rounded-[10px]">
-                  <EmojiPicker 
-                    onEmojiClick={handleEmojiClick}
-                    theme={Theme.DARK}
-                    lazyLoadEmojis={true}
-                  />
-                </div>
-              )}
+
             </div>
             <input
 
@@ -504,6 +495,13 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     </div>
   );
 }
+
+
+
+
+
+
+
 
 
 
