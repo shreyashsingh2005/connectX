@@ -90,7 +90,17 @@ export function MessageBubble({
     <div
       className={cn('flex gap-2 mb-1 group', isOwn ? 'flex-row-reverse' : 'flex-row')}
       onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => { setShowActions(false); setShowEmojiPicker(false); }}
+        onMouseLeave={() => { setShowActions(false); setShowEmojiPicker(false); }}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          setShowActions(true);
+          setShowEmojiPicker(true);
+        }}
+        onClick={(e) => {
+          if ((e.target as HTMLElement).closest('button')) return;
+          setShowActions(!showActions);
+          if (showActions) setShowEmojiPicker(false);
+        }}
     >
       {/* Avatar */}
       {!isOwn && showAvatar && (

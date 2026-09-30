@@ -17,7 +17,7 @@ import { Conversation } from '@/types';
 
 function DecryptedPreview({ content, conversationId }: { content: string, conversationId: string }) {
   const { decrypt, isReady } = useE2EE(conversationId);
-  const [text, setText] = useState('Decrypting...');
+  const [text, setText] = useState('');
   
   useEffect(() => {
     if (!isReady) return;

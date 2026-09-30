@@ -255,13 +255,22 @@ export function MessageList({ conversationId }: MessageListProps) {
 
   async function handleReact(messageId: string, emoji: string) {
     if (!profile) return;
-    const existing = messages.find(m => m.id === messageId)?.reactions?.find(r => r.emoji === emoji && r.user_id === profile.id);
-    if (existing) {
+    const msg = messages.find(m => m.id === messageId);
+    if (!msg) return;
+
+    let newReactions = [...(msg.reactions || [])];
+    const existingIdx = newReactions.findIndex(r => r.emoji === emoji && r.user_id === profile.id);
+    
+    if (existingIdx !== -1) {
+      newReactions.splice(existingIdx, 1);
+      useChatStore.getState().updateMessage(conversationId, messageId, { reactions: newReactions });
       await supabase.from('message_reactions').delete().eq('message_id', messageId).eq('user_id', profile.id).eq('emoji', emoji);
     } else {
+      const newReaction = { id: Math.random().toString(), message_id: messageId, user_id: profile.id, emoji, created_at: new Date().toISOString(), profile: profile as any };
+      newReactions.push(newReaction);
+      useChatStore.getState().updateMessage(conversationId, messageId, { reactions: newReactions });
       await supabase.from('message_reactions').insert({ message_id: messageId, user_id: profile.id, emoji });
     }
-    loadMessages();
   }
 
   function handleDeleteClick(messageId: string) {
