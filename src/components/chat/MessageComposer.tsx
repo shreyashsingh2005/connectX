@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useChatStore } from '@/store/useChatStore';
@@ -40,6 +40,8 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const emojiButtonRef = useRef<HTMLButtonElement>(null);
   
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const supabase = createClient();
@@ -57,6 +59,38 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 150) + 'px';
     }
   }, [text]);
+
+  // Click-away listener for emoji picker
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showEmojiPicker && 
+        emojiPickerRef.current && 
+        !emojiPickerRef.current.contains(event.target as Node) &&
+        emojiButtonRef.current &&
+        !emojiButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowEmojiPicker(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showEmojiPicker]);
+
+  const handleEmojiClick = (emojiData: any) => {
+    const cursor = textareaRef.current?.selectionStart || text.length;
+    const newText = text.slice(0, cursor) + emojiData.emoji + text.slice(cursor);
+    setText(newText);
+    
+    // Focus back and move cursor after state update
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        textareaRef.current.setSelectionRange(cursor + emojiData.emoji.length, cursor + emojiData.emoji.length);
+      }
+    }, 0);
+  };
 
   // Typing indicator
   const sendTypingStatus = useCallback(async (typing: boolean) => {
@@ -347,6 +381,15 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       onDrop={handleDrop}
       onDragOver={e => e.preventDefault()}
     >
+      {showEmojiPicker && (
+        <div ref={emojiPickerRef} className="absolute bottom-[100%] right-4 mb-2 z-[50] shadow-2xl rounded-xl overflow-hidden border border-[#EAECF0] dark:border-[#252A34]">
+          <EmojiPicker 
+            onEmojiClick={handleEmojiClick}
+            theme={Theme.DARK}
+            lazyLoadEmojis={true}
+          />
+        </div>
+      )}
       {/* Reply preview */}
       {replyToMessage && (
         <div className="flex items-center gap-3 px-3 py-2 mb-2 bg-[#F8FAFC] dark:bg-[#11141A] rounded-[10px] border border-[#EAECF0] dark:border-[#252A34]">
@@ -411,12 +454,25 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
             style={{ minHeight: '44px' }}
           />
           
-            <button
-              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              className="flex w-[36px] h-[36px] flex-shrink-0 items-center justify-center rounded-[10px] text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922] transition-colors"
-            >
-              <Smile size={20} strokeWidth={2} />
-            </button>
+            <div className="relative flex items-center justify-center">
+              <button
+                ref={emojiButtonRef}
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="flex w-[36px] h-[36px] flex-shrink-0 items-center justify-center rounded-[10px] text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922] transition-colors"
+              >
+                <Smile size={20} strokeWidth={2} />
+              </button>
+              
+              {showEmojiPicker && (
+                <div ref={emojiPickerRef} className="absolute bottom-[110%] right-0 mb-2 z-[9999] shadow-xl rounded-[10px]">
+                  <EmojiPicker 
+                    onEmojiClick={handleEmojiClick}
+                    theme={Theme.DARK}
+                    lazyLoadEmojis={true}
+                  />
+                </div>
+              )}
+            </div>
             <input
 
             ref={fileInputRef}
@@ -448,6 +504,10 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     </div>
   );
 }
+
+
+
+
 
 
 
