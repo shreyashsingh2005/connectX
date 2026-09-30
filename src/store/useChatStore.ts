@@ -133,14 +133,32 @@ export const useChatStore = create<ChatState>()(set => ({
   }),
 
   updateMessage: (conversationId, messageId, updates) =>
-    set(state => ({
-      messages: {
-        ...state.messages,
-        [conversationId]: (state.messages[conversationId] || []).map(m =>
-          m.id === messageId ? mergeMessage(m, updates) : m
-        ),
-      },
-    })),
+    set(state => {
+      const current = state.messages[conversationId] || [];
+      const newId = updates.id;
+      
+      // If we are changing the ID (e.g. tempId -> realId) and the realId already exists (e.g. from realtime)
+      if (newId && newId !== messageId && current.some(m => m.id === newId)) {
+        return {
+          messages: {
+            ...state.messages,
+            // Filter out the old tempId, and merge updates into the realId
+            [conversationId]: current
+              .filter(m => m.id !== messageId)
+              .map(m => m.id === newId ? mergeMessage(m, updates) : m)
+          }
+        };
+      }
+      
+      return {
+        messages: {
+          ...state.messages,
+          [conversationId]: current.map(m =>
+            m.id === messageId ? mergeMessage(m, updates) : m
+          ),
+        },
+      };
+    }),
   removeMessage: (conversationId, messageId) =>
     set(state => ({
       messages: {
