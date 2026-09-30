@@ -23,9 +23,9 @@ export function useConversations() {
     setIsLoadingConversations,
   } = useChatStore();
 
-  const loadConversations = useCallback(async () => {
+  const loadConversations = useCallback(async (silent = false) => {
     if (!profile) return;
-    setIsLoadingConversations(true);
+    if (!silent) setIsLoadingConversations(true);
 
     try {
       const { data: memberRows } = await supabase
@@ -99,7 +99,7 @@ export function useConversations() {
     loadConversations();
 
     const debouncedLoad = debounce(() => {
-      loadConversations();
+      loadConversations(true);
     }, 1000);
 
     const channelName = `user_conversations:${profile.id}:${Math.random().toString(36).substring(7)}`;
@@ -258,20 +258,22 @@ export function useConversations() {
           let newReactions = [...(msgToUpdate.reactions || [])];
           
           if (payload.eventType === 'INSERT') {
-            // Check if it exists
-            if (!newReactions.find(r => r.id === reaction.id)) {
-              // We need the profile, but we can just use a dummy one or fetch it
-              // Actually, other_member is usually the one reacting if it's direct!
+              const existingIdx = newReactions.findIndex(r => r.message_id === reaction.message_id && r.user_id === reaction.user_id && r.emoji === reaction.emoji);
+              
               const conv = state.conversations.find(c => c.id === convId);
               let profile = undefined;
               if (conv && conv.type === 'direct' && conv.other_member?.id === reaction.user_id) {
                 profile = conv.other_member;
               }
-              newReactions.push({ ...reaction, profile } as any);
+              
+              if (existingIdx !== -1) {
+                newReactions[existingIdx] = { ...reaction, profile } as any;
+              } else {
+                newReactions.push({ ...reaction, profile } as any);
+              }
+            } else if (payload.eventType === 'DELETE') {
+              newReactions = newReactions.filter(r => !(r.message_id === payload.old.message_id && r.user_id === payload.old.user_id && r.emoji === payload.old.emoji));
             }
-          } else if (payload.eventType === 'DELETE') {
-            newReactions = newReactions.filter(r => r.id !== payload.old.id && !(r.message_id === payload.old.message_id && r.user_id === payload.old.user_id && r.emoji === payload.old.emoji));
-          }
           
           state.updateMessage(convId, reaction.message_id, { reactions: newReactions });
         }
