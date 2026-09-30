@@ -196,7 +196,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
   const uploadAttachment = async (att: AttachmentPreviewType, messageId: string): Promise<string | null> => {
     const ext = att.file.name.split('.').pop();
-    const path = `${profile!.id}/${messageId}/${att.id}.${ext}`;
+    const path = `${conversationId}/${messageId}/${att.id}.${ext}`;
     
     let encryptedBlob: Blob;
     try {
