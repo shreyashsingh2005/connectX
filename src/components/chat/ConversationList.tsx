@@ -1,4 +1,6 @@
 'use client';
+import { useEffect } from 'react';
+import { useE2EE } from '@/hooks/useE2EE';
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -12,6 +14,23 @@ import { UserAvatar } from '@/components/ui/UserAvatar';
 import { cn, formatConversationTime, truncateText } from '@/lib/utils';
 import { Search, Plus, Users, Pin } from 'lucide-react';
 import { Conversation } from '@/types';
+
+function DecryptedPreview({ content }: { content: string }) {
+  const { decrypt } = useE2EE();
+  const [text, setText] = useState('Decrypting...');
+  
+  useEffect(() => {
+    let mounted = true;
+    decrypt(content).then((res: string) => {
+      if (mounted) setText(res);
+    }).catch(() => {
+      if (mounted) setText('Encrypted message');
+    });
+    return () => { mounted = false; };
+  }, [content, decrypt]);
+  
+  return <>{text.length > 40 ? text.substring(0, 40) + '...' : text}</>;
+}
 
 export function ConversationList() {
   const router = useRouter();
@@ -54,7 +73,7 @@ export function ConversationList() {
              msg.type === 'video' ? '🎬 Video' :
              msg.type === 'audio' ? '🎵 Audio' : '📄 File';
     }
-    return truncateText(msg.content || '', 40);
+    return <DecryptedPreview content={msg.content || ''} />;
   }
 
   function handleSelectConversation(conv: Conversation) {

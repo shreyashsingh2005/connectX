@@ -134,7 +134,14 @@ export function MessageList({ conversationId }: MessageListProps) {
       const { data } = await query;
       if (!data) return;
 
-      const ordered = [...data].reverse();
+      let ordered = [...data].reverse();
+      
+      const clearedChats = JSON.parse(localStorage.getItem('cleared_chats') || '{}');
+      const clearTime = clearedChats[conversationId];
+      if (clearTime) {
+        ordered = ordered.filter(m => new Date(m.created_at).getTime() > new Date(clearTime).getTime());
+      }
+      
       setHasMore(data.length === PAGE_SIZE);
 
       if (!beforeId) {

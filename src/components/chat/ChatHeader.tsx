@@ -15,6 +15,10 @@ import {
   Users,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { useChatStore } from '@/store/useChatStore';
+import toast from 'react-hot-toast';
 
 interface ChatHeaderProps {
   conversation: Conversation;
@@ -24,6 +28,35 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   const router = useRouter();
   const profile = useAuthStore(s => s.profile);
   const toggleProfilePanel = useUIStore(s => s.toggleProfilePanel);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showClearModal, setShowClearModal] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowMenu(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  async function handleClearChat() {
+    if (!profile) return;
+    try {
+      const clearedChats = JSON.parse(localStorage.getItem('cleared_chats') || '{}');
+      clearedChats[conversation.id] = new Date().toISOString();
+      localStorage.setItem('cleared_chats', JSON.stringify(clearedChats));
+      
+      // Remove locally from Zustand store
+      useChatStore.getState().setMessages(conversation.id, []);
+      
+      toast.success('Chat cleared for you');
+      setShowClearModal(false);
+    } catch (error) {
+      toast.error('Failed to clear chat');
+    }
+  }
 
   const isDirect = conversation.type === 'direct';
   const name = isDirect
@@ -98,13 +131,56 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
         >
           <Video className="w-4.5 h-4.5" />
         </button>
-        <button
-          onClick={toggleProfilePanel}
-          title="Conversation info"
-          className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-[#171E2D] transition-all"
-        >
-          <MoreVertical className="w-4.5 h-4.5" />
-        </button>
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            title="Options"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-[#171E2D] transition-all"
+          >
+            <MoreVertical className="w-4.5 h-4.5" />
+          </button>
+          
+          {showMenu && (
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1F2937] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 overflow-hidden">
+              <button 
+                onClick={() => { setShowMenu(false); toggleProfilePanel(); }}
+                className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#111827] transition-colors"
+              >
+                Conversation Info
+              </button>
+              <div className="h-[1px] w-full bg-gray-100 dark:bg-gray-700" />
+              <button 
+                onClick={() => { setShowMenu(false); setShowClearModal(true); }}
+                className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              >
+                Clear Chat
+              </button>
+            </div>
+          )}
+        </div>
+        
+        {showClearModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+            <div className="bg-white dark:bg-[#151922] w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-[#252A34]">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Clear chat?</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Are you sure you want to clear all messages in this conversation? This will only clear them for you.</p>
+              <div className="flex flex-col gap-2">
+                <button 
+                  onClick={handleClearChat}
+                  className="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-colors"
+                >
+                  Clear chat
+                </button>
+                <button 
+                  onClick={() => setShowClearModal(false)}
+                  className="w-full py-2.5 mt-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-xl font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
