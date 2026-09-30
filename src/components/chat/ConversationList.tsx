@@ -36,6 +36,25 @@ function DecryptedPreview({ content, conversationId }: { content: string, conver
 
 export function ConversationList() {
   const router = useRouter();
+  const [clearedChats, setClearedChats] = useState<Record<string, string>>({});
+  const [deletedLocalIds, setDeletedLocalIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadCleared = () => {
+      try {
+        setClearedChats(JSON.parse(localStorage.getItem('cleared_chats') || '{}'));
+        setDeletedLocalIds(JSON.parse(localStorage.getItem('deleted_messages') || '[]'));
+      } catch (e) {}
+    };
+    loadCleared();
+    window.addEventListener('storage', loadCleared);
+    // Also listen to a custom event for same-tab updates
+    window.addEventListener('chat_cleared', loadCleared);
+    return () => {
+      window.removeEventListener('storage', loadCleared);
+      window.removeEventListener('chat_cleared', loadCleared);
+    };
+  }, []);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'unread' | 'pinned'>('all');
   const profile = useAuthStore(s => s.profile);

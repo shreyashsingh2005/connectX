@@ -327,6 +327,7 @@ export function MessageList({ conversationId }: MessageListProps) {
       const newDeleted = [...deletedLocalIds, msgId];
       setDeletedLocalIds(newDeleted);
       localStorage.setItem('deleted_messages', JSON.stringify(newDeleted));
+        window.dispatchEvent(new Event('chat_cleared'));
       // Remove from store for immediate effect
       useChatStore.getState().removeMessage(conversationId, msgId);
     }

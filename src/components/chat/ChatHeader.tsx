@@ -47,6 +47,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
       const clearedChats = JSON.parse(localStorage.getItem('cleared_chats') || '{}');
       clearedChats[conversation.id] = new Date().toISOString();
       localStorage.setItem('cleared_chats', JSON.stringify(clearedChats));
+        window.dispatchEvent(new Event('chat_cleared'));
       
       // Remove locally from Zustand store
       useChatStore.getState().setMessages(conversation.id, []);
