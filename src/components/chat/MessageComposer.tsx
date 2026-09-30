@@ -307,12 +307,15 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         }
       }
 
-      // Replace optimistic with real
-      updateMessage(conversationId, tempId, { 
-        ...newMessage, 
-        status: 'sent',
-        sender: profile 
-      });
+      // Update conversation last_message_id
+        await supabase.from('conversations').update({ last_message_id: newMessage.id, last_message_at: newMessage.created_at }).eq('id', conversationId);
+
+        // Replace optimistic with real
+        updateMessage(conversationId, tempId, { 
+          ...newMessage, 
+          status: 'sent',
+          sender: profile 
+        });
     } catch (error) {
       console.error('Send error:', error);
       updateMessage(conversationId, tempId, { status: 'failed' });
