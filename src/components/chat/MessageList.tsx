@@ -43,6 +43,7 @@ export function MessageList({ conversationId }: MessageListProps) {
   const updateConversation = useChatStore(s => s.updateConversation);
   const conversation = useChatStore(s => s.conversations.find(c => c.id === conversationId));
   const forceReadAt = (conversation as any)?.forceReadAt;
+  const unreadCount = conversation?.unread_count || 0;
   const otherMemberReadAt = forceReadAt || conversation?.members?.find((m: any) => m.user_id !== profile?.id)?.last_read_at;
   const prependMessages = useChatStore(s => s.prependMessages);
   const setIsLoadingMessages = useChatStore(s => s.setIsLoadingMessages);
@@ -197,9 +198,27 @@ export function MessageList({ conversationId }: MessageListProps) {
           const key = `${payload.userId}-${conversationId}`;
           if (typingTimeouts.current[key]) clearTimeout(typingTimeouts.current[key]);
       })
+      .on('broadcast', { event: 'read' }, ({ payload }) => {
+        if (payload.userId !== profile.id) {
+          useChatStore.getState().updateConversation(conversationId, { forceReadAt: new Date().toISOString() } as any);
+          
+          const currentMessages = useChatStore.getState().messages[conversationId] || [];
+          const updates = currentMessages
+            .filter(m => m.sender_id === profile.id && m.status !== 'read')
+            .map(m => ({ id: m.id, changes: { status: 'read' as any } }));
+          if (updates.length > 0) {
+            useChatStore.getState().bulkUpdateMessages(conversationId, updates);
+          }
+        }
+      })
       .subscribe((status) => {
         (window as any).__chat_channel = channel;
         if (status === 'SUBSCRIBED') {
+          if (profile && unreadCount > 0) {
+            supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', conversationId).eq('user_id', profile.id).then();
+            updateConversation(conversationId, { unread_count: 0 });
+            channel.send({ type: 'broadcast', event: 'read', payload: { userId: profile.id } });
+          }
           setIsReconnecting(prev => {
             if (prev) {
               loadMessages(); // Refetch missed messages
@@ -338,9 +357,11 @@ export function MessageList({ conversationId }: MessageListProps) {
         if (item.type === 'date') return <DateSeparator key={`date-${index}`} date={item.date} />;
         const { message, showAvatar, showSender } = item;
         const isOwn = message.sender_id === profile?.id;
+        const msgStatus = (isOwn && otherMemberReadAt && new Date(message.created_at).getTime() <= new Date(otherMemberReadAt).getTime() + 60000) ? 'read' : message.status;
+        const msgProp = { ...message, status: msgStatus as any };
         return (
-          <MessageBubble
-            key={message.id} message={message} isOwn={isOwn} showAvatar={showAvatar} showSender={showSender}
+          <MessageBubble key={msgProp.id} message={msgProp}
+              isOwn={isOwn} showAvatar={showAvatar} showSender={showSender}
             currentUserId={profile?.id || ''} onReply={setReplyToMessage} onEdit={handleEdit}
             onDelete={handleDeleteClick} onReact={handleReact}
           />
