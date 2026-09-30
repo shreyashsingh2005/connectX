@@ -113,9 +113,13 @@ export function MessageList({ conversationId }: MessageListProps) {
   }, []);
 
   const loadMessages = useCallback(async (beforeId?: string) => {
-    if (!conversationId) return;
-    if (!beforeId) setIsLoadingMessages(true);
-    else setIsLoadingMore(true);
+    if (!conversationId || !profile) return;
+    
+    // Prevent UI wipe on reconnect by checking if we already have messages
+    const current = useChatStore.getState().messages[conversationId] || [];
+    if (!beforeId && current.length === 0) setIsLoadingMessages(true);
+    else if (beforeId) setIsLoadingMore(true);
+    
     setFetchError(null);
 
     try {
@@ -140,21 +144,46 @@ export function MessageList({ conversationId }: MessageListProps) {
       const clearTime = clearedChats[conversationId];
       if (clearTime) {
         ordered = ordered.filter(m => new Date(m.created_at).getTime() > new Date(clearTime).getTime());
+        // If we filtered out all messages because they were cleared, we should stop fetching older ones
+        if (ordered.length === 0 && data.length > 0) {
+          setHasMore(false);
+          return;
+        }
       }
       
       setHasMore(data.length === PAGE_SIZE);
 
       if (!beforeId) {
-        setMessages(conversationId, ordered);
-        if (ordered.length > 0) oldestMessageIdRef.current = ordered[0].id;
-        if (ordered.length > 0 && !beforeId) setLatestLocalMessageId(ordered[ordered.length - 1].id);
+        if (current.length === 0) {
+          setMessages(conversationId, ordered);
+        } else {
+          ordered.forEach(msg => useChatStore.getState().addMessage(conversationId, msg as any));
+        }
+        
+        // ALWAYS update oldestMessageIdRef to the oldest fetched message (even if filtered out)
+        if (data.length > 0) {
+          oldestMessageIdRef.current = data[data.length - 1].id;
+        }
+        if (ordered.length > 0) {
+          setLatestLocalMessageId(ordered[ordered.length - 1].id);
+        }
       } else {
-        prependMessages(conversationId, ordered);
-        if (ordered.length > 0) oldestMessageIdRef.current = ordered[0].id;
+        if (ordered.length > 0) {
+          prependMessages(conversationId, ordered);
+        }
+        if (data.length > 0) {
+          oldestMessageIdRef.current = data[data.length - 1].id;
+        }
       }
-
-      if (profile) {
-        await supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', conversationId).eq('user_id', profile.id);
+      
+      if (!beforeId && ordered.length > 0) {
+        const unreadCount = useChatStore.getState().conversations.find(c => c.id === conversationId)?.unread_count || 0;
+        if (unreadCount > 0) {
+          useChatStore.getState().updateConversation(conversationId, { unread_count: 0 });
+          (window as any).__chat_channel?.send({ type: 'broadcast', event: 'read', payload: { userId: profile.id } });
+          await supabase.from('messages').update({ status: 'read' }).eq('conversation_id', conversationId).neq('sender_id', profile.id).neq('status', 'read');
+          await supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', conversationId).eq('user_id', profile.id);
+        }
       }
     } catch (err: any) {
       console.error(err);
