@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import * as E2EE from '@/lib/e2ee';
@@ -124,25 +124,25 @@ export function useE2EE(conversationId?: string) {
     loadConvKey();
   }, [profile, conversationId, supabase, identityReady]);
 
-  const encrypt = async (text: string) => {
+  const encrypt = useCallback(async (text: string) => {
     if (!conversationKey) throw new Error("E2EE not ready");
     return await E2EE.encryptText(text, conversationKey);
-  };
+  }, [conversationKey]);
 
-  const decrypt = async (ciphertext: string) => {
+  const decrypt = useCallback(async (ciphertext: string) => {
     if (!conversationKey) throw new Error("E2EE not ready");
     return await E2EE.decryptText(ciphertext, conversationKey);
-  };
+  }, [conversationKey]);
 
-  const encryptAttachment = async (file: Blob) => {
+  const encryptAttachment = useCallback(async (file: Blob) => {
     if (!conversationKey) throw new Error("E2EE not ready");
     return await E2EE.encryptFile(file, conversationKey);
-  };
+  }, [conversationKey]);
 
-  const decryptAttachment = async (file: Blob, mimeType?: string) => {
+  const decryptAttachment = useCallback(async (file: Blob, mimeType?: string) => {
     if (!conversationKey) throw new Error("E2EE not ready");
     return await E2EE.decryptFile(file, conversationKey, mimeType);
-  };
+  }, [conversationKey]);
 
   return {
     isReady,

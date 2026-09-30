@@ -44,7 +44,9 @@ function DeliveryIcon({ status }: { status: Message['status'] }) {
   return null;
 }
 
-export function MessageBubble({
+import { memo } from 'react';
+
+export const MessageBubble = memo(function MessageBubble({
   message,
   isOwn,
   showAvatar = true,
@@ -266,7 +268,15 @@ export function MessageBubble({
       )}
     </div>
   );
-}
+}, (prev, next) => {
+  return (
+    prev.message === next.message &&
+    prev.isOwn === next.isOwn &&
+    prev.showAvatar === next.showAvatar &&
+    prev.showSender === next.showSender &&
+    prev.currentUserId === next.currentUserId
+  );
+});
 
 
 

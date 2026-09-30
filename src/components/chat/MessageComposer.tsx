@@ -269,7 +269,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         try {
           console.log("[E2EE_TRACE] MessageComposer encrypting text length:", finalContent.length);
             finalContent = await encrypt(finalContent);
-            console.log("[E2EE_TRACE] MessageComposer encryption SUCCESS. Base64 length:", finalContent.length);
+            console.log("[E2EE_TRACE] MessageComposer encryption SUCCESS. Base64 length:", finalContent!.length);
         } catch (e) {
           console.error('Encryption failed', e);
           toast.error('Failed to encrypt message');
