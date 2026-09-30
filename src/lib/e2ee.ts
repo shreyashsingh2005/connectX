@@ -206,10 +206,10 @@ export async function decryptText(payloadBase64: string, aesKey: CryptoKey): Pro
       ciphertext
     );
     return new TextDecoder().decode(decrypted);
-  } catch (err) {
-    console.error("E2EE Decrypt failed:", err);
-    return "[Encrypted Message - Unable to decrypt]";
-  }
+  } catch (err: any) {
+      console.error("E2EE Decrypt failed:", err);
+      return "[Encrypted Message - Unable to decrypt: " + (err?.message || "Unknown error") + "]";
+    }
 }
 
 // Encrypt file Blob
