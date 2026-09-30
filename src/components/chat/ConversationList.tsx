@@ -12,7 +12,8 @@ import { ConversationItemSkeleton } from '@/components/ui/SkeletonLoader';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { cn, formatConversationTime, truncateText } from '@/lib/utils';
-import { Search, Plus, Users, Pin } from 'lucide-react';
+import { Search, Plus, Users, Pin, Bell } from 'lucide-react';
+import Link from 'next/link';
 import { Conversation } from '@/types';
 
 function DecryptedPreview({ content, conversationId }: { content: string, conversationId: string }) {

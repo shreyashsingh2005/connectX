@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useUIStore } from '@/store/useUIStore';
 import { AppSidebar } from '@/components/layout/AppSidebar';
@@ -10,10 +10,15 @@ import { NewChatModal } from '@/components/modals/NewChatModal';
 import { GroupChatModal } from '@/components/modals/GroupChatModal';
 import { UsernameSetupModal } from '@/components/modals/UsernameSetupModal';
 import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { profile, isLoaded, updateOnlineStatus } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const isMobileChatView = pathname.startsWith('/chat/') && pathname.length > 6;
+  const isSettingsView = pathname.startsWith('/settings');
+  const hideOnMobile = isMobileChatView || isSettingsView;
   const showNewChatModal = useUIStore(s => s.showNewChatModal);
   const showGroupModal = useUIStore(s => s.showGroupModal);
 
@@ -94,7 +99,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Main content */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <main className={cn("flex-1 flex flex-col min-w-0 overflow-hidden md:pb-0", hideOnMobile ? "pb-0" : "pb-[80px]")}>
         {children}
       </main>
 
