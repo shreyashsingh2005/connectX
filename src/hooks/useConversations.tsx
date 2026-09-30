@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useChatStore } from '@/store/useChatStore';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -10,6 +10,14 @@ import toast from 'react-hot-toast';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import * as E2EE from '@/lib/e2ee';
 import { Message } from '@/types';
+
+// Module-level singleton guard.
+// ConversationList is rendered twice on desktop (layout sidebar + /chat page mobile view).
+// Both instances call useConversations(), which would create two identical Supabase channel
+// subscriptions and double-fire every INSERT handler. We prevent this by tracking how many
+// instances are mounted and only creating/tearing-down the channel from the first mount.
+let _activeConversationSubscribers = 0;
+let _globalChannelRef: ReturnType<ReturnType<typeof createClient>['channel']> | null = null;
 
 export function useConversations() {
   const supabase = createClient();
@@ -109,16 +117,30 @@ export function useConversations() {
 
   
   
-  // Realtime subscription
+  // Realtime subscription — singleton guard prevents duplicate channels
   useEffect(() => {
     if (!profile) return;
     loadConversations();
+
+    _activeConversationSubscribers += 1;
+    const isFirstSubscriber = _activeConversationSubscribers === 1;
+
+    // Only the first mounted instance creates the realtime subscription.
+    // All instances share the same Zustand store, so only one subscription is needed.
+    if (!isFirstSubscriber) {
+      return () => {
+        _activeConversationSubscribers -= 1;
+      };
+    }
 
     const debouncedLoad = debounce(() => {
       loadConversations(true);
     }, 1000);
 
-    const channelName = `user_conversations:${profile.id}:${Math.random().toString(36).substring(7)}`;
+    // IMPORTANT: Deterministic channel name — no Math.random().
+    // A random suffix caused duplicate Supabase channels on every React remount/StrictMode double-invoke,
+    // leading to multiple competing INSERT handlers and stale isActive state.
+    const channelName = `user_conversations:${profile.id}`;
     
     const channel = supabase
       .channel(channelName)
@@ -152,7 +174,8 @@ export function useConversations() {
           table: 'messages',
         },
         async (payload) => {
-          const newMsgRaw = payload.new as Message;
+            console.log("[Realtime] platform=desktop/mobile", "subscriptionStatus=SUBSCRIBED", "eventType=INSERT", "messageId=" + payload.new.id, "received=true");
+            const newMsgRaw = payload.new as Message;
           const currentConvs = useChatStore.getState().conversations;
           const conv = currentConvs.find(c => c.id === newMsgRaw.conversation_id);
           
@@ -179,25 +202,28 @@ export function useConversations() {
           );
           useChatStore.getState().setConversations(sorted);
 
-          if (isActive) {
-            // Construct full message locally to avoid replication lag / read replica race conditions
-            const newMessage = {
-              ...newMsgRaw,
-              sender: conv.type === 'direct' ? conv.other_member : undefined,
-              attachments: [],
-              reactions: [],
-            };
-            useChatStore.getState().addMessage(newMsgRaw.conversation_id, newMessage as any);
-            if (!isOwn) {
-              await supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', newMsgRaw.conversation_id).eq('user_id', profile.id);
-              // Also explicitly mark it as read in the DB so other clients know
-              await supabase.from('messages').update({ status: 'read' }).eq('id', newMsgRaw.id);
-              // Broadcast read
-              try {
-                (window as any).__chat_channel?.send({ type: 'broadcast', event: 'read', payload: { userId: profile.id } });
-              } catch {}
-            }
+          // ALWAYS add the message to the store regardless of isActive.
+          // Previously, this was gated on isActive, which silently dropped messages
+          // when setActiveConversationId() had not yet fired (timing race on desktop).
+          // addMessage in useChatStore deduplicates by message.id, so calling it
+          // unconditionally is safe — duplicates from optimistic insert will be merged.
+          const newMessage = {
+            ...newMsgRaw,
+            sender: isOwn ? undefined : (conv.type === 'direct' ? conv.other_member : undefined),
+            attachments: [],
+            reactions: [],
+          };
+          useChatStore.getState().addMessage(newMsgRaw.conversation_id, newMessage as any);
+
+          if (isActive && !isOwn) {
+            // Mark as read only when this conversation is actively open
+            await supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', newMsgRaw.conversation_id).eq('user_id', profile.id);
+            await supabase.from('messages').update({ status: 'read' }).eq('id', newMsgRaw.id);
+            try {
+              (window as any).__chat_channel?.send({ type: 'broadcast', event: 'read', payload: { userId: profile.id } });
+            } catch {}
           } else if (!isActive && !isOwn) {
+            // Show toast notification for messages in non-active conversations
             let senderName = 'Someone';
             let senderAvatar = null;
             
@@ -347,7 +373,12 @@ export function useConversations() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      _activeConversationSubscribers -= 1;
+      if (_activeConversationSubscribers <= 0) {
+        _activeConversationSubscribers = 0;
+        _globalChannelRef = null;
+        supabase.removeChannel(channel);
+      }
     };
   }, [profile?.id, loadConversations, supabase]);
 
