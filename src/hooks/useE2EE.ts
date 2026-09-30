@@ -16,10 +16,10 @@ export function useE2EE(conversationId?: string) {
     if (!profile) return;
     async function initIdentity() {
       try {
-        let keys = await E2EE.loadKeyPair();
+        let keys = await E2EE.loadKeyPair(profile!.id);
         if (!keys) {
           keys = await E2EE.generateRSAKeyPair();
-          await E2EE.storeKeyPair(keys.publicKey, keys.privateKey);
+          await E2EE.storeKeyPair(profile!.id, keys.publicKey, keys.privateKey);
           
           const pubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
           await supabase.from('profiles').update({ public_key: pubKeyB64 }).eq('id', profile!.id);
@@ -53,14 +53,20 @@ export function useE2EE(conversationId?: string) {
         if (memberErr && memberErr.code !== 'PGRST116') throw memberErr;
 
         let aesKey: CryptoKey | null = null;
-        const keys = await E2EE.loadKeyPair();
+        const keys = await E2EE.loadKeyPair(profile!.id);
         if (!keys) throw new Error("Identity keys missing");
 
         if (member?.encrypted_key) {
           // Decrypt existing conversation key
-          const rawAesBase64 = await E2EE.decryptConversationKey(member.encrypted_key, keys.privateKey);
-          aesKey = await E2EE.importConversationKey(rawAesBase64);
-        } else {
+          try {
+            const rawAesBase64 = await E2EE.decryptConversationKey(member.encrypted_key, keys.privateKey);
+            aesKey = await E2EE.importConversationKey(rawAesBase64);
+          } catch (decryptErr) {
+            console.warn("Failed to decrypt conversation key (likely changed device or cleared cache). Generating a new key...", decryptErr);
+          }
+        } 
+        
+        if (!aesKey) {
           // We need to generate a new key and distribute it!
           aesKey = await E2EE.generateConversationKey();
           const rawAesBase64 = await E2EE.exportConversationKey(aesKey);

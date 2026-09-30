@@ -22,35 +22,63 @@ export async function initDB(): Promise<IDBDatabase> {
   });
 }
 
-export async function storeKeyPair(publicKey: CryptoKey, privateKey: CryptoKey): Promise<void> {
+export async function storeKeyPair(userId: string, publicKey: CryptoKey, privateKey: CryptoKey): Promise<void> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
-    store.put(publicKey, 'publicKey');
-    store.put(privateKey, 'privateKey');
+    store.put(publicKey, `publicKey_${userId}`);
+    store.put(privateKey, `privateKey_${userId}`);
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
 }
 
-export async function loadKeyPair(): Promise<{ publicKey: CryptoKey; privateKey: CryptoKey } | null> {
+export async function loadKeyPair(userId: string): Promise<{ publicKey: CryptoKey; privateKey: CryptoKey } | null> {
   const db = await initDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readonly');
-    const store = tx.objectStore(STORE_NAME);
-    const getPub = store.get('publicKey');
-    const getPriv = store.get('privateKey');
+  
+  // Helper to get from IDB
+  const getFromStore = (key: string): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const req = tx.objectStore(STORE_NAME).get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  };
 
-    tx.oncomplete = () => {
-      if (getPub.result && getPriv.result) {
-        resolve({ publicKey: getPub.result, privateKey: getPriv.result });
-      } else {
-        resolve(null);
-      }
-    };
-    tx.onerror = () => reject(tx.error);
-  });
+  try {
+    const pub = await getFromStore(`publicKey_${userId}`);
+    const priv = await getFromStore(`privateKey_${userId}`);
+    
+    if (pub && priv) {
+      return { publicKey: pub, privateKey: priv };
+    }
+    
+    // Fallback: Check for legacy un-scoped keys and migrate them if found
+    const legacyPub = await getFromStore('publicKey');
+    const legacyPriv = await getFromStore('privateKey');
+    
+    if (legacyPub && legacyPriv) {
+      // Migrate to scoped keys
+      await new Promise<void>((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.put(legacyPub, `publicKey_${userId}`);
+        store.put(legacyPriv, `privateKey_${userId}`);
+        store.delete('publicKey');
+        store.delete('privateKey');
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+      return { publicKey: legacyPub, privateKey: legacyPriv };
+    }
+    
+    return null;
+  } catch (err) {
+    console.error("Error loading keypair:", err);
+    return null;
+  }
 }
 
 export async function generateRSAKeyPair(): Promise<{ publicKey: CryptoKey; privateKey: CryptoKey }> {
