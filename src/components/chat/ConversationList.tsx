@@ -82,7 +82,7 @@ export function ConversationList() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-[#111827] border-r border-[#EAECF0] dark:border-[#252A34] w-80 flex-shrink-0">
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-[#111827] border-r border-[#EAECF0] dark:border-[#252A34] w-full md:w-80 flex-shrink-0">
       {/* Header */}
       <div className="px-4 pt-5 pb-3 border-b border-gray-200 dark:border-[#1F2937]">
         <div className="flex items-center justify-between mb-4">
