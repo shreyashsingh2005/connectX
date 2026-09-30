@@ -24,7 +24,7 @@ export default function NotificationsPage() {
     loadNotifications();
 
     const channel = supabase
-      .channel(`notifications:${profile.id}`)
+      .channel(`notifications:${profile.id}:${Math.random().toString(36).substring(7)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${profile.id}` }, () => loadNotifications())
       .subscribe();
 

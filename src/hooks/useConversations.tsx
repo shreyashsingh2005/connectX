@@ -102,7 +102,7 @@ export function useConversations() {
       loadConversations();
     }, 1000);
 
-    const channelName = `user_conversations:${profile.id}`;
+    const channelName = `user_conversations:${profile.id}:${Math.random().toString(36).substring(7)}`;
     
     const channel = supabase
       .channel(channelName)
