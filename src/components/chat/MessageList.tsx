@@ -68,6 +68,7 @@ export function MessageList({ conversationId }: MessageListProps) {
   const [isReconnecting, setIsReconnecting] = useState(false);
   const [latestLocalMessageId, setLatestLocalMessageId] = useState<string | null>(null);
   const isFirstLoad = useRef(true);
+  const typingTimeouts = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const { isReady, decrypt } = useE2EE(conversationId);
 
   useEffect(() => {
@@ -181,11 +182,19 @@ export function MessageList({ conversationId }: MessageListProps) {
       .on('broadcast', { event: 'typing' }, ({ payload }) => {
         if (payload.userId !== profile.id) {
           addTypingUser({ userId: payload.userId, username: payload.username, conversationId });
-          setTimeout(() => removeTypingUser(payload.userId, conversationId), 3000);
+            const key = `${payload.userId}-${conversationId}`;
+            if (typingTimeouts.current[key]) clearTimeout(typingTimeouts.current[key]);
+            typingTimeouts.current[key] = setTimeout(() => {
+              removeTypingUser(payload.userId, conversationId);
+          const key = `${payload.userId}-${conversationId}`;
+          if (typingTimeouts.current[key]) clearTimeout(typingTimeouts.current[key]);
+            }, 3000);
         }
       })
       .on('broadcast', { event: 'stop_typing' }, ({ payload }) => {
         removeTypingUser(payload.userId, conversationId);
+          const key = `${payload.userId}-${conversationId}`;
+          if (typingTimeouts.current[key]) clearTimeout(typingTimeouts.current[key]);
       })
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
