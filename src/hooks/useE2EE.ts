@@ -101,10 +101,8 @@ export function useE2EE(conversationId?: string) {
               const pubKey = (m.profiles as any)?.public_key;
               if (pubKey) {
                 const encKey = await E2EE.encryptConversationKey(rawAesBase64, pubKey);
-                await supabase
-                  .from('conversation_members')
-                  .update({ encrypted_key: encKey })
-                  .eq('id', m.id);
+                const { error: rpcErr } = await supabase.rpc('update_member_key', { p_member_id: m.id, p_encrypted_key: encKey });
+                if (rpcErr) throw rpcErr;
               }
             }
           }
