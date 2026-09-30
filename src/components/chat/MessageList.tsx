@@ -41,6 +41,8 @@ export function MessageList({ conversationId }: MessageListProps) {
   const addMessage = useChatStore(s => s.addMessage);
   const updateMessage = useChatStore(s => s.updateMessage);
   const updateConversation = useChatStore(s => s.updateConversation);
+  const conversation = useChatStore(s => s.conversations.find(c => c.id === conversationId));
+  const otherMemberReadAt = conversation?.members?.find((m: any) => m.user_id !== profile?.id)?.last_read_at;
   const prependMessages = useChatStore(s => s.prependMessages);
   const setIsLoadingMessages = useChatStore(s => s.setIsLoadingMessages);
   const setReplyToMessage = useChatStore(s => s.setReplyToMessage);
@@ -53,6 +55,15 @@ export function MessageList({ conversationId }: MessageListProps) {
   const [hasMore, setHasMore] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [deleteModalMsg, setDeleteModalMsg] = useState<Message | null>(null);
+  const [deletedLocalIds, setDeletedLocalIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      setDeletedLocalIds(JSON.parse(localStorage.getItem('deleted_messages') || '[]'));
+    } catch {}
+  }, []);
+
   const oldestMessageIdRef = useRef<string | null>(null);
   const [isReconnecting, setIsReconnecting] = useState(false);
   const [latestLocalMessageId, setLatestLocalMessageId] = useState<string | null>(null);
@@ -156,7 +167,7 @@ export function MessageList({ conversationId }: MessageListProps) {
       scrollToBottom('instant');
       isFirstLoad.current = false;
     } else if (messages.length > 0) {
-      const last = messages[messages.length - 1];
+      const last = messages[messages.length - 1]; // We don't need to change this for scroll logic
       if (last.sender_id === profile?.id) scrollToBottom();
     }
   }, [messages.length]);
@@ -215,9 +226,26 @@ export function MessageList({ conversationId }: MessageListProps) {
     loadMessages();
   }
 
-  async function handleDelete(messageId: string) {
-    await supabase.from('messages').update({ is_deleted: true, deleted_at: new Date().toISOString() }).eq('id', messageId);
-    updateMessage(conversationId, messageId, { is_deleted: true });
+  function handleDeleteClick(messageId: string) {
+    const msg = messages.find(m => m.id === messageId);
+    if (msg) setDeleteModalMsg(msg);
+  }
+
+  async function confirmDelete(forEveryone: boolean) {
+    if (!deleteModalMsg) return;
+    const msgId = deleteModalMsg.id;
+    setDeleteModalMsg(null);
+    
+    if (forEveryone) {
+      await supabase.from('messages').update({ is_deleted: true, deleted_at: new Date().toISOString() }).eq('id', msgId);
+      updateMessage(conversationId, msgId, { is_deleted: true });
+    } else {
+      const newDeleted = [...deletedLocalIds, msgId];
+      setDeletedLocalIds(newDeleted);
+      localStorage.setItem('deleted_messages', JSON.stringify(newDeleted));
+      // Remove from store for immediate effect
+      useChatStore.getState().removeMessage(conversationId, msgId);
+    }
   }
 
   async function handleEdit(message: Message) {
@@ -232,8 +260,9 @@ export function MessageList({ conversationId }: MessageListProps) {
   let lastDate: string | null = null;
   let lastSenderId: string | null = null;
 
-  for (let i = 0; i < messages.length; i++) {
-    const msg = messages[i];
+  const visibleMessages = messages.filter(m => !deletedLocalIds.includes(m.id));
+    for (let i = 0; i < visibleMessages.length; i++) {
+      const msg = visibleMessages[i];
     const msgDate = new Date(msg.created_at);
     const dateKey = format(msgDate, 'yyyy-MM-dd');
     if (dateKey !== lastDate) {
@@ -259,6 +288,36 @@ export function MessageList({ conversationId }: MessageListProps) {
 
   return (
     <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-4">
+      {deleteModalMsg && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-[#151922] w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-[#252A34]">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Delete message?</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Are you sure you want to delete this message?</p>
+            <div className="flex flex-col gap-2">
+              {deleteModalMsg.sender_id === profile?.id && (
+                <button 
+                  onClick={() => confirmDelete(true)}
+                  className="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-colors"
+                >
+                  Delete for everyone
+                </button>
+              )}
+              <button 
+                onClick={() => confirmDelete(false)}
+                className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-[#1F2937] dark:hover:bg-[#2A3040] text-gray-900 dark:text-white rounded-xl font-medium transition-colors"
+              >
+                Delete for me
+              </button>
+              <button 
+                onClick={() => setDeleteModalMsg(null)}
+                className="w-full py-2.5 mt-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-xl font-medium transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {isLoadingMore && (
         <div className="flex justify-center py-2">
           <div className="w-5 h-5 border-2 border-pink-400 border-t-transparent rounded-full animate-spin" />
@@ -272,7 +331,7 @@ export function MessageList({ conversationId }: MessageListProps) {
           <MessageBubble
             key={message.id} message={message} isOwn={isOwn} showAvatar={showAvatar} showSender={showSender}
             currentUserId={profile?.id || ''} onReply={setReplyToMessage} onEdit={handleEdit}
-            onDelete={handleDelete} onReact={handleReact}
+            onDelete={handleDeleteClick} onReact={handleReact}
           />
         );
       })}

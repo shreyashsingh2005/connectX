@@ -221,7 +221,7 @@ export function useConversations() {
           event: '*',
           schema: 'public',
           table: 'conversation_members',
-          filter: `user_id=eq.${profile.id}`,
+          
         },
         () => {
           debouncedLoad();
