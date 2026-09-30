@@ -194,7 +194,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     });
   };
 
-  const uploadAttachment = async (att: AttachmentPreviewType, messageId: string): Promise<string | null> => {
+  const uploadAttachment = async (att: AttachmentPreviewType, messageId: string): Promise<{url: string, path: string} | null> => {
     const ext = att.file.name.split('.').pop();
     const path = `${conversationId}/${messageId}/${att.id}.${ext}`;
     
@@ -219,7 +219,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       .from('attachments')
       .getPublicUrl(path);
     
-    return publicUrl;
+    return { url: publicUrl, path };
   };
 
   async function handleSend() {
@@ -296,8 +296,9 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       // Upload attachments
       for (const att of sentAttachments) {
-        const url = await uploadAttachment(att, newMessage.id);
-        if (url) {
+        const uploadRes = await uploadAttachment(att, newMessage.id);
+        if (uploadRes) {
+            const { url, path } = uploadRes;
           await supabase.from('attachments').insert({
             message_id: newMessage.id,
             conversation_id: conversationId,
@@ -305,7 +306,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
             file_name: att.file.name,
             file_size: att.file.size,
             mime_type: att.file.type,
-            storage_path: `${profile.id}/${newMessage.id}/${att.id}`,
+            storage_path: path,
             url,
           });
         }
