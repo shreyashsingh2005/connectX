@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -117,7 +117,7 @@ export function useConversations() {
 
   
   
-  // Realtime subscription — singleton guard prevents duplicate channels
+  // Realtime subscription â€” singleton guard prevents duplicate channels
   useEffect(() => {
     if (!profile) return;
     loadConversations();
@@ -137,7 +137,7 @@ export function useConversations() {
       loadConversations(true);
     }, 1000);
 
-    // IMPORTANT: Deterministic channel name — no Math.random().
+    // IMPORTANT: Deterministic channel name â€” no Math.random().
     // A random suffix caused duplicate Supabase channels on every React remount/StrictMode double-invoke,
     // leading to multiple competing INSERT handlers and stale isActive state.
     const channelName = `user_conversations:${profile.id}`;
@@ -174,7 +174,6 @@ export function useConversations() {
           table: 'messages',
         },
         async (payload) => {
-            console.log("[Realtime] platform=desktop/mobile", "subscriptionStatus=SUBSCRIBED", "eventType=INSERT", "messageId=" + payload.new.id, "received=true");
             const newMsgRaw = payload.new as Message;
           const currentConvs = useChatStore.getState().conversations;
           const conv = currentConvs.find(c => c.id === newMsgRaw.conversation_id);
@@ -206,7 +205,7 @@ export function useConversations() {
           // Previously, this was gated on isActive, which silently dropped messages
           // when setActiveConversationId() had not yet fired (timing race on desktop).
           // addMessage in useChatStore deduplicates by message.id, so calling it
-          // unconditionally is safe — duplicates from optimistic insert will be merged.
+          // unconditionally is safe â€” duplicates from optimistic insert will be merged.
           const newMessage = {
             ...newMsgRaw,
             sender: isOwn ? undefined : (conv.type === 'direct' ? conv.other_member : undefined),
@@ -386,3 +385,4 @@ export function useConversations() {
 
   return { conversations, isLoadingConversations, loadConversations, updateConversation, addConversation };
 }
+

@@ -78,7 +78,6 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   }, [showEmojiPicker]);
 
   const handleEmojiClick = (emojiData: any, event: MouseEvent) => {
-    console.log("[EMOJI] picker=open selection=received emojiLength=" + emojiData?.emoji?.length + " codePointCount=" + Array.from(emojiData?.emoji || '').length);
     const cursor = textareaRef.current?.selectionStart ?? text.length;
     const newText = text.slice(0, cursor) + emojiData.emoji + text.slice(cursor);
     setText(newText);
@@ -303,9 +302,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       let finalContent = content || null;
       if (finalContent) {
         try {
-          console.log("[E2EE_TRACE] MessageComposer encrypting text length:", finalContent.length);
             finalContent = await encrypt(finalContent);
-            console.log("[E2EE_TRACE] MessageComposer encryption SUCCESS. Base64 length:", finalContent!.length);
         } catch (e) {
           console.error('Encryption failed', e);
           toast.error('Failed to encrypt message');
@@ -495,6 +492,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     </div>
   );
 }
+
 
 
 

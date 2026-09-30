@@ -102,7 +102,7 @@ export default function ContactsPage() {
   useEffect(() => {
     if (!profile) return;
     
-    const channel = supabase.channel('contacts_realtime_' + profile.id + '_' + Math.random().toString(36).substring(7))
+    const channel = supabase.channel(`contacts_realtime:${profile.id}`)
       .on('postgres_changes', { 
         event: '*', schema: 'public', table: 'friend_requests' 
       }, () => {

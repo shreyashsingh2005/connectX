@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -91,11 +91,9 @@ export function MessageList({ conversationId }: MessageListProps) {
     const processBatch = async () => {
       const updates = await Promise.all(toDecrypt.map(async msg => {
         try {
-          console.log("[E2EE_TRACE] MessageList decrypting message:", msg.id, "Content length:", msg.content?.length);
             let decrypted: string;
             try {
               decrypted = await decrypt(msg.content!);
-              console.log("[E2EE_TRACE] MessageList decryption SUCCESS for", msg.id);
             } catch (innerErr) {
               console.error("[E2EE_TRACE] MessageList decryption FAILED for", msg.id, innerErr);
               throw innerErr;
@@ -425,3 +423,4 @@ export function MessageList({ conversationId }: MessageListProps) {
     </div>
   );
 }
+
