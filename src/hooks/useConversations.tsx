@@ -174,7 +174,7 @@ export function useConversations() {
           );
           useChatStore.getState().setConversations(sorted);
 
-          if (isActive && !isOwn) {
+          if (isActive) {
             // Construct full message locally to avoid replication lag / read replica race conditions
             const newMessage = {
               ...newMsgRaw,
@@ -183,13 +183,15 @@ export function useConversations() {
               reactions: [],
             };
             useChatStore.getState().addMessage(newMsgRaw.conversation_id, newMessage as any);
-            await supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', newMsgRaw.conversation_id).eq('user_id', profile.id);
-            // Also explicitly mark it as read in the DB so other clients know
-            await supabase.from('messages').update({ status: 'read' }).eq('id', newMsgRaw.id);
-            // Broadcast read
-            try {
-              (window as any).__chat_channel?.send({ type: 'broadcast', event: 'read', payload: { userId: profile.id } });
-            } catch {}
+            if (!isOwn) {
+              await supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', newMsgRaw.conversation_id).eq('user_id', profile.id);
+              // Also explicitly mark it as read in the DB so other clients know
+              await supabase.from('messages').update({ status: 'read' }).eq('id', newMsgRaw.id);
+              // Broadcast read
+              try {
+                (window as any).__chat_channel?.send({ type: 'broadcast', event: 'read', payload: { userId: profile.id } });
+              } catch {}
+            }
           } else if (!isActive && !isOwn) {
             let senderName = 'Someone';
             let senderAvatar = null;
