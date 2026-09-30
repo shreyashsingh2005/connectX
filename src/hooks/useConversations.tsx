@@ -180,6 +180,10 @@ export function useConversations() {
             if (data) {
               useChatStore.getState().addMessage(newMsgRaw.conversation_id, data);
               await supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', newMsgRaw.conversation_id).eq('user_id', profile.id);
+              // Broadcast read
+              try {
+                (window as any).__chat_channel?.send({ type: 'broadcast', event: 'read', payload: { userId: profile.id } });
+              } catch {}
             }
           } else if (!isActive && !isOwn) {
             let senderName = 'Someone';

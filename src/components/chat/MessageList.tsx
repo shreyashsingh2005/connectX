@@ -42,7 +42,8 @@ export function MessageList({ conversationId }: MessageListProps) {
   const updateMessage = useChatStore(s => s.updateMessage);
   const updateConversation = useChatStore(s => s.updateConversation);
   const conversation = useChatStore(s => s.conversations.find(c => c.id === conversationId));
-  const otherMemberReadAt = conversation?.members?.find((m: any) => m.user_id !== profile?.id)?.last_read_at;
+  const forceReadAt = (conversation as any)?.forceReadAt;
+  const otherMemberReadAt = forceReadAt || conversation?.members?.find((m: any) => m.user_id !== profile?.id)?.last_read_at;
   const prependMessages = useChatStore(s => s.prependMessages);
   const setIsLoadingMessages = useChatStore(s => s.setIsLoadingMessages);
   const setReplyToMessage = useChatStore(s => s.setReplyToMessage);
@@ -197,6 +198,7 @@ export function MessageList({ conversationId }: MessageListProps) {
           if (typingTimeouts.current[key]) clearTimeout(typingTimeouts.current[key]);
       })
       .subscribe((status) => {
+        (window as any).__chat_channel = channel;
         if (status === 'SUBSCRIBED') {
           setIsReconnecting(prev => {
             if (prev) {

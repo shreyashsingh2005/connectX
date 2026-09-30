@@ -59,8 +59,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   // Typing indicator
   const sendTypingStatus = useCallback(async (typing: boolean) => {
     if (!profile) return;
-    const channels = supabase.getChannels();
-    const channel = channels.find(c => c.topic === `room:${conversationId}`);
+    const channel = (window as any).__chat_channel;
     if (channel) {
       try {
         await channel.send({
