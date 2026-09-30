@@ -145,18 +145,7 @@ export function useConversations() {
             return;
           }
 
-          let decryptedContent = undefined;
-          if (newMsgRaw.content && newMsgRaw.type === 'text') {
-            const key = E2EE.conversationKeyCache.get(conv.id);
-            if (key) {
-              try {
-                decryptedContent = await E2EE.decryptText(newMsgRaw.content, key);
-                newMsgRaw.decrypted_content = decryptedContent;
-              } catch (e) {
-                newMsgRaw.decrypted_content = '[Unable to decrypt message]';
-              }
-            }
-          }
+          // Decryption in realtime listener REMOVED to avoid race conditions with UI local cache
 
           const isOwn = newMsgRaw.sender_id === profile.id;
           const activeId = useChatStore.getState().activeConversationId;
