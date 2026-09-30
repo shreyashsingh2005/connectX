@@ -1,6 +1,5 @@
 'use client';
 
-import { startConversationServer } from '@/app/actions/conversation';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -218,7 +217,8 @@ export default function ContactsPage() {
         }
       }
 
-      const newConvId = await startConversationServer(profile.id, targetProfile.id);
+      const { data: newConvId, error: convErr } = await supabase.rpc('start_direct_conversation', { other_user_id: targetProfile.id });
+        if (convErr) throw convErr;
         router.push(`/chat/${newConvId}`);
     } catch (error: any) {
       toast.error(error.message || 'Failed to start conversation');
