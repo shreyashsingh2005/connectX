@@ -93,8 +93,8 @@ export function MessageList({ conversationId }: MessageListProps) {
         try {
           const decrypted = await decrypt(msg.content!);
           return { id: msg.id, changes: { decrypted_content: decrypted } };
-        } catch (e) {
-          return { id: msg.id, changes: { decrypted_content: '[Unable to decrypt message]' } };
+        } catch (e: any) {
+          return { id: msg.id, changes: { decrypted_content: '[Unable to decrypt message: ' + (e?.message || e?.name || String(e)) + ']' } };
         }
       }));
       

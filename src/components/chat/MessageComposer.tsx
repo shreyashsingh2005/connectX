@@ -279,7 +279,8 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       const { data: newMessage, error } = await supabase
         .from('messages')
         .insert({
-          conversation_id: conversationId,
+            id: tempId,
+            conversation_id: conversationId,
           sender_id: profile.id,
           content: finalContent,
           type: sentAttachments.length > 0 ? getFileType(sentAttachments[0].file.type) : 'text',
