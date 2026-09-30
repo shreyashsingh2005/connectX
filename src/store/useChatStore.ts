@@ -93,15 +93,12 @@ export const useChatStore = create<ChatState>()(set => ({
   addMessage: (conversationId, message) =>
     set(state => {
       const current = state.messages[conversationId] || [];
-      const existingById = current.find(m => m.id === message.id);
-        const existingByContent = !existingById && message.status === 'sent' ? current.find(m => m.status === 'sending' && m.content === message.content && m.sender_id === message.sender_id) : null;
-        if (existingById || existingByContent) {
-          const targetId = existingById ? message.id : existingByContent!.id;
+      if (current.some(m => m.id === message.id)) {
         // Merge instead of duplicate
         return {
           messages: {
             ...state.messages,
-            [conversationId]: current.map(m => m.id === targetId ? mergeMessage(m, message) : m),
+            [conversationId]: current.map(m => m.id === message.id ? mergeMessage(m, message) : m),
           },
         };
       }

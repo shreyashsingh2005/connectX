@@ -225,7 +225,7 @@ export async function encryptFile(file: Blob, aesKey: CryptoKey): Promise<Blob> 
 }
 
 // Decrypt file Blob
-export async function decryptFile(blob: Blob, aesKey: CryptoKey): Promise<Blob> {
+export async function decryptFile(blob: Blob, aesKey: CryptoKey, mimeType?: string): Promise<Blob> {
   const buffer = await blob.arrayBuffer();
   const iv = buffer.slice(0, 12);
   const ciphertext = buffer.slice(12);
@@ -235,5 +235,5 @@ export async function decryptFile(blob: Blob, aesKey: CryptoKey): Promise<Blob> 
     aesKey,
     ciphertext
   );
-  return new Blob([decrypted], { type: blob.type });
+  return new Blob([decrypted], { type: mimeType || blob.type });
 }

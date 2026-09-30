@@ -139,9 +139,9 @@ export function useE2EE(conversationId?: string) {
     return await E2EE.encryptFile(file, conversationKey);
   };
 
-  const decryptAttachment = async (file: Blob) => {
+  const decryptAttachment = async (file: Blob, mimeType?: string) => {
     if (!conversationKey) throw new Error("E2EE not ready");
-    return await E2EE.decryptFile(file, conversationKey);
+    return await E2EE.decryptFile(file, conversationKey, mimeType);
   };
 
   return {

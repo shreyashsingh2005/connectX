@@ -16,15 +16,16 @@ export function EncryptedAttachment({ attachment, isOwn }: { attachment: Attachm
 
   useEffect(() => {
     if (!isReady || !attachment.storage_path) return;
-
+    let url: string | null = null;
+    
     async function load() {
       try {
         const { data, error: downloadError } = await supabase.storage.from('attachments').download(attachment.storage_path);
         if (downloadError) throw downloadError;
         if (!data) throw new Error("No data");
 
-        const decryptedBlob = await decryptAttachment(data);
-        const url = URL.createObjectURL(decryptedBlob);
+        const decryptedBlob = await decryptAttachment(data, attachment.mime_type);
+        url = URL.createObjectURL(decryptedBlob);
         setObjectUrl(url);
       } catch (err) {
         console.error('Failed to decrypt attachment', err);
@@ -34,7 +35,7 @@ export function EncryptedAttachment({ attachment, isOwn }: { attachment: Attachm
     load();
 
     return () => {
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      if (url) URL.revokeObjectURL(url);
     };
   }, [isReady, attachment.storage_path]);
 
@@ -53,14 +54,7 @@ export function EncryptedAttachment({ attachment, isOwn }: { attachment: Attachm
   if (attachment.mime_type.startsWith('image/')) {
     return (
       <div className="relative rounded-xl overflow-hidden max-w-xs cursor-pointer">
-        <Image
-          src={objectUrl}
-          alt={attachment.file_name}
-          width={attachment.width || 300}
-          height={attachment.height || 200}
-          className="object-cover rounded-xl"
-          style={{ maxHeight: 300, width: 'auto' }}
-        />
+        <img src={objectUrl} alt={attachment.file_name} className="object-cover rounded-xl" style={{ maxHeight: 300, maxWidth: '100%' }} />
       </div>
     );
   }

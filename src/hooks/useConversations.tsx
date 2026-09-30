@@ -216,12 +216,35 @@ export function useConversations() {
         }
       )
       
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'message_reactions',
+      
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'attachments',
+          },
+          async (payload) => {
+            const newAttachment = payload.new;
+            const state = useChatStore.getState();
+            const convMsgs = state.messages[newAttachment.conversation_id] || [];
+            const msg = convMsgs.find(m => m.id === newAttachment.message_id);
+            if (msg) {
+              const currentAtts = msg.attachments || [];
+              if (!currentAtts.some(a => a.id === newAttachment.id)) {
+                state.updateMessage(newAttachment.conversation_id, newAttachment.message_id, {
+                  attachments: [...currentAtts, newAttachment as any]
+                });
+              }
+            }
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'message_reactions',
         },
         async (payload) => {
           // If we receive a reaction update, we need to fetch it or patch it

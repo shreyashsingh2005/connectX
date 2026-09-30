@@ -19,13 +19,16 @@ interface ConversationPageProps {
 
 export default function ConversationPage({ params }: ConversationPageProps) {
   const { conversationId } = use(params);
-  const [conversation, setConversation] = useState<Conversation | null>(null);
-  const [loading, setLoading] = useState(true);
+  const storeConversation = useChatStore(s => s.conversations.find(c => c.id === conversationId));
+  const [localConversation, setLocalConversation] = useState<Conversation | null>(null);
+  const conversation = storeConversation || localConversation;
+  const [loading, setLoading] = useState(!conversation);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
   const profile = useAuthStore(s => s.profile);
   const setActiveConversationId = useChatStore(s => s.setActiveConversationId);
+  const addConversation = useChatStore(s => s.addConversation);
   const showProfilePanel = useUIStore(s => s.showProfilePanel);
 
   useEffect(() => {
@@ -68,7 +71,9 @@ export default function ConversationPage({ params }: ConversationPageProps) {
         ? data.members.find((m: { user_id: string }) => m.user_id !== profile.id)?.profile
         : undefined;
 
-      setConversation({ ...data, other_member: otherMember });
+      const enriched = { ...data, other_member: otherMember };
+      setLocalConversation(enriched);
+      if (!storeConversation) addConversation(enriched);
     } catch {
       setError('Failed to load conversation');
     } finally {
