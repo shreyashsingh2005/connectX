@@ -37,10 +37,10 @@ interface MessageBubbleProps {
 const QUICK_EMOJIS = ['❤️', '😂', '👍', '😮', '😢', '🙏'];
 
 function DeliveryIcon({ status }: { status: Message['status'] }) {
-  if (status === 'sending') return <Clock className="w-3 h-3 text-gray-600 dark:text-gray-400" />;
-  if (status === 'sent') return <Check className="w-3 h-3 text-gray-600 dark:text-gray-400" />;
-  if (status === 'delivered') return <CheckCheck className="w-3 h-3 text-gray-600 dark:text-gray-400" />;
-  if (status === 'read') return <CheckCheck className="w-3 h-3 text-pink-400" />;
+  if (status === 'sending') return <Clock className="w-3 h-3 text-white/70" />;
+  if (status === 'sent') return <Check className="w-[14px] h-[14px] text-white/80 drop-shadow-sm" />;
+  if (status === 'delivered') return <CheckCheck className="w-[14px] h-[14px] text-white/80 drop-shadow-sm" />;
+  if (status === 'read') return <CheckCheck className="w-[15px] h-[15px] text-[#38bdf8] drop-shadow-md brightness-110" />;
   return null;
 }
 
@@ -162,7 +162,7 @@ export function MessageBubble({
             {message.is_edited && (
               <span className="text-[10px] opacity-50">edited</span>
             )}
-            <span className="text-[10px] opacity-60">
+            <span className={`text-[11px] ${isOwn ? 'font-medium text-white/80 drop-shadow-sm tracking-wide' : 'opacity-60'}`}>
               {formatMessageTime(message.created_at)}
             </span>
             {isOwn && <DeliveryIcon status={message.status} />}
