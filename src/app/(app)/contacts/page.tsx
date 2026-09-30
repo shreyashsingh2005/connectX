@@ -216,18 +216,9 @@ export default function ContactsPage() {
         }
       }
 
-      const { data: newConv, error: convErr } = await supabase
-        .from('conversations')
-        .insert({ type: 'direct' })
-        .select()
-        .single();
-      if (convErr) throw convErr;
-
-      await supabase.from('conversation_members').insert([
-        { conversation_id: newConv.id, user_id: profile.id, role: 'member' },
-        { conversation_id: newConv.id, user_id: targetProfile.id, role: 'member' }
-      ]);
-      router.push(`/chat/${newConv.id}`);
+      const { data: newConvId, error: convErr } = await supabase.rpc('start_conversation', { other_user_id: targetProfile.id });
+        if (convErr) throw convErr;
+        router.push(`/chat/${newConvId}`);
     } catch (error: any) {
       toast.error(error.message || 'Failed to start conversation');
     } finally {
