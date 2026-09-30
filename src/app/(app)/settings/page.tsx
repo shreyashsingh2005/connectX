@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { UserSettings } from '@/types';
 import toast from 'react-hot-toast';
 import { cn, generateAvatarUrl, debounce } from '@/lib/utils';
+import { UserAvatar } from '@/components/ui/UserAvatar';
 import { 
   Shield, Bell, Eye, Lock, User, ChevronRight, Save, Loader2, 
   Monitor, Moon, Sun, Camera, AtSign, CheckCircle2, Mail, FileText, LogOut
