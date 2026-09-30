@@ -91,7 +91,15 @@ export function MessageList({ conversationId }: MessageListProps) {
     const processBatch = async () => {
       const updates = await Promise.all(toDecrypt.map(async msg => {
         try {
-          const decrypted = await decrypt(msg.content!);
+          console.log("[E2EE_TRACE] MessageList decrypting message:", msg.id, "Content length:", msg.content?.length);
+            let decrypted: string;
+            try {
+              decrypted = await decrypt(msg.content!);
+              console.log("[E2EE_TRACE] MessageList decryption SUCCESS for", msg.id);
+            } catch (innerErr) {
+              console.error("[E2EE_TRACE] MessageList decryption FAILED for", msg.id, innerErr);
+              throw innerErr;
+            }
           return { id: msg.id, changes: { decrypted_content: decrypted } };
         } catch (e: any) {
           return { id: msg.id, changes: { decrypted_content: '[Unable to decrypt message: ' + (e?.message || e?.name || String(e)) + ']' } };

@@ -207,8 +207,8 @@ export async function decryptText(payloadBase64: string, aesKey: CryptoKey): Pro
     );
     return new TextDecoder().decode(decrypted);
   } catch (err: any) {
-      console.error("E2EE Decrypt failed:", err);
-      return "[Encrypted Message - Unable to decrypt: " + (err?.message || "Unknown error") + "]";
+      console.error("[E2EE_TRACE] Core E2EE.decryptText FAILED! payloadBase64 length:", payloadBase64?.length, "Key type:", aesKey?.type, "Algorithm:", aesKey?.algorithm?.name, "Error name:", err?.name, "Message:", err?.message);
+      return "[E2EE_TRACE_FAIL: err=" + err?.name + ":" + (err?.message || 'none') + ", payloadLen=" + payloadBase64?.length + ", keyAlgo=" + aesKey?.algorithm?.name + "]";
     }
 }
 
