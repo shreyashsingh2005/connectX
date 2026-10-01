@@ -43,6 +43,7 @@ export default function RegisterPage() {
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
@@ -77,9 +78,15 @@ export default function RegisterPage() {
       
       toast.success('Account created! Check your email to verify.');
       router.push('/login');
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Registration failed';
-      toast.error(message);
+    } catch (error: any) {
+      const msg = error?.message || '';
+      if (msg.includes('rate limit') || error?.status === 429) {
+        toast.error('Email sending is temporarily rate-limited. Please try again later.');
+      } else if (msg.toLowerCase().includes('already registered')) {
+        toast.error('This email is already registered. Please sign in.');
+      } else {
+        toast.error(msg || 'Registration failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
