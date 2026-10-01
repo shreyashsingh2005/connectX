@@ -74,7 +74,7 @@ export const MessageBubble = memo(function MessageBubble({
           <div className="w-8 flex-shrink-0" />
         )}
         <div className={cn(
-          'max-w-[85%] md:max-w-[65%] rounded-[16px] px-4 py-2.5 italic text-gray-500 text-sm border',
+          'max-w-[78%] md:max-w-[65%] rounded-[16px] px-4 py-2.5 italic text-gray-500 text-sm border',
           isOwn ? 'border-[#2A2F45]' : 'border-gray-200 dark:border-[#252A34]',
           'bg-gray-100 dark:bg-[#11141A]'
         )}>
@@ -92,7 +92,7 @@ export const MessageBubble = memo(function MessageBubble({
 
   return (
     <div
-      className={cn('flex gap-2 group', isOwn ? 'flex-row-reverse' : 'flex-row', showAvatar ? 'mt-3 mb-1' : 'mb-1')}
+      className={cn('flex gap-2 group', isOwn ? 'flex-row-reverse' : 'flex-row', showAvatar ? 'mt-3 mb-0.5' : 'mb-0.5')}
       onMouseEnter={() => setShowActions(true)}
         onMouseLeave={() => { setShowActions(false); setShowEmojiPicker(false); }}
         onContextMenu={(e) => {
@@ -117,7 +117,7 @@ export const MessageBubble = memo(function MessageBubble({
       )}
       {!isOwn && !showAvatar && <div className="w-7 flex-shrink-0" />}
 
-      <div className={cn('flex flex-col max-w-[85%] md:max-w-[65%]', isOwn ? 'items-end' : 'items-start')}>
+      <div className={cn('flex flex-col max-w-[78%] md:max-w-[65%]', isOwn ? 'items-end' : 'items-start')}>
         {/* Sender name (group) */}
         {showSender && !isOwn && (
           <span className="text-xs font-medium text-[#8B5CF6] mb-1 ml-1">
@@ -143,7 +143,7 @@ export const MessageBubble = memo(function MessageBubble({
           ref={bubbleRef}
           className={cn(
             'relative rounded-[16px] px-4 py-2.5 message-animate',
-            isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (isOwn ? 'bg-[#8B5CF6] text-white rounded-br-sm shadow-sm' : 'bg-white dark:bg-[#151922] border border-gray-100 dark:border-[#252A34] text-gray-900 dark:text-[#F5F7FA] rounded-bl-sm shadow-sm'),
+            isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (isOwn ? `bg-[#8B5CF6] text-white shadow-sm ${showAvatar ? 'rounded-[16px] rounded-br-[4px]' : 'rounded-[16px] rounded-r-[4px]'}` : `bg-[#F2F4F7] dark:bg-[#171B23] text-[#101828] dark:text-[#F5F7FA] shadow-sm ${showAvatar ? 'rounded-[16px] rounded-bl-[4px]' : 'rounded-[16px] rounded-l-[4px]'}`),
           )}
         >
           {/* Text content */}
@@ -188,7 +188,7 @@ export const MessageBubble = memo(function MessageBubble({
               <button
                 key={emoji}
                 onClick={() => onReact?.(message.id, emoji)}
-                className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gray-200 dark:bg-[#151922] border border-gray-300 dark:border-[#252A34] hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors text-xs"
+                className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] hover:bg-gray-50 dark:hover:bg-[#1A1E29] transition-colors text-[11px] font-medium shadow-sm text-gray-700 dark:text-gray-300"
               >
                 <span>{emoji}</span>
                 {count > 1 && <span className="text-gray-600 dark:text-gray-400 text-[10px]">{count}</span>}

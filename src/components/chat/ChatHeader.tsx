@@ -5,7 +5,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useUIStore } from '@/store/useUIStore';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { OnlineIndicator } from '@/components/ui/OnlineIndicator';
-import { formatLastSeen } from '@/lib/utils';
+import { formatLastSeen, cn } from '@/lib/utils';
 import {
   Search,
   Phone,
@@ -69,7 +69,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   const memberCount = conversation.members?.length || 0;
 
   return (
-    <header className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-[#252A34] bg-gray-50 dark:bg-[#111827] flex-shrink-0">
+    <header className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-[#252A34] bg-white/80 dark:bg-[#0B0D12]/80 backdrop-blur-xl flex-shrink-0">
       {/* Left: Back (mobile) + Avatar + Info */}
       <div className="flex items-center gap-3">
         {/* Back button - mobile only */}
@@ -94,12 +94,12 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
           <div className="text-left">
             <h3 className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">{name}</h3>
             {isDirect ? (
-              <OnlineIndicator
-                isOnline={isOnline}
-                showText
-                lastSeen={lastSeen ? formatLastSeen(lastSeen) : undefined}
-                className="mt-0.5"
-              />
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className={cn("w-1.5 h-1.5 rounded-full", isOnline ? "bg-green-500" : "bg-gray-400 dark:bg-gray-600")} />
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  {isOnline ? 'online' : (lastSeen ? formatLastSeen(lastSeen) : 'offline')}
+                </span>
+              </div>
             ) : (
               <div className="flex items-center gap-1 mt-0.5">
                 <Users className="w-3 h-3 text-gray-500" />
@@ -114,7 +114,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
       <div className="flex items-center gap-1">
         <button
           title="Search messages"
-          className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-[#11141A] transition-all"
+          className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-[#1A1E29] transition-colors"
         >
           <Search className="w-4.5 h-4.5" />
         </button>
@@ -136,7 +136,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
           <button
             onClick={() => setShowMenu(!showMenu)}
             title="Options"
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-[#11141A] transition-all"
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-[#1A1E29] transition-colors"
           >
             <MoreVertical className="w-4.5 h-4.5" />
           </button>

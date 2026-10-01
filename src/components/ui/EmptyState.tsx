@@ -11,8 +11,8 @@ const variantConfig: Record<EmptyStateVariant, { Icon: LucideIcon; title: string
   },
   'no-messages': {
     Icon: MessageSquare,
-    title: 'No messages yet',
-    description: 'Say hello! Send a message to start the conversation.',
+    title: 'Start a conversation',
+    description: 'Send a message to start chatting securely.',
   },
   'no-search-results': {
     Icon: Search,
