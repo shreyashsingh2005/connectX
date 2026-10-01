@@ -1,234 +1,19 @@
-'use client';
+const fs = require('fs');
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
-import { useAuthStore } from '@/store/useAuthStore';
-import { UserAvatar } from '@/components/ui/UserAvatar';
-import { Profile, Friendship } from '@/types';
-import { cn, debounce } from '@/lib/utils';
-import toast from 'react-hot-toast';
-import { Search, UserPlus, Users, Loader2, MessageSquare, Check, X as XIcon, Clock } from 'lucide-react';
-import { useFriendActions } from '@/hooks/useFriendActions';
+const filePath = 'src/app/(app)/contacts/page.tsx';
+let code = fs.readFileSync(filePath, 'utf8');
 
-type TabType = 'friends' | 'find';
-
-export default function ContactsPage() {
-  const [activeTab, setActiveTab] = useState<TabType>('friends');
-  
-  // Find People State
-  const [query, setQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Profile[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [relationshipMap, setRelationshipMap] = useState<Record<string, string>>({});
-  const [requestIds, setRequestIds] = useState<Record<string, string>>({});
-  
-  // Friends State
-  const [friendships, setFriendships] = useState<Friendship[]>([]);
-  const [loadingFriends, setLoadingFriends] = useState(true);
-  const [page, setPage] = useState(1);
-  const [hasMoreFriends, setHasMoreFriends] = useState(false);
-  
-  // Requests State
-  const [incomingRequests, setIncomingRequests] = useState<any[]>([]);
-  const [outgoingRequests, setOutgoingRequests] = useState<any[]>([]);
-  const [loadingRequests, setLoadingRequests] = useState(true);
-
-  const [isStartingChat, setIsStartingChat] = useState<string | null>(null);
-  
-  const router = useRouter();
-  const supabase = createClient();
-  const profile = useAuthStore(s => s.profile);
-  const { sendFriendRequest, respondToRequest, cancelRequest } = useFriendActions();
-
-  const fetchFriendsAndRequests = useCallback(async () => {
-    if (!profile) return;
-    
-    // Fetch Friendships
-    const { data: friendsData } = await supabase
-      .from('friendships')
-      .select('id, created_at, user_id, friend_id, friend:profiles!friendships_friend_id_fkey(*)')
-      .eq('user_id', profile.id)
-      .order('created_at', { ascending: false })
-      .limit(page * 20);
-
-    const { data: friendsData2 } = await supabase
-      .from('friendships')
-      .select('id, created_at, user_id, friend_id, friend:profiles!friendships_user_id_fkey(*)')
-      .eq('friend_id', profile.id)
-      .order('created_at', { ascending: false })
-      .limit(page * 20);
-
-    const validFriends: Friendship[] = [];
-    if (friendsData) {
-      friendsData.forEach((f: any) => {
-        if (f.friend) validFriends.push({ ...f, friend: f.friend as Profile });
-      });
-    }
-    if (friendsData2) {
-      friendsData2.forEach((f: any) => {
-        if (f.friend && f.friend.id !== profile.id && !validFriends.find(vf => vf.friend?.id === f.friend.id)) {
-          validFriends.push({ ...f, friend: f.friend as Profile });
-        }
-      });
-    }
-    setFriendships(validFriends);
-    setLoadingFriends(false);
-
-    // Use raw select without foreign keys if we only need raw data, to avoid PostgREST FKEY ambiguity issues
-    const { data: incReq } = await supabase
-      .from('friend_requests')
-      .select('*, sender:profiles!friend_requests_sender_id_fkey(*)')
-      .eq('receiver_id', profile.id)
-      .eq('status', 'pending');
-    setIncomingRequests(incReq || []);
-
-    const { data: outReq } = await supabase
-      .from('friend_requests')
-      .select('*, receiver:profiles!friend_requests_receiver_id_fkey(*)')
-      .eq('sender_id', profile.id)
-      .eq('status', 'pending');
-    setOutgoingRequests(outReq || []);
-    
-    setLoadingRequests(false);
-  }, [profile, supabase, page]);
-
-  useEffect(() => {
-    fetchFriendsAndRequests();
-  }, [fetchFriendsAndRequests]);
-
-  // Real-time synchronization
-  useEffect(() => {
-    if (!profile) return;
-    
-    const channel = supabase.channel(`contacts_realtime:${profile.id}`)
-      .on('postgres_changes', { 
-        event: '*', schema: 'public', table: 'friend_requests' 
-      }, () => {
-        fetchFriendsAndRequests();
-      })
-      .on('postgres_changes', { 
-        event: '*', schema: 'public', table: 'friendships' 
-      }, () => {
-        fetchFriendsAndRequests();
-      })
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, [profile, supabase, fetchFriendsAndRequests]);
-
-  const search = useCallback(
-    debounce(async (q: string) => {
-      if (!q.trim() || !profile) { setSearchResults([]); return; }
-      setIsSearching(true);
-      try {
-        const normalized = q.toLowerCase();
-        const { data: users } = await supabase
-          .from('profiles')
-          .select('*')
-          .neq('id', profile.id)
-          .or(`username_normalized.ilike.%${normalized}%,display_name.ilike.%${q}%`)
-          .limit(20);
-          
-        const fetchedUsers = users || [];
-        setSearchResults(fetchedUsers);
-        
-        if (fetchedUsers.length > 0) {
-          const userIds = fetchedUsers.map(u => u.id);
-          const uids = userIds.join(',');
-          
-          const { data: fData } = await supabase
-            .from('friendships')
-            .select('user_id, friend_id')
-            .or(`and(user_id.eq.${profile.id},friend_id.in.(${uids})),and(friend_id.eq.${profile.id},user_id.in.(${uids}))`);
-            
-          const { data: rData } = await supabase
-            .from('friend_requests')
-            .select('id, sender_id, receiver_id, status')
-            .eq('status', 'pending')
-            .or(`and(sender_id.eq.${profile.id},receiver_id.in.(${uids})),and(receiver_id.eq.${profile.id},sender_id.in.(${uids}))`);
-            
-          const newMap: Record<string, string> = {};
-          const newReqIds: Record<string, string> = {};
-          
-          fetchedUsers.forEach(u => {
-            const isFriend = fData?.some(f => (f.user_id === profile.id && f.friend_id === u.id) || (f.friend_id === profile.id && f.user_id === u.id));
-            if (isFriend) {
-              newMap[u.id] = 'friend';
-              return;
-            }
-            const req = rData?.find(r => (r.sender_id === profile.id && r.receiver_id === u.id) || (r.receiver_id === profile.id && r.sender_id === u.id));
-            if (req) {
-              newReqIds[u.id] = req.id;
-              if (req.sender_id === profile.id) newMap[u.id] = 'outgoing_request';
-              else newMap[u.id] = 'incoming_request';
-            } else {
-              newMap[u.id] = 'none';
-            }
-          });
-          
-          setRelationshipMap(newMap);
-          setRequestIds(newReqIds);
-        }
-      } catch (err) {
-        console.error('Search error:', err);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 500),
-    [profile, supabase]
-  );
-
-  // Trigger search when query changes OR when we switch to find tab
-  useEffect(() => {
-    if (activeTab === 'find') {
-      search(query);
-    }
-  }, [query, activeTab, search]);
-  
-  // Ensure the search re-runs when a request is updated and we are on the find tab
-  useEffect(() => {
-    if (activeTab === 'find' && query.trim()) {
-      search(query);
-    }
-  }, [incomingRequests, outgoingRequests, friendships]); // these change on realtime events
-
-  async function handleStartChat(targetProfile: Profile) {
-    if (!profile || isStartingChat) return;
-    setIsStartingChat(targetProfile.id);
-    try {
-      const { data: existingMembers } = await supabase
-        .from('conversation_members')
-        .select('conversation_id')
-        .eq('user_id', profile.id);
-
-      if (existingMembers && existingMembers.length > 0) {
-        const convIds = existingMembers.map(m => m.conversation_id);
-        const { data: shared } = await supabase
-          .from('conversation_members')
-          .select('conversation_id')
-          .in('conversation_id', convIds)
-          .eq('user_id', targetProfile.id);
-
-        if (shared && shared.length > 0) {
-          router.push(`/chat/${shared[0].conversation_id}`);
-          return;
-        }
-      }
-
-      const { data: newConvId, error: convErr } = await supabase.rpc('start_direct_conversation', { other_user_id: targetProfile.id });
-        if (convErr) throw convErr;
-        router.push(`/chat/${newConvId}`);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to start conversation');
-    } finally {
-      setIsStartingChat(null);
-    }
-  }
-
-  const getRelationshipStatus = (targetId: string) => {
+const splitMarker = `  const getRelationshipStatus = (targetId: string) => {
     return relationshipMap[targetId] || 'none';
-  };
+  };`;
+
+const parts = code.split(splitMarker);
+if (parts.length !== 2) {
+  console.error("Could not find split marker!");
+  process.exit(1);
+}
+
+const newReturn = `
   return (
     <div className="flex-1 overflow-y-auto bg-[#F8FAFC] dark:bg-[#0B0D12]">
       <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-8 md:py-12">
@@ -313,9 +98,9 @@ export default function ContactsPage() {
                       <div key={user.id} className="w-full flex items-center justify-between p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-md hover:border-[#8B5CF6]/30 transition-all duration-150 gap-4">
                         <div 
                           className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer"
-                          onClick={() => router.push(`/profile/${user.username || user.id}`)}
+                          onClick={() => router.push(\`/profile/\${user.username || user.id}\`)}
                         >
-                          <UserAvatar src={user.avatar_url} name={user.display_name} size="xl" isOnline={user.is_online} />
+                          <UserAvatar src={user.avatar_url} name={user.display_name} size="lg" isOnline={user.is_online} />
                           <div className="flex-1 min-w-0">
                             <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[15px] truncate">
                               {user.display_name}
@@ -418,9 +203,9 @@ export default function ContactsPage() {
                     <div key={req.id} className="w-full flex items-center justify-between p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-md transition-all duration-150 gap-4">
                       <div 
                         className="flex items-center gap-4 cursor-pointer flex-1 min-w-0"
-                        onClick={() => router.push(`/profile/${req.sender?.username || req.sender_id}`)}
+                        onClick={() => router.push(\`/profile/\${req.sender?.username || req.sender_id}\`)}
                       >
-                        <UserAvatar src={req.sender?.avatar_url} name={req.sender?.display_name || 'User'} size="xl" />
+                        <UserAvatar src={req.sender?.avatar_url} name={req.sender?.display_name || 'User'} size="lg" />
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[15px] truncate">{req.sender?.display_name || 'User'}</p>
                           <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] truncate">@{req.sender?.username || 'unknown'}</p>
@@ -497,10 +282,10 @@ export default function ContactsPage() {
                       <div key={f.id} className="w-full flex items-center justify-between p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-md hover:border-[#8B5CF6]/30 transition-all duration-150 gap-4">
                         <div 
                           className="flex items-center gap-4 cursor-pointer flex-1 min-w-0"
-                          onClick={() => router.push(`/profile/${f.friend?.username || f.friend?.id}`)}
+                          onClick={() => router.push(\`/profile/\${f.friend?.username || f.friend?.id}\`)}
                         >
                           <div className="relative">
-                            <UserAvatar src={f.friend.avatar_url} name={f.friend.display_name} size="xl" />
+                            <UserAvatar src={f.friend.avatar_url} name={f.friend.display_name} size="lg" />
                             {f.friend.is_online && (
                               <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#12B76A] border-2 border-white dark:border-[#11141A] rounded-full" />
                             )}
@@ -512,7 +297,7 @@ export default function ContactsPage() {
                         </div>
 
                         <button
-                          onClick={() => handleStartChat(f.friend!)}
+                          onClick={() => handleStartChat(f.friend)}
                           disabled={isStartingChat === f.friend.id}
                           className="px-4 py-2 bg-[#F8FAFC] dark:bg-[#151922] text-[#101828] dark:text-[#F5F7FA] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] text-[13px] font-medium flex items-center justify-center gap-2 hover:bg-[#EAECF0] dark:hover:bg-[#252A34] transition-all shadow-sm min-w-[110px]"
                         >
@@ -532,3 +317,9 @@ export default function ContactsPage() {
     </div>
   );
 }
+`;
+
+const finalCode = parts[0] + splitMarker + newReturn;
+
+fs.writeFileSync(filePath, finalCode, 'utf8');
+console.log("Updated Contacts Page UI");
