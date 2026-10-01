@@ -133,15 +133,7 @@ export function useConversations() {
     loadConversations();
 
     _activeConversationSubscribers += 1;
-    const isFirstSubscriber = _activeConversationSubscribers === 1;
 
-    // Only the first mounted instance creates the realtime subscription.
-    // All instances share the same Zustand store, so only one subscription is needed.
-    if (!isFirstSubscriber) {
-      return () => {
-        _activeConversationSubscribers -= 1;
-      };
-    }
 
     const debouncedLoad = debounce(() => {
       loadConversations(true);
@@ -152,8 +144,9 @@ export function useConversations() {
     // leading to multiple competing INSERT handlers and stale isActive state.
     const channelName = `user_conversations:${profile.id}`;
     
-    const channel = supabase
-      .channel(channelName)
+    if (!_globalChannelRef) {
+      _globalChannelRef = supabase
+        .channel(channelName)
       
       .on(
         'postgres_changes',
@@ -383,13 +376,17 @@ export function useConversations() {
         }
       )
       .subscribe();
+    }
 
     return () => {
       _activeConversationSubscribers -= 1;
       if (_activeConversationSubscribers <= 0) {
-        _activeConversationSubscribers = 0;
-        _globalChannelRef = null;
-        supabase.removeChannel(channel);
+        setTimeout(() => {
+          if (_activeConversationSubscribers <= 0 && _globalChannelRef) {
+            supabase.removeChannel(_globalChannelRef);
+            _globalChannelRef = null;
+          }
+        }, 100);
       }
     };
   }, [profile?.id, loadConversations, supabase]);
