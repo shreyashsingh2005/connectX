@@ -108,7 +108,7 @@ export function ConversationList() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-[#111827] border-r border-[#EAECF0] dark:border-[#252A34] w-full md:w-80 flex-shrink-0">
+    <div className="flex flex-col h-full bg-transparent border-r border-[#EAECF0] dark:border-[#252A34] w-full md:w-80 flex-shrink-0">
       {/* Header */}
       <div className="px-4 pt-5 pb-3 border-b border-gray-200 dark:border-[#252A34]">
         <div className="flex items-center justify-between mb-4">
@@ -141,12 +141,12 @@ export function ConversationList() {
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-gray-100 dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] rounded-[10px] py-2 h-[42px] pl-10 pr-4 text-[14px] rounded-[10px] text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/20 transition-all"
+            className="w-full bg-[#F9FAFB] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2 h-[42px] pl-10 pr-4 text-[14px] rounded-[10px] text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/20 transition-all"
           />
         </div>
 
         {/* Filter tabs */}
-        <div className="flex bg-gray-100 dark:bg-[#11141A] p-1 rounded-[10px] mt-4">
+        <div className="flex bg-[#F9FAFB] dark:bg-[#151922] p-1 rounded-[10px] mt-4">
           {(['all', 'unread', 'pinned'] as const).map(f => (
             <button
               key={f}
@@ -202,7 +202,7 @@ export function ConversationList() {
                   'w-full flex items-center gap-3 px-4 py-3 transition-all duration-150 text-left group relative',
                   isActive
                     ? 'bg-gray-100/80 dark:bg-[#151922] before:absolute before:left-0 before:top-[10%] before:h-[80%] before:w-[3px] before:bg-[#8B5CF6] before:rounded-r-md'
-                    : 'hover:bg-gray-50 dark:hover:bg-[#151922]/60 bg-transparent'
+                    : 'hover:bg-[#F9FAFB] dark:hover:bg-[#151922]/80 bg-transparent'
                 )}
               >
                 {/* Avatar */}

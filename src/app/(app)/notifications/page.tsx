@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -54,10 +54,10 @@ export default function NotificationsPage() {
 
   const getIcon = (type: string) => {
     switch (type) {
-      case 'friend_request': return <UserPlus className="w-5 h-5 text-blue-500" />;
-      case 'friend_accept': return <Check className="w-5 h-5 text-green-500" />;
-      case 'message': return <MessageSquare className="w-5 h-5 text-pink-500" />;
-      default: return <Bell className="w-5 h-5 text-purple-500" />;
+      case 'friend_request': return <UserPlus className="w-4 h-4 text-[#8B5CF6]" />;
+      case 'friend_accept': return <Check className="w-4 h-4 text-[#12B76A]" />;
+      case 'message': return <MessageSquare className="w-4 h-4 text-[#EC4899]" />;
+      default: return <Bell className="w-4 h-4 text-[#667085] dark:text-[#98A2B3]" />;
     }
   };
 
@@ -82,15 +82,15 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-white dark:bg-[#0B0F19]">
+    <div className="flex-1 overflow-y-auto bg-[#F8FAFC] dark:bg-[#0B0D12]">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Notifications</h1>
-            {unreadCount > 0 && <p className="text-sm text-gray-500 mt-1">{unreadCount} unread</p>}
+            <h1 className="text-2xl font-bold text-[#101828] dark:text-[#F5F7FA]">Notifications</h1>
+            {unreadCount > 0 && <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-1">{unreadCount} unread</p>}
           </div>
           {unreadCount > 0 && (
-            <button onClick={markAllAsRead} className="flex items-center gap-2 text-sm text-pink-500 hover:text-pink-600 dark:text-[#8B5CF6] dark:hover:text-[#8B5CF6] transition-colors">
+            <button onClick={markAllAsRead} className="flex items-center gap-1.5 text-[13px] font-medium text-[#8B5CF6] hover:text-[#7C3AED] transition-colors">
               <CheckCheck className="w-4 h-4" />
               Mark all read
             </button>
@@ -98,17 +98,19 @@ export default function NotificationsPage() {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 text-pink-500 animate-spin" /></div>
+          <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 text-[#8B5CF6] animate-spin" /></div>
         ) : notifications.length === 0 ? (
-          <EmptyState variant="no-notifications" />
+          <div className="flex justify-center py-12">
+            <EmptyState variant="no-notifications" />
+          </div>
         ) : (
           <div className="space-y-3">
             {notifications.map(n => (
               <div
                 key={n.id}
                 className={cn(
-                  "p-4 rounded-2xl border transition-all cursor-pointer",
-                  !n.is_read ? "bg-pink-50/50 dark:bg-pink-900/10 border-pink-100 dark:border-pink-900/30" : "bg-gray-50 dark:bg-[#111827] border-gray-100 dark:border-[#252A34]"
+                  "p-4 rounded-[16px] border transition-all cursor-pointer shadow-sm",
+                  !n.is_read ? "bg-white dark:bg-[#151922] border-[#8B5CF6]/30 dark:border-[#8B5CF6]/30" : "bg-white dark:bg-[#11141A] border-[#EAECF0] dark:border-[#252A34]"
                 )}
                 onClick={() => {
                   if (!n.is_read) markAsRead(n.id);
@@ -119,35 +121,35 @@ export default function NotificationsPage() {
                 }}
               >
                 <div className="flex gap-4">
-                  <div className="mt-1 p-2 bg-white dark:bg-[#11141A] rounded-full shadow-sm flex-shrink-0">
+                  <div className="mt-0.5 p-2 bg-[#F8FAFC] dark:bg-[#151922] rounded-full border border-[#EAECF0] dark:border-[#252A34] flex-shrink-0">
                     {getIcon(n.type)}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className={cn("font-medium", !n.is_read ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300")}>
+                      <h3 className={cn("font-medium text-[14px]", !n.is_read ? "text-[#101828] dark:text-[#F5F7FA]" : "text-[#344054] dark:text-[#D0D5DD]")}>
                         {n.title}
                       </h3>
-                      <span className="text-xs text-gray-400 whitespace-nowrap">
+                      <span className="text-[12px] text-[#98A2B3] whitespace-nowrap">
                         {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
                       </span>
                     </div>
                     {n.body && (
-                      <p className={cn("mt-1 text-sm", !n.is_read ? "text-gray-600 dark:text-gray-400" : "text-gray-500")}>
+                      <p className={cn("mt-1 text-[13px] leading-relaxed", !n.is_read ? "text-[#344054] dark:text-[#D0D5DD]" : "text-[#667085] dark:text-[#98A2B3]")}>
                         {n.body}
                       </p>
                     )}
                     
                     {n.type === 'friend_request' && !n.is_read && (
-                      <div className="mt-4 flex items-center gap-3">
+                      <div className="mt-3 flex items-center gap-2">
                         <button
                           onClick={(e) => { e.stopPropagation(); handleAction(n, 'accepted'); }}
-                          className="px-4 py-2 bg-[#8B5CF6] text-white text-sm font-medium rounded-xl hover:opacity-90 transition-all shadow-md shadow-[#8B5CF6]/20 flex items-center gap-2"
+                          className="px-4 py-2 bg-[#8B5CF6] text-white text-[13px] font-medium rounded-[8px] hover:bg-[#7C3AED] transition-all shadow-sm flex items-center gap-1.5"
                         >
                           <Check className="w-4 h-4" /> Accept
                         </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); handleAction(n, 'declined'); }}
-                          className="px-4 py-2 bg-gray-200 dark:bg-[#151922] text-gray-700 dark:text-gray-300 text-sm font-medium rounded-xl hover:bg-gray-300 dark:hover:bg-[#374151] transition-all flex items-center gap-2"
+                          className="px-3 py-2 bg-white dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] text-[13px] font-medium rounded-[8px] hover:bg-[#F8FAFC] dark:hover:bg-[#252A34] transition-all flex items-center gap-1.5 shadow-sm"
                         >
                           <XIcon className="w-4 h-4" /> Decline
                         </button>
@@ -163,4 +165,3 @@ export default function NotificationsPage() {
     </div>
   );
 }
-

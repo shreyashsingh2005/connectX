@@ -52,7 +52,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (!isLoaded) {
     return (
-      <div className="h-screen w-screen bg-white dark:bg-[#0B0F19] flex items-center justify-center">
+      <div className="h-screen w-screen bg-[#F8FAFC] dark:bg-[#0B0D12] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-[#8B5CF6] flex items-center justify-center">
             <Loader2 className="w-6 h-6 text-gray-900 dark:text-white animate-spin" />
@@ -65,7 +65,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (!profile) {
     return (
-      <div className="h-screen w-screen bg-white dark:bg-[#0B0F19] flex items-center justify-center p-4 text-center">
+      <div className="h-screen w-screen bg-[#F8FAFC] dark:bg-[#0B0D12] flex items-center justify-center p-4 text-center">
         <div className="max-w-md space-y-4">
           <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -89,7 +89,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="h-[100dvh] w-screen flex flex-col-reverse md:flex-row overflow-hidden bg-white dark:bg-[#0B0F19]">
+    <div className="h-[100dvh] w-screen flex flex-col-reverse md:flex-row overflow-hidden bg-[#F8FAFC] dark:bg-[#0B0D12]">
       {/* Navigation sidebar (Bottom on mobile, left on desktop) */}
       <AppSidebar />
 

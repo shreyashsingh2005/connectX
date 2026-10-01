@@ -231,15 +231,15 @@ export default function SettingsPage() {
 
   if (!profile) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center bg-[#F8FAFC] dark:bg-[#0B0D12]">
         <Loader2 className="w-8 h-8 animate-spin text-[#8B5CF6]" />
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#FFFFFF] dark:bg-[#0B0D12] relative overflow-y-auto custom-scrollbar">
-      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-10 flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col h-full bg-[#F8FAFC] dark:bg-[#0B0D12] relative overflow-y-auto custom-scrollbar">
+      <div className="max-w-5xl mx-auto w-full px-4 sm:px-8 py-8 sm:py-12 flex-1 flex flex-col">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-[#101828] dark:text-[#F5F7FA] tracking-tight">Settings</h1>
         </div>
@@ -255,17 +255,17 @@ export default function SettingsPage() {
                   setIsEditingProfile(false);
                 }}
                 className={cn(
-                  'w-full flex items-center justify-between px-3 py-2.5 rounded-[10px] transition-all',
+                  'w-full flex items-center justify-between px-4 py-2.5 rounded-[12px] transition-all',
                   activeSection === id
-                    ? 'bg-[#F8FAFC] dark:bg-[#11141A] text-[#101828] dark:text-[#F5F7FA] font-medium shadow-sm border border-[#EAECF0] dark:border-[#252A34]'
-                    : 'text-[#667085] dark:text-[#98A2B3] hover:bg-[#F8FAFC]/50 dark:hover:bg-[#11141A]/50 hover:text-[#101828] dark:hover:text-[#F5F7FA] border border-transparent'
+                    ? 'bg-white dark:bg-[#11141A] text-[#101828] dark:text-[#F5F7FA] font-medium shadow-sm border border-[#EAECF0] dark:border-[#252A34]'
+                    : 'text-[#667085] dark:text-[#98A2B3] hover:bg-white/50 dark:hover:bg-[#11141A]/50 hover:text-[#101828] dark:hover:text-[#F5F7FA] border border-transparent'
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <Icon size={18} strokeWidth={2} className={cn(activeSection === id ? 'text-[#8B5CF6] dark:text-[#A78BFA]' : '')} />
-                  <span className="text-[14px]">{label}</span>
+                  <Icon size={16} strokeWidth={2} className={cn(activeSection === id ? 'text-[#8B5CF6] dark:text-[#A78BFA]' : '')} />
+                  <span className="text-[13px]">{label}</span>
                 </div>
-                {activeSection === id && <ChevronRight size={16} className="text-[#98A2B3]" />}
+                {activeSection === id && <ChevronRight size={14} className="text-[#98A2B3]" />}
               </button>
             ))}
           </div>
@@ -275,14 +275,14 @@ export default function SettingsPage() {
             {activeSection === 'account' && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 {/* Profile Header Card */}
-                <div className="bg-white dark:bg-[#151922] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] overflow-hidden shadow-sm">
+                <div className="bg-white dark:bg-[#11141A] rounded-[24px] border border-[#EAECF0] dark:border-[#252A34] overflow-hidden shadow-sm">
                   <div className="h-32 bg-gradient-to-r from-[#8B5CF6]/10 to-[#EC4899]/10 dark:from-[#8B5CF6]/20 dark:to-[#EC4899]/20 relative">
-                     <div className="absolute inset-0 bg-[#F8FAFC]/50 dark:bg-[#11141A]/50 backdrop-blur-[2px]"></div>
+                     <div className="absolute inset-0 bg-[#F8FAFC]/50 dark:bg-[#0B0D12]/50 backdrop-blur-[2px]"></div>
                   </div>
                   <div className="px-6 sm:px-8 pb-6 sm:pb-8 relative">
-                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-end -mt-12 sm:-mt-16 mb-4">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-end -mt-12 sm:-mt-16 mb-6">
                       <div className="relative group">
-                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-white dark:border-[#151922] bg-[#EAECF0] dark:bg-[#252A34] shadow-md relative">
+                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-[24px] overflow-hidden border-4 border-white dark:border-[#11141A] bg-[#EAECF0] dark:bg-[#252A34] shadow-sm relative">
                           {avatarPreview ? (
                             <Image src={avatarPreview} alt="Preview" fill className="object-cover" sizes="(max-width: 768px) 96px, 128px" />
                           ) : profile.avatar_url ? (
@@ -295,10 +295,10 @@ export default function SettingsPage() {
                           <>
                             <button
                               onClick={() => fileInputRef.current?.click()}
-                              className="absolute bottom-1 right-1 p-2 sm:p-2.5 bg-[#101828] dark:bg-[#F5F7FA] text-white dark:text-[#101828] rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg border-2 border-white dark:border-[#151922]"
+                              className="absolute bottom-2 right-2 p-2 bg-[#101828] dark:bg-[#F5F7FA] text-white dark:text-[#101828] rounded-xl hover:scale-105 active:scale-95 transition-all shadow-md border-2 border-white dark:border-[#11141A]"
                               aria-label="Change avatar"
                             >
-                              <Camera size={16} className="sm:w-5 sm:h-5" />
+                              <Camera size={14} />
                             </button>
                             <input type="file" ref={fileInputRef} onChange={handleAvatarSelect} accept="image/*" className="hidden" />
                           </>
@@ -321,7 +321,7 @@ export default function SettingsPage() {
                             </div>
                             <button
                               onClick={() => setIsEditingProfile(true)}
-                              className="bg-white dark:bg-[#1A1F2B] border border-[#EAECF0] dark:border-[#252A34] text-[#101828] dark:text-[#F5F7FA] text-[14px] font-medium px-4 py-2 rounded-[10px] hover:bg-[#F8FAFC] dark:hover:bg-[#252A34] transition-all shadow-sm w-full sm:w-auto"
+                              className="bg-white dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] text-[13px] font-medium px-4 py-2 rounded-[8px] hover:bg-[#F8FAFC] dark:hover:bg-[#252A34] transition-all shadow-sm w-full sm:w-auto"
                             >
                               Edit Profile
                             </button>
@@ -335,33 +335,33 @@ export default function SettingsPage() {
                     </div>
 
                     {!isEditingProfile ? (
-                      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
+                      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-6">
                           <div>
-                            <span className="flex items-center gap-2 text-[13px] font-medium text-[#667085] dark:text-[#98A2B3] mb-1">
+                            <span className="flex items-center gap-2 text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2">
                               <FileText size={14} /> About
                             </span>
-                            <p className="text-[14px] text-[#101828] dark:text-[#F5F7FA] leading-relaxed whitespace-pre-wrap">
+                            <p className="text-[14px] text-[#344054] dark:text-[#D0D5DD] leading-relaxed whitespace-pre-wrap">
                               {profile.bio || <span className="text-[#98A2B3] italic">No bio provided.</span>}
                             </p>
                           </div>
                           <div>
-                            <span className="flex items-center gap-2 text-[13px] font-medium text-[#667085] dark:text-[#98A2B3] mb-1">
+                            <span className="flex items-center gap-2 text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2">
                               <Mail size={14} /> Email Address
                             </span>
-                            <p className="text-[14px] text-[#101828] dark:text-[#F5F7FA]">{profile.email}</p>
+                            <p className="text-[14px] text-[#344054] dark:text-[#D0D5DD]">{profile.email}</p>
                           </div>
                         </div>
                       </div>
                     ) : (
-                      <form onSubmit={handleUpdateProfile} className="mt-6 space-y-5 animate-in fade-in duration-200">
+                      <form onSubmit={handleUpdateProfile} className="mt-8 space-y-5 animate-in fade-in duration-200">
                         <div className="space-y-1.5">
                           <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Display Name</label>
                           <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#98A2B3]" />
                             <input
                               type="text" required value={editForm.display_name} onChange={e => setEditForm({ ...editForm, display_name: e.target.value })}
-                              className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2.5 pl-10 pr-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 transition-all shadow-sm"
+                              className="w-full bg-[#F8FAFC] dark:bg-[#0B0D12] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2.5 pl-10 pr-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all"
                             />
                           </div>
                         </div>
@@ -373,10 +373,10 @@ export default function SettingsPage() {
                             <input
                               type="text" required value={editForm.username} onChange={handleUsernameChange}
                               className={cn(
-                                "w-full bg-white dark:bg-[#11141A] border rounded-[10px] py-2.5 pl-10 pr-10 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:ring-2 transition-all shadow-sm",
+                                "w-full bg-[#F8FAFC] dark:bg-[#0B0D12] border rounded-[10px] py-2.5 pl-10 pr-10 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:ring-1 transition-all",
                                 isUsernameAvailable === false 
-                                  ? "border-[#F04438] focus:border-[#F04438] focus:ring-[#F04438]/20" 
-                                  : "border-[#EAECF0] dark:border-[#252A34] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]/20"
+                                  ? "border-[#F04438] focus:border-[#F04438] focus:ring-[#F04438]" 
+                                  : "border-[#EAECF0] dark:border-[#252A34] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]"
                               )}
                             />
                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -399,11 +399,11 @@ export default function SettingsPage() {
                             value={editForm.bio} onChange={e => setEditForm({ ...editForm, bio: e.target.value })}
                             placeholder="Write a short bio..."
                             rows={3}
-                            className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2.5 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 transition-all shadow-sm resize-none"
+                            className="w-full bg-[#F8FAFC] dark:bg-[#0B0D12] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2.5 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all resize-none"
                           />
                         </div>
 
-                        <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#EAECF0] dark:border-[#252A34]">
+                        <div className="flex items-center justify-end gap-3 pt-6">
                           <button
                             type="button"
                             onClick={() => {
@@ -412,16 +412,16 @@ export default function SettingsPage() {
                               setAvatarPreview(null);
                               setEditForm({ display_name: profile.display_name, username: profile.username, bio: profile.bio || '' });
                             }}
-                            className="px-4 py-2 text-[14px] font-medium text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F8FAFC] dark:hover:bg-[#252A34] rounded-[10px] transition-colors"
+                            className="px-4 py-2 text-[13px] font-medium text-[#667085] dark:text-[#98A2B3] bg-white dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] hover:bg-[#F8FAFC] dark:hover:bg-[#252A34] rounded-[8px] transition-colors shadow-sm"
                           >
                             Cancel
                           </button>
                           <button
                             type="submit"
                             disabled={isSaving || isCheckingUsername || isUsernameAvailable === false}
-                            className="bg-[#101828] dark:bg-[#F5F7FA] text-white dark:text-[#101828] text-[14px] font-medium px-5 py-2 rounded-[10px] hover:bg-[#1D2939] dark:hover:bg-white transition-all shadow-sm flex items-center gap-2 disabled:opacity-50"
+                            className="bg-[#8B5CF6] text-white text-[13px] font-medium px-5 py-2 rounded-[8px] hover:bg-[#7C3AED] transition-all shadow-sm flex items-center gap-2 disabled:opacity-50"
                           >
-                            {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                            {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
                             Save Changes
                           </button>
                         </div>
@@ -434,7 +434,7 @@ export default function SettingsPage() {
                 {!isEditingProfile && (
                   <>
                     <h3 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] mt-8 mb-4 px-1">Account & Security</h3>
-                    <div className="bg-white dark:bg-[#151922] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] shadow-sm divide-y divide-[#EAECF0] dark:divide-[#252A34]">
+                    <div className="bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] shadow-sm divide-y divide-[#EAECF0] dark:divide-[#252A34]">
                       <div className="p-4 sm:p-5 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-[#12B76A]/10 flex items-center justify-center text-[#12B76A]">
@@ -445,7 +445,7 @@ export default function SettingsPage() {
                             <p className="text-[13px] text-[#667085] dark:text-[#98A2B3]">Verified</p>
                           </div>
                         </div>
-                        <CheckCircle2 size={18} className="text-[#12B76A]" />
+                        <CheckCircle2 size={16} className="text-[#12B76A]" />
                       </div>
                       
                       <div className="p-4 sm:p-5 flex items-center justify-between">
@@ -458,7 +458,7 @@ export default function SettingsPage() {
                             <p className="text-[13px] text-[#667085] dark:text-[#98A2B3]">Active for all conversations</p>
                           </div>
                         </div>
-                        <CheckCircle2 size={18} className="text-[#12B76A]" />
+                        <CheckCircle2 size={16} className="text-[#12B76A]" />
                       </div>
 
                       <div className="p-4 sm:p-5 flex items-center justify-between">
@@ -478,18 +478,18 @@ export default function SettingsPage() {
                     </div>
 
                     <h3 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] mt-8 mb-4 px-1">Account Actions</h3>
-                    <div className="bg-white dark:bg-[#151922] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] shadow-sm overflow-hidden">
-                      <button onClick={() => setActiveSection('security')} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#F8FAFC] dark:hover:bg-[#11141A] transition-colors border-b border-[#EAECF0] dark:border-[#252A34]">
+                    <div className="bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] shadow-sm overflow-hidden">
+                      <button onClick={() => setActiveSection('security')} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#F8FAFC] dark:hover:bg-[#151922] transition-colors border-b border-[#EAECF0] dark:border-[#252A34]">
                         <div className="flex items-center gap-3">
-                          <Lock size={18} className="text-[#667085] dark:text-[#98A2B3]" />
+                          <Lock size={16} className="text-[#667085] dark:text-[#98A2B3]" />
                           <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Change Password</span>
                         </div>
-                        <ChevronRight size={18} className="text-[#98A2B3]" />
+                        <ChevronRight size={16} className="text-[#98A2B3]" />
                       </button>
                       
                       <button onClick={handleLogout} className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-[#FEF3F2] dark:hover:bg-[#4A1519]/20 transition-colors group">
                         <div className="flex items-center gap-3">
-                          <LogOut size={18} className="text-[#F04438] group-hover:text-[#D92D20] transition-colors" />
+                          <LogOut size={16} className="text-[#F04438] group-hover:text-[#D92D20] transition-colors" />
                           <span className="text-[14px] font-medium text-[#F04438] group-hover:text-[#D92D20] transition-colors">Log out</span>
                         </div>
                       </button>
@@ -515,13 +515,13 @@ export default function SettingsPage() {
                       key={t.id}
                       onClick={() => setTheme(t.id)}
                       className={cn(
-                        'flex flex-col items-center justify-center gap-2 h-[88px] rounded-[12px] border transition-colors',
+                        'flex flex-col items-center justify-center gap-2 h-[100px] rounded-[16px] border transition-colors shadow-sm',
                         theme === t.id
                           ? 'border-[#8B5CF6] bg-[#8B5CF6]/5 text-[#8B5CF6]'
-                          : 'border-[#EAECF0] dark:border-[#252A34] bg-white dark:bg-[#151922] text-[#667085] dark:text-[#98A2B3] hover:border-[#8B5CF6]/50 hover:bg-[#F8FAFC] dark:hover:bg-[#1A1F2B]'
+                          : 'border-[#EAECF0] dark:border-[#252A34] bg-white dark:bg-[#11141A] text-[#667085] dark:text-[#98A2B3] hover:border-[#8B5CF6]/50 hover:bg-[#F8FAFC] dark:hover:bg-[#151922]'
                       )}
                     >
-                      <t.icon size={24} strokeWidth={1.5} />
+                      <t.icon size={20} strokeWidth={1.5} />
                       <span className="text-[13px] font-medium">{t.label}</span>
                     </button>
                   ))}
@@ -536,13 +536,13 @@ export default function SettingsPage() {
                   <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-1">Control who can see your information.</p>
                 </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-3 bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[16px] overflow-hidden shadow-sm">
                   {[
                     { key: 'show_online_status', label: 'Online Status', desc: 'Who can see when you are online' },
                     { key: 'show_last_seen', label: 'Last Seen', desc: 'Who can see your last seen time' },
                     { key: 'profile_visibility', label: 'Profile Visibility', desc: 'Who can view your profile' },
-                  ].map(item => (
-                    <div key={item.key} className="flex items-center justify-between p-4 bg-[#F8FAFC] dark:bg-[#151922] rounded-[12px] border border-[#EAECF0] dark:border-[#252A34]">
+                  ].map((item, i) => (
+                    <div key={item.key} className={cn("flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 gap-4", i !== 0 && "border-t border-[#EAECF0] dark:border-[#252A34]")}>
                       <div>
                         <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</p>
                         <p className="text-[13px] text-[#667085] dark:text-[#98A2B3]">{item.desc}</p>
@@ -550,7 +550,7 @@ export default function SettingsPage() {
                       <select
                         value={localSettings[item.key as keyof UserSettings] as string || 'everyone'}
                         onChange={e => setLocalSettings({ ...localSettings, [item.key]: e.target.value })}
-                        className="bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] text-[#101828] dark:text-[#F5F7FA] text-[13px] font-medium rounded-[8px] py-2 px-3 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]"
+                        className="bg-[#F8FAFC] dark:bg-[#0B0D12] border border-[#EAECF0] dark:border-[#252A34] text-[#101828] dark:text-[#F5F7FA] text-[13px] font-medium rounded-[8px] py-2 px-3 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] w-full sm:w-auto"
                       >
                         <option value="everyone">Everyone</option>
                         <option value="contacts">My Friends</option>
@@ -559,10 +559,12 @@ export default function SettingsPage() {
                     </div>
                   ))}
                 </div>
-                <button onClick={handleSaveSettings} disabled={isSaving} className="bg-[#8B5CF6] text-white text-[14px] font-medium px-4 py-2 rounded-[8px] hover:bg-[#7C3AED] transition-colors flex items-center gap-2 h-[40px]">
-                  {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                  Save Privacy Settings
-                </button>
+                <div className="flex justify-end pt-2">
+                  <button onClick={handleSaveSettings} disabled={isSaving} className="bg-[#8B5CF6] text-white text-[13px] font-medium px-4 py-2 rounded-[8px] hover:bg-[#7C3AED] transition-colors flex items-center gap-2 shadow-sm">
+                    {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                    Save Privacy Settings
+                  </button>
+                </div>
               </div>
             )}
 
@@ -572,14 +574,14 @@ export default function SettingsPage() {
                   <h2 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA]">Notifications</h2>
                   <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-1">Manage your notification preferences.</p>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-3 bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[16px] overflow-hidden shadow-sm">
                   {[
                     { key: 'notifications_enabled', label: 'Push Notifications', desc: 'Receive push notifications' },
                     { key: 'message_notifications', label: 'Message Alerts', desc: 'Get notified for new messages' },
                     { key: 'group_notifications', label: 'Group Alerts', desc: 'Get notified for group activity' },
                     { key: 'notification_sound', label: 'Sound', desc: 'Play sound on new notifications' },
-                  ].map(item => (
-                    <div key={item.key} className="flex items-center justify-between p-4 bg-[#F8FAFC] dark:bg-[#151922] rounded-[12px] border border-[#EAECF0] dark:border-[#252A34]">
+                  ].map((item, i) => (
+                    <div key={item.key} className={cn("flex items-center justify-between p-4 sm:p-5", i !== 0 && "border-t border-[#EAECF0] dark:border-[#252A34]")}>
                       <div>
                         <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</p>
                         <p className="text-[13px] text-[#667085] dark:text-[#98A2B3]">{item.desc}</p>
@@ -591,15 +593,17 @@ export default function SettingsPage() {
                           checked={localSettings[item.key as keyof UserSettings] as boolean || false}
                           onChange={e => setLocalSettings({ ...localSettings, [item.key]: e.target.checked })}
                         />
-                        <div className="w-9 h-5 bg-[#EAECF0] dark:bg-[#374151] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#8B5CF6]/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#8B5CF6]"></div>
+                        <div className="w-9 h-5 bg-[#EAECF0] dark:bg-[#374151] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#8B5CF6]/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#EAECF0] after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#8B5CF6]"></div>
                       </label>
                     </div>
                   ))}
                 </div>
-                <button onClick={handleSaveSettings} disabled={isSaving} className="bg-[#8B5CF6] text-white text-[14px] font-medium px-4 py-2 rounded-[8px] hover:bg-[#7C3AED] transition-colors flex items-center gap-2 h-[40px]">
-                  {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                  Save Notifications
-                </button>
+                <div className="flex justify-end pt-2">
+                  <button onClick={handleSaveSettings} disabled={isSaving} className="bg-[#8B5CF6] text-white text-[13px] font-medium px-4 py-2 rounded-[8px] hover:bg-[#7C3AED] transition-colors flex items-center gap-2 shadow-sm">
+                    {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                    Save Notifications
+                  </button>
+                </div>
               </div>
             )}
 
@@ -607,16 +611,16 @@ export default function SettingsPage() {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA] flex items-center gap-2">
-                    <Shield size={18} className="text-[#12B76A]" />
+                    <Shield size={16} className="text-[#12B76A]" />
                     Security & Privacy
                   </h2>
                   <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-1">Manage your account security and encryption settings.</p>
                 </div>
 
-                <div className="bg-[#F8FAFC] dark:bg-[#151922] rounded-[12px] p-5 border border-[#EAECF0] dark:border-[#252A34] space-y-3">
+                <div className="bg-white dark:bg-[#11141A] rounded-[16px] p-5 border border-[#EAECF0] dark:border-[#252A34] shadow-sm">
                   <div className="flex items-start gap-4">
                     <div className="p-2 bg-[#12B76A]/10 text-[#12B76A] rounded-[8px]">
-                      <Lock size={18} />
+                      <Lock size={16} />
                     </div>
                     <div>
                       <h3 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA]">End-to-End Encryption</h3>
@@ -627,36 +631,38 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="bg-[#F8FAFC] dark:bg-[#151922] rounded-[12px] p-5 border border-[#EAECF0] dark:border-[#252A34] space-y-3">
-                  <h3 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] border-b border-[#EAECF0] dark:border-[#252A34] pb-3">Active Sessions</h3>
-                  <div className="flex items-center justify-between py-2">
+                <div className="bg-white dark:bg-[#11141A] rounded-[16px] p-5 border border-[#EAECF0] dark:border-[#252A34] shadow-sm">
+                  <h3 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] border-b border-[#EAECF0] dark:border-[#252A34] pb-3 mb-3">Active Sessions</h3>
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Monitor size={18} className="text-[#667085] dark:text-[#98A2B3]" />
+                      <Monitor size={16} className="text-[#667085] dark:text-[#98A2B3]" />
                       <div>
                         <p className="font-medium text-[#101828] dark:text-[#F5F7FA] text-[14px]">Current Device</p>
                         <p className="text-[12px] text-[#12B76A]">Active now</p>
                       </div>
                     </div>
-                    <div className="text-[12px] font-medium text-[#667085] dark:text-[#98A2B3] bg-[#EAECF0]/50 dark:bg-[#252A34] px-2.5 py-1 rounded-md">
+                    <div className="text-[12px] font-medium text-[#344054] dark:text-[#D0D5DD] bg-[#F8FAFC] dark:bg-[#252A34] border border-[#EAECF0] dark:border-[#252A34] px-2.5 py-1 rounded-md">
                       This device
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4 pt-2">
-                  <h3 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA]">Change Password</h3>
-                  <div className="space-y-1.5">
-                    <label className="text-[13px] font-medium text-[#101828] dark:text-[#F5F7FA]">New Password</label>
-                    <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="New password (min 8 chars)" className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#98A2B3] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm" />
+                <div className="bg-white dark:bg-[#11141A] rounded-[16px] p-5 border border-[#EAECF0] dark:border-[#252A34] shadow-sm space-y-4">
+                  <h3 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] border-b border-[#EAECF0] dark:border-[#252A34] pb-3">Change Password</h3>
+                  <div className="space-y-4 max-w-md pt-2">
+                    <div className="space-y-1.5">
+                      <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">New Password</label>
+                      <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="New password (min 8 chars)" className="w-full bg-[#F8FAFC] dark:bg-[#0B0D12] border border-[#EAECF0] dark:border-[#252A34] rounded-[8px] py-2 px-3 text-[13px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#98A2B3] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Confirm New Password</label>
+                      <input type="password" value={confirmNewPassword} onChange={e => setConfirmNewPassword(e.target.value)} placeholder="Repeat new password" className="w-full bg-[#F8FAFC] dark:bg-[#0B0D12] border border-[#EAECF0] dark:border-[#252A34] rounded-[8px] py-2 px-3 text-[13px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#98A2B3] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all" />
+                    </div>
+                    <button onClick={handleChangePassword} disabled={isChangingPassword || !newPassword} className="bg-[#8B5CF6] text-white text-[13px] font-medium px-4 py-2 rounded-[8px] hover:bg-[#7C3AED] transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50">
+                      {isChangingPassword ? <Loader2 size={14} className="animate-spin" /> : <Lock size={14} />}
+                      Update Password
+                    </button>
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[13px] font-medium text-[#101828] dark:text-[#F5F7FA]">Confirm New Password</label>
-                    <input type="password" value={confirmNewPassword} onChange={e => setConfirmNewPassword(e.target.value)} placeholder="Repeat new password" className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#98A2B3] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm" />
-                  </div>
-                  <button onClick={handleChangePassword} disabled={isChangingPassword || !newPassword} className="bg-[#8B5CF6] text-white text-[14px] font-medium px-4 py-2 rounded-[8px] hover:bg-[#7C3AED] transition-colors flex items-center justify-center gap-2 h-[40px] disabled:opacity-50">
-                    {isChangingPassword ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} />}
-                    Update Password
-                  </button>
                 </div>
               </div>
             )}

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -47,43 +47,43 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-white dark:bg-[#0B0F19]">
+    <div className="flex-1 overflow-y-auto bg-[#F8FAFC] dark:bg-[#0B0D12]">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Search</h1>
+        <h1 className="text-2xl font-bold text-[#101828] dark:text-[#F5F7FA] mb-6">Search</h1>
 
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#98A2B3]" />
           <input
             type="text" value={query} autoFocus
             onChange={e => { setQuery(e.target.value); performSearch(e.target.value); }}
             placeholder="Search people, messages..."
-            className="w-full bg-gray-50 dark:bg-[#111827] border border-gray-200 dark:border-[#252A34] rounded-xl py-3 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-[#8B5CF6]/50 transition-all"
+            className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[12px] py-3 pl-10 pr-10 text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#98A2B3] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] shadow-sm transition-all"
           />
-          {isSearching && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 animate-spin" />}
+          {isSearching && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#98A2B3] animate-spin" />}
         </div>
 
         {query.trim() && (
           <>
             <div className="flex gap-2 mb-6">
               {([['users', User, 'People'], ['messages', MessageSquare, 'Messages']] as [ResultType, typeof User, string][]).map(([tab, Icon, label]) => (
-                <button key={tab} onClick={() => setActiveTab(tab)} className={cn('flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all', activeTab === tab ? 'bg-[#8B5CF6] text-white' : 'text-gray-500 hover:text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-[#111827]')}>
+                <button key={tab} onClick={() => setActiveTab(tab)} className={cn('flex items-center gap-2 px-4 py-2 rounded-[8px] text-[13px] font-medium transition-all shadow-sm border', activeTab === tab ? 'bg-white dark:bg-[#252A34] border-[#EAECF0] dark:border-[#252A34] text-[#101828] dark:text-[#F5F7FA]' : 'bg-[#F8FAFC] dark:bg-[#11141A] border-transparent text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA]')}>
                   <Icon className="w-4 h-4" />
                   {label}
-                  {tab === 'users' && userResults.length > 0 && <span className="bg-white/20 rounded-full px-1.5 py-0.5 text-[10px]">{userResults.length}</span>}
-                  {tab === 'messages' && messageResults.length > 0 && <span className="bg-white/20 rounded-full px-1.5 py-0.5 text-[10px]">{messageResults.length}</span>}
+                  {tab === 'users' && userResults.length > 0 && <span className="bg-[#EAECF0] dark:bg-[#252A34] text-[#344054] dark:text-[#D0D5DD] rounded-full px-1.5 py-0.5 text-[10px]">{userResults.length}</span>}
+                  {tab === 'messages' && messageResults.length > 0 && <span className="bg-[#EAECF0] dark:bg-[#252A34] text-[#344054] dark:text-[#D0D5DD] rounded-full px-1.5 py-0.5 text-[10px]">{messageResults.length}</span>}
                 </button>
               ))}
             </div>
 
             {activeTab === 'users' && (
-              userResults.length === 0 ? <p className="text-center py-8 text-gray-500">No people found</p> : (
+              userResults.length === 0 ? <p className="text-center py-8 text-[#667085] dark:text-[#98A2B3] text-[14px]">No people found</p> : (
                 <div className="space-y-2">
                   {userResults.map(user => (
-                    <button key={user.id} onClick={() => handleStartChat(user)} className="w-full flex items-center gap-3 p-4 bg-gray-50 dark:bg-[#111827] rounded-2xl border border-gray-200 dark:border-[#252A34] hover:border-[#8B5CF6]/20 transition-all text-left">
-                      <UserAvatar src={user.avatar_url} name={user.display_name} size="sm" isOnline={user.is_online} />
+                    <button key={user.id} onClick={() => handleStartChat(user)} className="w-full flex items-center gap-3 p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-sm transition-all text-left">
+                      <UserAvatar src={user.avatar_url} name={user.display_name} size="md" isOnline={user.is_online} />
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-white">{user.display_name}</p>
-                        <p className="text-xs text-gray-500">@{user.username}</p>
+                        <p className="font-medium text-[#101828] dark:text-[#F5F7FA] text-[14px]">{user.display_name}</p>
+                        <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">@{user.username}</p>
                       </div>
                     </button>
                   ))}
@@ -92,20 +92,20 @@ export default function SearchPage() {
             )}
 
             {activeTab === 'messages' && (
-              messageResults.length === 0 ? <p className="text-center py-8 text-gray-500">No messages found</p> : (
+              messageResults.length === 0 ? <p className="text-center py-8 text-[#667085] dark:text-[#98A2B3] text-[14px]">No messages found</p> : (
                 <div className="space-y-2">
                   {messageResults.map(msg => (
-                    <button key={msg.id} onClick={() => router.push(`/chat/${msg.conversation_id}`)} className="w-full flex items-start gap-3 p-4 bg-gray-50 dark:bg-[#111827] rounded-2xl border border-gray-200 dark:border-[#252A34] hover:border-[#8B5CF6]/20 transition-all text-left">
-                      <UserAvatar src={(msg.sender as Profile | undefined)?.avatar_url} name={(msg.sender as Profile | undefined)?.display_name || 'User'} size="sm" />
+                    <button key={msg.id} onClick={() => router.push(`/chat/${msg.conversation_id}`)} className="w-full flex items-start gap-3 p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-sm transition-all text-left">
+                      <UserAvatar src={(msg.sender as Profile | undefined)?.avatar_url} name={(msg.sender as Profile | undefined)?.display_name || 'User'} size="md" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="font-medium text-gray-900 dark:text-white text-sm">{(msg.sender as Profile | undefined)?.display_name}</p>
-                          <span className="text-xs text-gray-500">{formatMessageTime(msg.created_at)}</span>
+                          <p className="font-medium text-[#101828] dark:text-[#F5F7FA] text-[14px]">{(msg.sender as Profile | undefined)?.display_name}</p>
+                          <span className="text-[12px] text-[#98A2B3]">{formatMessageTime(msg.created_at)}</span>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 truncate mt-0.5">
+                        <p className="text-[13px] text-[#344054] dark:text-[#D0D5DD] truncate mt-0.5">
                           {msg.content?.split(new RegExp(`(${query})`, 'gi')).map((part, i) =>
                             part.toLowerCase() === query.toLowerCase()
-                              ? <mark key={i} className="bg-pink-500/30 text-[#8B5CF6] rounded px-0.5">{part}</mark>
+                              ? <mark key={i} className="bg-[#8B5CF6]/20 text-[#8B5CF6] rounded px-0.5">{part}</mark>
                               : part
                           )}
                         </p>
@@ -119,13 +119,14 @@ export default function SearchPage() {
         )}
 
         {!query.trim() && (
-          <div className="text-center py-16">
-            <Search className="w-12 h-12 text-gray-700 mx-auto mb-3" />
-            <p className="text-gray-500">Type to search across connectX</p>
+          <div className="text-center py-16 bg-white dark:bg-[#11141A] rounded-[16px] border border-dashed border-[#EAECF0] dark:border-[#252A34] shadow-sm">
+            <div className="w-12 h-12 bg-[#F8FAFC] dark:bg-[#151922] rounded-full flex items-center justify-center mx-auto mb-4">
+               <Search className="w-5 h-5 text-[#98A2B3]" />
+            </div>
+            <p className="text-[14px] text-[#667085] dark:text-[#98A2B3] font-medium">Type to search across connectX</p>
           </div>
         )}
       </div>
     </div>
   );
 }
-

@@ -22,6 +22,7 @@ const navItems = [
   { href: '/chat', icon: MessageSquare, label: 'Chats' },
   { href: '/contacts', icon: Users, label: 'Friends' },
   { href: '/search', icon: Search, label: 'Search' },
+  { href: '/notifications', icon: Bell, label: 'Notifications' },
 ];
 
 export function AppSidebar() {
@@ -45,7 +46,7 @@ export function AppSidebar() {
   }
 
   return (
-    <aside className={cn("md:flex flex-row md:flex-col items-center justify-between md:justify-start w-full md:w-[68px] h-[64px] md:h-full bg-white/80 dark:bg-[#0E1015]/80 backdrop-blur-xl border-t md:border-t-0 md:border-r border-gray-200/50 dark:border-[#252A34] py-2 md:py-6 flex-shrink-0 z-[100] fixed bottom-0 left-0 md:relative px-6 md:px-0 transition-transform duration-300", hideOnMobile ? "translate-y-full md:translate-y-0 hidden md:flex" : "translate-y-0 flex")}>
+    <aside className={cn("md:flex flex-row md:flex-col items-center justify-between md:justify-start w-full md:w-[68px] h-[64px] md:h-full bg-[#FFFFFF] dark:bg-[#090B10] border-t md:border-t-0 md:border-r border-[#EAECF0] dark:border-[#252A34] py-2 md:py-6 flex-shrink-0 z-[100] fixed bottom-0 left-0 md:relative px-6 md:px-0 transition-transform duration-150", hideOnMobile ? "translate-y-full md:translate-y-0 hidden md:flex" : "translate-y-0 flex")}>
       {/* Logo */}
       <Link href="/chat" className="hidden md:flex mb-6 transition-transform hover:opacity-80" aria-label="connectX home">
         <ConnectXLogo size={28} />
@@ -62,9 +63,9 @@ export function AppSidebar() {
               aria-label={label}
               title={label}
               className={cn(
-                'relative group w-10 h-10 rounded-[8px] flex items-center justify-center transition-all duration-300',
+                'relative group w-10 h-10 rounded-[8px] flex items-center justify-center transition-all duration-150',
                 isActive
-                  ? 'bg-[#A855F7]/15 text-[#8B5CF6] dark:text-[#A78BFA] '
+                  ? 'bg-[#8B5CF6]/10 text-[#8B5CF6] dark:text-[#A78BFA] relative before:absolute before:left-[0px] before:top-[25%] before:h-[50%] before:w-[3px] before:bg-[#8B5CF6] before:rounded-r-md '
                   : 'text-[#667085] hover:text-[#344054] dark:hover:text-[#F5F7FA] hover:bg-gray-100 dark:hover:bg-[#151922]'
               )}
             >
@@ -83,7 +84,7 @@ export function AppSidebar() {
           href="/profile"
           aria-label="My Profile"
           title="My Profile"
-          className="md:hidden relative group transition-transform duration-300 active:scale-95"
+          className="md:hidden relative group transition-transform duration-150 active:scale-95"
         >
           <UserAvatar
             src={profile?.avatar_url}

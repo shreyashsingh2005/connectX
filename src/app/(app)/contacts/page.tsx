@@ -1,6 +1,5 @@
 'use client';
 
-
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -232,18 +231,18 @@ export default function ContactsPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-[#0B0F19]">
+    <div className="flex-1 overflow-y-auto bg-[#F8FAFC] dark:bg-[#0B0D12]">
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-6 md:py-10">
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-8 tracking-tight">Friends</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-[#101828] dark:text-[#F5F7FA] mb-8 tracking-tight">Contacts</h1>
 
-        {/* Premium Segmented Control for Tabs */}
+        {/* Segmented Control */}
         <div className="flex mb-8">
-          <div className="inline-flex items-center p-1.5 bg-gray-200/50 dark:bg-[#111827] rounded-[12px] border border-gray-200/50 dark:border-[#252A34]">
+          <div className="inline-flex items-center p-1 bg-[#EAECF0]/50 dark:bg-[#11141A] rounded-[10px] border border-[#EAECF0] dark:border-[#252A34]">
             <button
               onClick={() => setActiveTab('friends')}
               className={cn(
-                "px-6 py-2.5 rounded-[8px] text-sm font-bold transition-all duration-300",
-                activeTab === 'friends' ? "bg-white dark:bg-[#151922] text-gray-900 dark:text-white shadow-sm" : "text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA]"
+                "px-5 py-2 rounded-[8px] text-[14px] font-medium transition-all duration-200",
+                activeTab === 'friends' ? "bg-white dark:bg-[#252A34] text-[#101828] dark:text-[#F5F7FA] shadow-sm" : "text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA]"
               )}
             >
               My Friends
@@ -251,8 +250,8 @@ export default function ContactsPage() {
             <button
               onClick={() => setActiveTab('find')}
               className={cn(
-                "px-6 py-2.5 rounded-[8px] text-sm font-bold transition-all duration-300",
-                activeTab === 'find' ? "bg-white dark:bg-[#151922] text-gray-900 dark:text-white shadow-sm" : "text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA]"
+                "px-5 py-2 rounded-[8px] text-[14px] font-medium transition-all duration-200",
+                activeTab === 'find' ? "bg-white dark:bg-[#252A34] text-[#101828] dark:text-[#F5F7FA] shadow-sm" : "text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA]"
               )}
             >
               Find People
@@ -261,57 +260,56 @@ export default function ContactsPage() {
         </div>
 
         {activeTab === 'find' && (
-          <div className="animate-fade-in">
+          <div className="animate-in fade-in duration-300">
             <div className="relative mb-8">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pink-500" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#98A2B3]" />
               <input
                 type="text"
                 value={query}
                 autoFocus
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search username, e.g. @rahul123"
-                className="w-full bg-white dark:bg-[#111827] border border-gray-100 dark:border-[#252A34] rounded-[12px] py-4 pl-12 pr-12 text-gray-900 dark:text-white placeholder-gray-400 font-medium focus:outline-none focus:border-[#8B5CF6] focus:ring-4 focus:ring-[#8B5CF6]/10 shadow-sm transition-all"
+                className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[12px] py-3 pl-10 pr-12 text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#98A2B3] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] shadow-sm transition-all"
               />
               {isSearching && (
                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                  <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+                  <Loader2 className="w-4 h-4 text-[#98A2B3] animate-spin" />
                 </div>
               )}
             </div>
 
             {query.trim() !== '' && (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {searchResults.length === 0 && !isSearching ? (
-                  <div className="text-center py-16 bg-white dark:bg-[#111827] rounded-[12px] border border-dashed border-gray-200 dark:border-[#252A34] shadow-sm">
-                    <div className="w-16 h-16 bg-gray-50 dark:bg-[#151922] rounded-full flex items-center justify-center mx-auto mb-4">
-                       <Users className="w-8 h-8 text-gray-400" />
+                  <div className="text-center py-16 bg-white dark:bg-[#11141A] rounded-[16px] border border-dashed border-[#EAECF0] dark:border-[#252A34] shadow-sm">
+                    <div className="w-12 h-12 bg-[#F8FAFC] dark:bg-[#151922] rounded-full flex items-center justify-center mx-auto mb-4">
+                       <Users className="w-5 h-5 text-[#98A2B3]" />
                     </div>
-                    <p className="text-gray-500 font-medium">No user found with that username.</p>
+                    <p className="text-[14px] text-[#667085] dark:text-[#98A2B3] font-medium">No user found with that username.</p>
                   </div>
                 ) : (
                   searchResults.map(user => {
                     const status = getRelationshipStatus(user.id);
                     return (
-                      <div key={user.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-5 bg-white dark:bg-[#111827] rounded-[12px] border border-gray-100 dark:border-[#252A34] hover:border-[#8B5CF6]/30 hover:shadow-xl hover:shadow-pink-500/5 hover:-translate-y-1 transition-all duration-300 gap-4">
+                      <div key={user.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-sm transition-all duration-200 gap-4">
                         <div 
-                          className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer"
+                          className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
                           onClick={() => router.push(`/profile/${user.username || user.id}`)}
                         >
-                          <UserAvatar src={user.avatar_url} name={user.display_name} size="lg" isOnline={user.is_online} />
+                          <UserAvatar src={user.avatar_url} name={user.display_name} size="md" isOnline={user.is_online} />
                           <div className="flex-1 min-w-0">
-                            <p className="font-bold text-gray-900 dark:text-white text-lg truncate">
+                            <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[15px] truncate">
                               {user.display_name}
                             </p>
-                            <p className="text-sm font-medium text-pink-500 truncate">@{user.username}</p>
-                            {user.bio && <p className="text-sm text-gray-500 mt-1.5 truncate">{user.bio}</p>}
+                            <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] truncate">@{user.username}</p>
+                            {user.bio && <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-1.5 truncate">{user.bio}</p>}
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
                           {status === 'none' && (
                             <button
                               onClick={async () => {
-                                // Optimistically update UI
                                 setRelationshipMap(prev => ({...prev, [user.id]: 'outgoing_request'}));
                                 const result: any = await sendFriendRequest(user.id);
                                 if (result && result.state) {
@@ -325,7 +323,7 @@ export default function ContactsPage() {
                                 }
                                 fetchFriendsAndRequests();
                               }}
-                              className="px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 rounded-[8px] text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 w-full md:w-auto"
+                              className="px-4 py-2 bg-[#101828] dark:bg-[#F5F7FA] text-white dark:text-[#101828] hover:bg-[#1D2939] dark:hover:bg-white rounded-[8px] text-[13px] font-medium transition-all shadow-sm flex items-center justify-center gap-2 w-full md:w-auto"
                             >
                               <UserPlus className="w-4 h-4" /> Add Friend
                             </button>
@@ -333,7 +331,7 @@ export default function ContactsPage() {
                           {status === 'outgoing_request' && (
                             <button
                               disabled
-                              className="px-5 py-2.5 bg-gray-100 dark:bg-[#151922] text-gray-400 rounded-[8px] text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed w-full md:w-auto"
+                              className="px-4 py-2 bg-[#F8FAFC] dark:bg-[#151922] text-[#98A2B3] border border-[#EAECF0] dark:border-[#252A34] rounded-[8px] text-[13px] font-medium flex items-center justify-center gap-2 cursor-not-allowed w-full md:w-auto"
                             >
                               <Clock className="w-4 h-4" /> Request Sent
                             </button>
@@ -341,7 +339,6 @@ export default function ContactsPage() {
                           {status === 'incoming_request' && (
                             <button
                               onClick={async () => {
-                                // Optimistically update UI
                                 setRelationshipMap(prev => ({...prev, [user.id]: 'friend'}));
                                 const reqId = requestIds[user.id];
                                 if (reqId) {
@@ -352,7 +349,7 @@ export default function ContactsPage() {
                                 }
                                 fetchFriendsAndRequests();
                               }}
-                              className="px-5 py-2.5 bg-green-500 text-white rounded-[8px] text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-green-500/25 w-full md:w-auto"
+                              className="px-4 py-2 bg-[#12B76A] text-white rounded-[8px] text-[13px] font-medium flex items-center justify-center gap-2 hover:bg-[#0E9F5D] transition-all shadow-sm w-full md:w-auto"
                             >
                               <Check className="w-4 h-4" /> Accept
                             </button>
@@ -361,7 +358,7 @@ export default function ContactsPage() {
                             <button
                               onClick={() => handleStartChat(user)}
                               disabled={isStartingChat === user.id}
-                              className="px-5 py-2.5 bg-[#8B5CF6] text-white rounded-[8px] text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-[#8B5CF6]/25 w-full md:w-auto"
+                              className="px-4 py-2 bg-[#8B5CF6] text-white rounded-[8px] text-[13px] font-medium flex items-center justify-center gap-2 hover:bg-[#7C3AED] transition-all shadow-sm w-full md:w-auto"
                             >
                               {isStartingChat === user.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
                               Message
@@ -372,51 +369,50 @@ export default function ContactsPage() {
                     );
                   })
                 )}
-
               </div>
             )}
             
             {!query.trim() && (
                <div className="text-center py-20">
-                  <div className="w-20 h-20 bg-white dark:bg-[#111827] rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100 dark:border-[#252A34]">
-                     <Search className="w-10 h-10 text-[#8B5CF6]" />
+                  <div className="w-16 h-16 bg-white dark:bg-[#11141A] rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-[#EAECF0] dark:border-[#252A34]">
+                     <Search className="w-6 h-6 text-[#8B5CF6]" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Find your friends</h3>
-                  <p className="text-gray-500 font-medium">Search using their exact @username</p>
+                  <h3 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA] mb-1">Find your friends</h3>
+                  <p className="text-[14px] text-[#667085] dark:text-[#98A2B3]">Search using their exact @username</p>
                </div>
             )}
           </div>
         )}
 
         {activeTab === 'friends' && (
-          <div className="animate-fade-in space-y-10">
+          <div className="animate-in fade-in duration-300 space-y-8">
             
             {/* Incoming Requests */}
             {incomingRequests.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                  <UserPlus className="w-4 h-4" /> Friend Requests
+              <div className="space-y-3">
+                <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider flex items-center gap-2 px-1">
+                  <UserPlus className="w-3.5 h-3.5" /> Friend Requests
                 </h3>
-                <div className="grid gap-4">
+                <div className="grid gap-3">
                   {incomingRequests.map(req => (
-                    <div key={req.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-5 bg-white dark:bg-[#111827] rounded-[12px] border border-gray-100 dark:border-[#252A34] hover:border-[#8B5CF6]/30 hover:shadow-xl hover:shadow-pink-500/5 hover:-translate-y-1 transition-all duration-300 gap-4">
+                    <div key={req.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-sm transition-all duration-200 gap-4">
                       <div 
-                        className="flex items-center gap-4 cursor-pointer flex-1 min-w-0"
+                        className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
                         onClick={() => router.push(`/profile/${req.sender?.username || req.sender_id}`)}
                       >
-                        <UserAvatar src={req.sender?.avatar_url} name={req.sender?.display_name || 'User'} size="lg" />
+                        <UserAvatar src={req.sender?.avatar_url} name={req.sender?.display_name || 'User'} size="md" />
                         <div className="flex-1 min-w-0">
-                          <p className="font-bold text-gray-900 dark:text-white text-lg truncate">{req.sender?.display_name || 'User'}</p>
-                          <p className="text-sm font-medium text-pink-500 truncate">@{req.sender?.username || 'unknown'}</p>
+                          <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[15px] truncate">{req.sender?.display_name || 'User'}</p>
+                          <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] truncate">@{req.sender?.username || 'unknown'}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 w-full md:w-auto">
+                      <div className="flex items-center gap-2 w-full md:w-auto">
                         <button
                           onClick={async () => {
                             await respondToRequest(req.id, req.sender_id, 'accepted');
                             fetchFriendsAndRequests();
                           }}
-                          className="flex-1 md:flex-none px-6 py-2.5 bg-green-500 text-white rounded-[8px] font-bold hover:scale-105 active:scale-95 transition-all shadow-lg shadow-green-500/25 flex items-center justify-center gap-2"
+                          className="flex-1 md:flex-none px-4 py-2 bg-[#12B76A] text-white rounded-[8px] text-[13px] font-medium hover:bg-[#0E9F5D] transition-all shadow-sm flex items-center justify-center gap-2"
                         >
                           <Check className="w-4 h-4" /> Accept
                         </button>
@@ -425,9 +421,9 @@ export default function ContactsPage() {
                             await respondToRequest(req.id, req.sender_id, 'declined');
                             fetchFriendsAndRequests();
                           }}
-                          className="px-4 py-2.5 bg-gray-100 dark:bg-[#151922] text-gray-600 dark:text-gray-300 rounded-[8px] font-bold hover:bg-gray-200 dark:hover:bg-[#374151] transition-all flex items-center justify-center"
+                          className="px-3 py-2 bg-[#F8FAFC] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#667085] dark:text-[#98A2B3] rounded-[8px] text-[13px] font-medium hover:bg-[#EAECF0] dark:hover:bg-[#252A34] transition-all flex items-center justify-center"
                         >
-                          <XIcon className="w-5 h-5" />
+                          <XIcon className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -437,50 +433,50 @@ export default function ContactsPage() {
             )}
 
             {/* Friends List */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                <Users className="w-4 h-4" /> My Friends {friendships.length > 0 && <span className="bg-gray-200 dark:bg-[#151922] text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs">{friendships.length}</span>}
+            <div className="space-y-3">
+              <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider flex items-center gap-2 px-1">
+                <Users className="w-3.5 h-3.5" /> My Friends {friendships.length > 0 && <span className="bg-[#EAECF0] dark:bg-[#252A34] text-[#344054] dark:text-[#D0D5DD] px-1.5 py-0.5 rounded-full text-[10px]">{friendships.length}</span>}
               </h3>
               
               {loadingFriends ? (
                 <div className="flex justify-center py-12">
-                  <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
+                  <Loader2 className="w-6 h-6 text-[#8B5CF6] animate-spin" />
                 </div>
               ) : friendships.length === 0 ? (
-                <div className="text-center py-16 bg-white dark:bg-[#111827] rounded-[12px] border border-dashed border-gray-200 dark:border-[#252A34] shadow-sm">
-                  <div className="w-16 h-16 bg-gray-50 dark:bg-[#151922] rounded-full flex items-center justify-center mx-auto mb-4">
-                     <Users className="w-8 h-8 text-gray-400" />
+                <div className="text-center py-16 bg-white dark:bg-[#11141A] rounded-[16px] border border-dashed border-[#EAECF0] dark:border-[#252A34] shadow-sm">
+                  <div className="w-12 h-12 bg-[#F8FAFC] dark:bg-[#151922] rounded-full flex items-center justify-center mx-auto mb-4">
+                     <Users className="w-5 h-5 text-[#98A2B3]" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No friends yet</h3>
-                  <p className="text-gray-500 font-medium mb-6">Start connecting with people to see them here.</p>
+                  <h3 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA] mb-1">No friends yet</h3>
+                  <p className="text-[14px] text-[#667085] dark:text-[#98A2B3] mb-6">Start connecting with people to see them here.</p>
                   <button
                     onClick={() => setActiveTab('find')}
-                    className="px-6 py-2.5 bg-[#8B5CF6] text-white font-bold rounded-[8px] hover:opacity-90 transition-all shadow-lg shadow-[#8B5CF6]/25"
+                    className="px-5 py-2 bg-[#8B5CF6] text-white text-[13px] font-medium rounded-[8px] hover:bg-[#7C3AED] transition-all shadow-sm"
                   >
                     Find friends
                   </button>
                 </div>
               ) : (
-                <div className="grid gap-4">
+                <div className="grid gap-3">
                   {friendships.map(f => {
                     if (!f.friend) return null;
                     return (
-                      <div key={f.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-5 bg-white dark:bg-[#111827] rounded-[12px] border border-gray-100 dark:border-[#252A34] hover:border-[#8B5CF6]/30 hover:shadow-xl hover:shadow-pink-500/5 hover:-translate-y-1 transition-all duration-300 gap-4">
+                      <div key={f.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-sm transition-all duration-200 gap-4">
                         <div 
-                          className="flex items-center gap-4 cursor-pointer flex-1 min-w-0"
+                          className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
                           onClick={() => router.push(`/profile/${f.friend?.username || f.friend?.id}`)}
                         >
-                          <UserAvatar src={f.friend.avatar_url} name={f.friend.display_name} size="lg" isOnline={f.friend.is_online} />
+                          <UserAvatar src={f.friend.avatar_url} name={f.friend.display_name} size="md" isOnline={f.friend.is_online} />
                           <div className="flex-1 min-w-0">
-                            <p className="font-bold text-gray-900 dark:text-white text-lg truncate">{f.friend.display_name}</p>
-                            <p className="text-sm font-medium text-pink-500 truncate">@{f.friend.username}</p>
+                            <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[15px] truncate">{f.friend.display_name}</p>
+                            <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] truncate">@{f.friend.username}</p>
                           </div>
                         </div>
 
                         <button
                           onClick={() => handleStartChat(f.friend!)}
                           disabled={isStartingChat === f.friend.id}
-                          className="flex-1 md:flex-none px-6 py-2.5 bg-[#8B5CF6] text-white rounded-[8px] text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[#8B5CF6]/25 w-full md:w-auto"
+                          className="flex-1 md:flex-none px-4 py-2 bg-[#8B5CF6] text-white rounded-[8px] text-[13px] font-medium flex items-center justify-center gap-2 hover:bg-[#7C3AED] transition-all shadow-sm w-full md:w-auto"
                         >
                           {isStartingChat === f.friend.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
                           Message
@@ -498,4 +494,3 @@ export default function ContactsPage() {
     </div>
   );
 }
-
