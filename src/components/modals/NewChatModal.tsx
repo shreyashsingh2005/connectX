@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -55,18 +55,18 @@ export function NewChatModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-md bg-white dark:bg-[#111827] rounded-3xl shadow-2xl border border-gray-100 dark:border-[#1F2937] overflow-hidden flex flex-col max-h-[80vh]">
-        <div className="p-6 border-b border-gray-100 dark:border-[#1F2937] flex items-center justify-between">
+      <div className="w-full max-w-md bg-white dark:bg-[#111827] rounded-3xl shadow-2xl border border-gray-100 dark:border-[#252A34] overflow-hidden flex flex-col max-h-[80vh]">
+        <div className="p-6 border-b border-gray-100 dark:border-[#252A34] flex items-center justify-between">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">New Chat / Find Friends</h2>
           <button
             onClick={() => setShowNewChatModal(false)}
-            className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white bg-gray-100 dark:bg-[#1F2937] hover:bg-gray-200 dark:hover:bg-[#374151] rounded-full transition-colors"
+            className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white bg-gray-100 dark:bg-[#151922] hover:bg-gray-200 dark:hover:bg-[#374151] rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-4 border-b border-gray-100 dark:border-[#1F2937]">
+        <div className="p-4 border-b border-gray-100 dark:border-[#252A34]">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -74,7 +74,7 @@ export function NewChatModal() {
               value={query}
               onChange={handleQueryChange}
               placeholder="Search username, e.g. @rahul123"
-              className="w-full bg-gray-50 dark:bg-[#0B0F19] border border-gray-200 dark:border-[#1F2937] rounded-xl py-3 pl-10 pr-10 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/50 transition-all"
+              className="w-full bg-gray-50 dark:bg-[#0B0F19] border border-gray-200 dark:border-[#252A34] rounded-xl py-3 pl-10 pr-10 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30 transition-all"
               autoFocus
             />
             {isSearching && (
@@ -121,3 +121,4 @@ export function NewChatModal() {
     </div>
   );
 }
+

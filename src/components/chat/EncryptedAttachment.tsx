@@ -98,7 +98,7 @@ export function EncryptedAttachment({ attachment, isOwn }: { attachment: Attachm
   if (attachment.mime_type.startsWith('audio/')) {
     return (
       <div className="flex items-center gap-2 min-w-[180px]">
-        <Music className="w-4 h-4 text-pink-300" />
+        <Music className="w-4 h-4 text-[#8B5CF6]" />
         <audio controls className="flex-1" style={{ height: 32 }}>
           <source src={objectUrl} type={attachment.mime_type} />
         </audio>
@@ -115,14 +115,15 @@ export function EncryptedAttachment({ attachment, isOwn }: { attachment: Attachm
         isOwn ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-50 dark:bg-[#111827] hover:bg-white dark:bg-[#0B0F19]'
       )}
     >
-      <div className="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center flex-shrink-0">
-        <FileText className="w-4 h-4 text-pink-400" />
+      <div className="w-8 h-8 rounded-lg bg-[#8B5CF6]/20 flex items-center justify-center flex-shrink-0">
+        <FileText className="w-4 h-4 text-[#8B5CF6]" />
       </div>
       <div className="flex-1 min-w-0">
         <p className={cn("text-[13px] font-medium truncate", isOwn ? "text-white" : "text-gray-900 dark:text-gray-100")}>{attachment.file_name}</p>
-        <p className={cn("text-[11px]", isOwn ? "text-pink-100" : "text-gray-500 dark:text-gray-400")}>{formatFileSize(attachment.file_size)}</p>
+        <p className={cn("text-[11px]", isOwn ? "text-white/80" : "text-gray-500 dark:text-gray-400")}>{formatFileSize(attachment.file_size)}</p>
       </div>
       <Download className={cn("w-4 h-4", isOwn ? "text-white" : "text-gray-400")} />
     </a>
   );
 }
+

@@ -107,12 +107,12 @@ export default function PublicProfilePage(props: Props) {
   if (!targetProfile) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-[#0B0F19] p-4 text-center">
-        <div className="w-24 h-24 bg-gray-100 dark:bg-[#1F2937] rounded-full flex items-center justify-center mb-4">
+        <div className="w-24 h-24 bg-gray-100 dark:bg-[#151922] rounded-full flex items-center justify-center mb-4">
           <Search className="w-10 h-10 text-gray-400" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">User Not Found</h2>
         <p className="text-gray-500 dark:text-gray-400 mb-6">The profile {username ? '@' + username : 'you requested'} does not exist.</p>
-        <button onClick={() => router.push('/search')} className="px-6 py-2.5 bg-gray-100 dark:bg-[#1F2937] text-gray-900 dark:text-white font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-[#374151] transition-colors">
+        <button onClick={() => router.push('/search')} className="px-6 py-2.5 bg-gray-100 dark:bg-[#151922] text-gray-900 dark:text-white font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-[#374151] transition-colors">
           Back to Search
         </button>
       </div>
@@ -140,14 +140,14 @@ export default function PublicProfilePage(props: Props) {
     <div className="flex-1 flex flex-col h-full bg-[#F8FAFC] dark:bg-[#0B0D12] overflow-y-auto custom-scrollbar">
       <div className="max-w-4xl mx-auto w-full px-4 py-8 md:py-12 flex-1 flex flex-col">
         <button onClick={() => router.back()} className="group flex items-center gap-3 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors mb-6 w-fit">
-          <div className="p-2 bg-white dark:bg-[#111827] rounded-full shadow-sm border border-gray-100 dark:border-[#1F2937] group-hover:scale-105 transition-transform">
+          <div className="p-2 bg-white dark:bg-[#111827] rounded-full shadow-sm border border-gray-100 dark:border-[#252A34] group-hover:scale-105 transition-transform">
              <ArrowLeft className="w-4 h-4" />
           </div>
           <span className="font-medium text-sm">Back</span>
         </button>
 
-        <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-[#1F2937] shadow-xl overflow-hidden animate-fade-in relative z-10">
-          <div className="h-32 md:h-56 w-full gradient-bg relative">
+        <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-[#252A34] shadow-xl overflow-hidden animate-fade-in relative z-10">
+          <div className="h-32 md:h-56 w-full bg-[#8B5CF6] relative">
              <div className="absolute inset-0 bg-black/10 backdrop-blur-[2px]"></div>
              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
              <div className="absolute top-10 left-10 w-32 h-32 bg-black/10 rounded-full blur-2xl"></div>
@@ -174,13 +174,13 @@ export default function PublicProfilePage(props: Props) {
                          const ok = await sendFriendRequest(targetProfile.id);
                          if (ok) setRelationship('outgoing_request');
                        }}
-                       className="flex-1 md:flex-none px-6 py-2.5 gradient-bg text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25">
+                       className="flex-1 md:flex-none px-6 py-2.5 bg-[#8B5CF6] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[#8B5CF6]/25">
                        <UserPlus className="w-5 h-5" /> Add Friend
                      </button>
                    )}
 
                    {relationship === 'outgoing_request' && (
-                     <button disabled className="flex-1 md:flex-none px-6 py-2.5 bg-gray-100 dark:bg-[#1F2937] text-gray-500 rounded-xl font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
+                     <button disabled className="flex-1 md:flex-none px-6 py-2.5 bg-gray-100 dark:bg-[#151922] text-gray-500 rounded-xl font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
                        <Clock className="w-5 h-5" /> Request Sent
                      </button>
                    )}
@@ -198,7 +198,7 @@ export default function PublicProfilePage(props: Props) {
                            const ok = await respondToRequest(requestId, targetProfile.id, 'declined');
                            if (ok) setRelationship('none');
                          }}
-                         className="px-4 py-2.5 bg-gray-100 dark:bg-[#1F2937] text-gray-600 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-[#374151] transition-all flex items-center justify-center">
+                         className="px-4 py-2.5 bg-gray-100 dark:bg-[#151922] text-gray-600 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-[#374151] transition-all flex items-center justify-center">
                          <XIcon className="w-5 h-5" />
                        </button>
                      </>
@@ -206,7 +206,7 @@ export default function PublicProfilePage(props: Props) {
 
                    {relationship === 'friend' && (
                      <>
-                       <button onClick={handleStartChat} disabled={isStartingChat} className="flex-1 md:flex-none px-6 py-2.5 gradient-bg text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25">
+                       <button onClick={handleStartChat} disabled={isStartingChat} className="flex-1 md:flex-none px-6 py-2.5 bg-[#8B5CF6] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[#8B5CF6]/25">
                          {isStartingChat ? <Loader2 className="w-5 h-5 animate-spin" /> : <MessageSquare className="w-5 h-5" />}
                          Message
                        </button>
@@ -222,7 +222,7 @@ export default function PublicProfilePage(props: Props) {
                      </>
                    )}
                    
-                   <button className="p-2.5 bg-gray-50 dark:bg-[#171E2D] text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors border border-gray-100 dark:border-[#1F2937]" title="Block User">
+                   <button className="p-2.5 bg-gray-50 dark:bg-[#11141A] text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors border border-gray-100 dark:border-[#252A34]" title="Block User">
                      <ShieldAlert className="w-5 h-5" />
                    </button>
                  </div>
@@ -247,7 +247,7 @@ export default function PublicProfilePage(props: Props) {
               </div>
               
               {targetProfile.bio && (
-                 <div className="pt-4 border-t border-gray-100 dark:border-[#1F2937]">
+                 <div className="pt-4 border-t border-gray-100 dark:border-[#252A34]">
                     <h3 className="text-sm font-bold text-gray-900 dark:text-gray-200 uppercase tracking-wider mb-3">About</h3>
                     <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap leading-relaxed text-[15px]">
                       {targetProfile.bio}

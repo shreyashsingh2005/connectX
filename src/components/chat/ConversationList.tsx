@@ -110,14 +110,14 @@ export function ConversationList() {
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-[#111827] border-r border-[#EAECF0] dark:border-[#252A34] w-full md:w-80 flex-shrink-0">
       {/* Header */}
-      <div className="px-4 pt-5 pb-3 border-b border-gray-200 dark:border-[#1F2937]">
+      <div className="px-4 pt-5 pb-3 border-b border-gray-200 dark:border-[#252A34]">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Messages</h2>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowGroupModal(true)}
               title="New Group"
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:bg-[#1F2937] transition-all"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:bg-[#151922] transition-all"
             >
               <Users className="w-4 h-4" />
             </button>
@@ -141,7 +141,7 @@ export function ConversationList() {
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-gray-100 dark:bg-[#171E2D] border border-gray-200 dark:border-[#1F2937] rounded-xl py-2.5 pl-10 pr-4 text-sm text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-pink-500/50 transition-all"
+            className="w-full bg-gray-100 dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] rounded-[10px] py-2 pl-10 pr-4 text-sm text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/20 transition-all"
           />
         </div>
 
@@ -200,8 +200,8 @@ export function ConversationList() {
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2.5 transition-all text-left group relative',
                   isActive
-                    ? 'bg-gradient-to-r from-pink-500/10 to-purple-500/10 border-r-2 border-pink-500'
-                    : 'hover:bg-gray-100 dark:bg-[#171E2D]'
+                    ? 'bg-gray-100 dark:bg-[#151922] border-l-2 border-[#8B5CF6]'
+                    : 'hover:bg-gray-50 dark:hover:bg-[#151922] bg-transparent border-l-2 border-transparent'
                 )}
               >
                 {/* Avatar */}
@@ -246,6 +246,7 @@ export function ConversationList() {
     </div>
   );
 }
+
 
 
 

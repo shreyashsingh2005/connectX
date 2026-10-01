@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -57,7 +57,7 @@ export default function SearchPage() {
             type="text" value={query} autoFocus
             onChange={e => { setQuery(e.target.value); performSearch(e.target.value); }}
             placeholder="Search people, messages..."
-            className="w-full bg-gray-50 dark:bg-[#111827] border border-gray-200 dark:border-[#1F2937] rounded-xl py-3 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-pink-500/50 transition-all"
+            className="w-full bg-gray-50 dark:bg-[#111827] border border-gray-200 dark:border-[#252A34] rounded-xl py-3 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-[#8B5CF6]/50 transition-all"
           />
           {isSearching && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 animate-spin" />}
         </div>
@@ -66,7 +66,7 @@ export default function SearchPage() {
           <>
             <div className="flex gap-2 mb-6">
               {([['users', User, 'People'], ['messages', MessageSquare, 'Messages']] as [ResultType, typeof User, string][]).map(([tab, Icon, label]) => (
-                <button key={tab} onClick={() => setActiveTab(tab)} className={cn('flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all', activeTab === tab ? 'gradient-bg text-white' : 'text-gray-500 hover:text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-[#111827]')}>
+                <button key={tab} onClick={() => setActiveTab(tab)} className={cn('flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all', activeTab === tab ? 'bg-[#8B5CF6] text-white' : 'text-gray-500 hover:text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-[#111827]')}>
                   <Icon className="w-4 h-4" />
                   {label}
                   {tab === 'users' && userResults.length > 0 && <span className="bg-white/20 rounded-full px-1.5 py-0.5 text-[10px]">{userResults.length}</span>}
@@ -79,7 +79,7 @@ export default function SearchPage() {
               userResults.length === 0 ? <p className="text-center py-8 text-gray-500">No people found</p> : (
                 <div className="space-y-2">
                   {userResults.map(user => (
-                    <button key={user.id} onClick={() => handleStartChat(user)} className="w-full flex items-center gap-3 p-4 bg-gray-50 dark:bg-[#111827] rounded-2xl border border-gray-200 dark:border-[#1F2937] hover:border-pink-500/20 transition-all text-left">
+                    <button key={user.id} onClick={() => handleStartChat(user)} className="w-full flex items-center gap-3 p-4 bg-gray-50 dark:bg-[#111827] rounded-2xl border border-gray-200 dark:border-[#252A34] hover:border-[#8B5CF6]/20 transition-all text-left">
                       <UserAvatar src={user.avatar_url} name={user.display_name} size="sm" isOnline={user.is_online} />
                       <div>
                         <p className="font-medium text-gray-900 dark:text-white">{user.display_name}</p>
@@ -95,7 +95,7 @@ export default function SearchPage() {
               messageResults.length === 0 ? <p className="text-center py-8 text-gray-500">No messages found</p> : (
                 <div className="space-y-2">
                   {messageResults.map(msg => (
-                    <button key={msg.id} onClick={() => router.push(`/chat/${msg.conversation_id}`)} className="w-full flex items-start gap-3 p-4 bg-gray-50 dark:bg-[#111827] rounded-2xl border border-gray-200 dark:border-[#1F2937] hover:border-pink-500/20 transition-all text-left">
+                    <button key={msg.id} onClick={() => router.push(`/chat/${msg.conversation_id}`)} className="w-full flex items-start gap-3 p-4 bg-gray-50 dark:bg-[#111827] rounded-2xl border border-gray-200 dark:border-[#252A34] hover:border-[#8B5CF6]/20 transition-all text-left">
                       <UserAvatar src={(msg.sender as Profile | undefined)?.avatar_url} name={(msg.sender as Profile | undefined)?.display_name || 'User'} size="sm" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
@@ -105,7 +105,7 @@ export default function SearchPage() {
                         <p className="text-sm text-gray-600 dark:text-gray-400 truncate mt-0.5">
                           {msg.content?.split(new RegExp(`(${query})`, 'gi')).map((part, i) =>
                             part.toLowerCase() === query.toLowerCase()
-                              ? <mark key={i} className="bg-pink-500/30 text-pink-300 rounded px-0.5">{part}</mark>
+                              ? <mark key={i} className="bg-pink-500/30 text-[#8B5CF6] rounded px-0.5">{part}</mark>
                               : part
                           )}
                         </p>
@@ -128,3 +128,4 @@ export default function SearchPage() {
     </div>
   );
 }
+

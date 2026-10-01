@@ -45,7 +45,7 @@ export function AppSidebar() {
   }
 
   return (
-    <aside className={cn("md:flex flex-row md:flex-col items-center justify-between md:justify-start w-full md:w-[68px] h-[64px] md:h-full bg-white/80 dark:bg-[#0E1015]/80 backdrop-blur-xl border-t md:border-t-0 md:border-r border-gray-200/50 dark:border-white/10 py-2 md:py-6 flex-shrink-0 z-[100] fixed bottom-0 left-0 md:relative px-6 md:px-0 transition-transform duration-300", hideOnMobile ? "translate-y-full md:translate-y-0 hidden md:flex" : "translate-y-0 flex")}>
+    <aside className={cn("md:flex flex-row md:flex-col items-center justify-between md:justify-start w-full md:w-[68px] h-[64px] md:h-full bg-white/80 dark:bg-[#0E1015]/80 backdrop-blur-xl border-t md:border-t-0 md:border-r border-gray-200/50 dark:border-[#252A34] py-2 md:py-6 flex-shrink-0 z-[100] fixed bottom-0 left-0 md:relative px-6 md:px-0 transition-transform duration-300", hideOnMobile ? "translate-y-full md:translate-y-0 hidden md:flex" : "translate-y-0 flex")}>
       {/* Logo */}
       <Link href="/chat" className="hidden md:flex mb-6 transition-transform hover:opacity-80" aria-label="connectX home">
         <ConnectXLogo size={28} />
@@ -62,13 +62,13 @@ export function AppSidebar() {
               aria-label={label}
               title={label}
               className={cn(
-                'relative group w-12 h-12 md:w-10 md:h-10 rounded-2xl md:rounded-[8px] flex items-center justify-center transition-all duration-300',
+                'relative group w-10 h-10 rounded-[8px] flex items-center justify-center transition-all duration-300',
                 isActive
-                  ? 'bg-[#A855F7]/15 text-[#8B5CF6] dark:text-[#A78BFA] scale-110'
+                  ? 'bg-[#A855F7]/15 text-[#8B5CF6] dark:text-[#A78BFA] '
                   : 'text-[#667085] hover:text-[#344054] dark:hover:text-[#F5F7FA] hover:bg-gray-100 dark:hover:bg-[#151922]'
               )}
             >
-              <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+              <Icon size={18} strokeWidth={isActive ? 2.25 : 1.75} />
               
               {/* Tooltip */}
               <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-gray-900 dark:bg-[#F5F7FA] text-white dark:text-gray-900 text-xs font-medium rounded-md px-2.5 py-1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50 shadow-sm translate-x-[-4px] group-hover:translate-x-0">
@@ -143,3 +143,4 @@ export function AppSidebar() {
     </aside>
   );
 }
+

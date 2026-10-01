@@ -22,9 +22,9 @@ function DateSeparator({ date }: { date: Date }) {
   const label = isToday(date) ? 'Today' : isYesterday(date) ? 'Yesterday' : format(date, 'MMMM d, yyyy');
   return (
     <div className="flex items-center gap-3 my-4 px-4">
-      <div className="flex-1 h-px bg-gray-200 dark:bg-[#1F2937]" />
+      <div className="flex-1 h-px bg-gray-200 dark:bg-[#151922]" />
       <span className="text-xs text-gray-500 font-medium px-2">{label}</span>
-      <div className="flex-1 h-px bg-gray-200 dark:bg-[#1F2937]" />
+      <div className="flex-1 h-px bg-gray-200 dark:bg-[#151922]" />
     </div>
   );
 }
@@ -387,7 +387,7 @@ export function MessageList({ conversationId }: MessageListProps) {
               )}
               <button 
                 onClick={() => confirmDelete(false)}
-                className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-[#1F2937] dark:hover:bg-[#2A3040] text-gray-900 dark:text-white rounded-xl font-medium transition-colors"
+                className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-[#151922] dark:hover:bg-[#2A3040] text-gray-900 dark:text-white rounded-xl font-medium transition-colors"
               >
                 Delete for me
               </button>
@@ -403,7 +403,7 @@ export function MessageList({ conversationId }: MessageListProps) {
       )}
       {isLoadingMore && (
         <div className="flex justify-center py-2">
-          <div className="w-5 h-5 border-2 border-pink-400 border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[#8B5CF6] border-t-transparent rounded-full animate-spin" />
         </div>
       )}
       {groupedMessages.map((item, index) => {
@@ -423,4 +423,5 @@ export function MessageList({ conversationId }: MessageListProps) {
     </div>
   );
 }
+
 

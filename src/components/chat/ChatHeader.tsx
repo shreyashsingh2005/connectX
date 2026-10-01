@@ -69,7 +69,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   const memberCount = conversation.members?.length || 0;
 
   return (
-    <header className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-[#1F2937] bg-gray-50 dark:bg-[#111827] flex-shrink-0">
+    <header className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-[#252A34] bg-gray-50 dark:bg-[#111827] flex-shrink-0">
       {/* Left: Back (mobile) + Avatar + Info */}
       <div className="flex items-center gap-3">
         {/* Back button - mobile only */}
@@ -114,7 +114,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
       <div className="flex items-center gap-1">
         <button
           title="Search messages"
-          className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-[#171E2D] transition-all"
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-[#11141A] transition-all"
         >
           <Search className="w-4.5 h-4.5" />
         </button>
@@ -136,13 +136,13 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
           <button
             onClick={() => setShowMenu(!showMenu)}
             title="Options"
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-[#171E2D] transition-all"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-[#11141A] transition-all"
           >
             <MoreVertical className="w-4.5 h-4.5" />
           </button>
           
           {showMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1F2937] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 overflow-hidden">
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#151922] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 overflow-hidden">
               <button 
                 onClick={() => { setShowMenu(false); toggleProfilePanel(); }}
                 className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#111827] transition-colors"

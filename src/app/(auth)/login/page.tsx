@@ -114,7 +114,7 @@ function LoginContent() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full gradient-bg text-white font-semibold py-3.5 rounded-xl hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-6 shadow-lg shadow-pink-500/25 disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full bg-[#8B5CF6] text-white font-semibold py-3.5 rounded-xl hover:opacity-90  transition-all flex items-center justify-center gap-2 mt-6 shadow-sm shadow-[#8B5CF6]/10 disabled:opacity-50 disabled:pointer-events-none"
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
             {loading ? 'Signing in...' : 'Sign In'}
@@ -132,7 +132,7 @@ function LoginContent() {
 
         <button
           onClick={handleGoogleLogin}
-          className="w-full bg-gray-100 dark:bg-[#171E2D]/80 border border-white/10 text-gray-900 dark:text-white py-3.5 rounded-xl font-medium hover:bg-gray-200 dark:bg-[#1F2937] hover:border-white/20 transition-all flex items-center justify-center gap-3 backdrop-blur-sm"
+          className="w-full bg-gray-100 dark:bg-[#11141A]/80 border border-white/10 text-gray-900 dark:text-white py-3.5 rounded-xl font-medium hover:bg-gray-200 dark:bg-[#151922] hover:border-white/20 transition-all flex items-center justify-center gap-3 backdrop-blur-sm"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -159,13 +159,14 @@ export default function LoginPage() {
     <div className="min-h-screen bg-white dark:bg-[#0B0F19] flex flex-col items-center justify-center p-4 py-12 relative overflow-hidden">
       {/* Premium Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-purple-600/15 blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-pink-600/15 blur-[120px]" />
+        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full hidden" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full hidden" />
       </div>
-      <Suspense fallback={<div className="text-pink-400 animate-pulse">Loading...</div>}>
+      <Suspense fallback={<div className="text-[#8B5CF6] animate-pulse">Loading...</div>}>
         <LoginContent />
       </Suspense>
     </div>
   );
 }
+
 

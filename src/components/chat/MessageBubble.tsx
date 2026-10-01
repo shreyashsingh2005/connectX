@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Message, Profile } from '@/types';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { EncryptedAttachment } from '@/components/chat/EncryptedAttachment';
-import { cn, formatMessageTime, formatFileSize } from '@/lib/utils';
+import { cn, formatMessageTime, formatFileSize, isOnlyEmojis } from '@/lib/utils';
 import {
   Check,
   CheckCheck,
@@ -34,7 +34,7 @@ interface MessageBubbleProps {
   onReact?: (messageId: string, emoji: string) => void;
 }
 
-const QUICK_EMOJIS = ['❤️', '😂', '👍', '😮', '😢', '🙏'];
+const QUICK_EMOJIS = ['â¤ï¸', 'ðŸ˜‚', 'ðŸ‘', 'ðŸ˜®', 'ðŸ˜¢', 'ðŸ™'];
 
 function DeliveryIcon({ status }: { status: Message['status'] }) {
   if (status === 'sending') return <Clock className="w-3 h-3 text-white/70" />;
@@ -63,6 +63,7 @@ export const MessageBubble = memo(function MessageBubble({
 
   const needsDecryption = !!message.content && message.status !== 'sending' && message.status !== 'failed' && message.type !== 'system' && message.decrypted_content === undefined;
   const displayContent = needsDecryption ? null : (message.decrypted_content ?? message.content);
+  const isEmojiOnly = isOnlyEmojis(displayContent) && (!message.attachments || message.attachments.length === 0) && !message.reply_to_id;
 
 
   if (message.is_deleted) {
@@ -72,11 +73,11 @@ export const MessageBubble = memo(function MessageBubble({
           <div className="w-8 flex-shrink-0" />
         )}
         <div className={cn(
-          'max-w-[70%] rounded-2xl px-4 py-2.5 italic text-gray-500 text-sm border',
-          isOwn ? 'border-[#2A2F45]' : 'border-gray-200 dark:border-[#1F2937]',
-          'bg-gray-100 dark:bg-[#171E2D]'
+          'max-w-[85%] md:max-w-[65%] rounded-[16px] px-4 py-2.5 italic text-gray-500 text-sm border',
+          isOwn ? 'border-[#2A2F45]' : 'border-gray-200 dark:border-[#252A34]',
+          'bg-gray-100 dark:bg-[#11141A]'
         )}>
-          🚫 This message was deleted
+          ðŸš« This message was deleted
         </div>
       </div>
     );
@@ -115,10 +116,10 @@ export const MessageBubble = memo(function MessageBubble({
       )}
       {!isOwn && !showAvatar && <div className="w-7 flex-shrink-0" />}
 
-      <div className={cn('flex flex-col max-w-[70%]', isOwn ? 'items-end' : 'items-start')}>
+      <div className={cn('flex flex-col max-w-[85%] md:max-w-[65%]', isOwn ? 'items-end' : 'items-start')}>
         {/* Sender name (group) */}
         {showSender && !isOwn && (
-          <span className="text-xs font-medium text-pink-400 mb-1 ml-1">
+          <span className="text-xs font-medium text-[#8B5CF6] mb-1 ml-1">
             {message.sender?.display_name}
           </span>
         )}
@@ -126,12 +127,12 @@ export const MessageBubble = memo(function MessageBubble({
         {/* Reply preview */}
         {message.reply_to && (
           <div className={cn(
-            'flex items-start gap-2 mb-1 px-3 py-1.5 rounded-xl text-xs border-l-2 border-pink-400 max-w-full w-full',
-            'bg-gray-200 dark:bg-[#1F2937] text-gray-600 dark:text-gray-400 cursor-pointer hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors'
+            'flex items-start gap-2 mb-1 px-3 py-1.5 rounded-[12px] text-xs border-l-2 border-[#8B5CF6] max-w-full w-full',
+            'bg-gray-200 dark:bg-[#151922] text-gray-600 dark:text-gray-400 cursor-pointer hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors'
           )}>
             <div className="min-w-0">
-              <span className="font-medium text-pink-400 block">{message.reply_to.sender?.display_name}</span>
-              <span className="truncate block">{message.reply_to.content || '📎 Attachment'}</span>
+              <span className="font-medium text-[#8B5CF6] block">{message.reply_to.sender?.display_name}</span>
+              <span className="truncate block">{message.reply_to.content || 'ðŸ“Ž Attachment'}</span>
             </div>
           </div>
         )}
@@ -140,10 +141,8 @@ export const MessageBubble = memo(function MessageBubble({
         <div
           ref={bubbleRef}
           className={cn(
-            'relative rounded-2xl px-4 py-2.5 message-animate',
-            isOwn
-              ? 'gradient-bg text-white rounded-br-sm'
-              : 'bg-gray-200 dark:bg-[#1F2937] text-gray-900 dark:text-gray-100 rounded-bl-sm',
+            'relative rounded-[16px] px-4 py-2.5 message-animate',
+            isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (isOwn ? 'bg-[#8B5CF6] text-white rounded-br-sm shadow-sm' : 'bg-white dark:bg-[#151922] border border-gray-100 dark:border-[#252A34] text-gray-900 dark:text-[#F5F7FA] rounded-bl-sm shadow-sm'),
           )}
         >
           {/* Text content */}
@@ -155,7 +154,7 @@ export const MessageBubble = memo(function MessageBubble({
               </div>
             ) : (
               <p className={cn(
-                "text-[15px] leading-relaxed whitespace-pre-wrap break-words",
+                isEmojiOnly ? 'text-[44px] leading-tight' : 'text-[15px] leading-relaxed whitespace-pre-wrap break-words',
                 displayContent?.startsWith('[Unable') && "italic opacity-80 text-[13px]"
               )}>
                 {displayContent}
@@ -174,7 +173,7 @@ export const MessageBubble = memo(function MessageBubble({
             {message.is_edited && (
               <span className="text-[10px] opacity-50">edited</span>
             )}
-            <span className={`text-[11px] ${isOwn ? 'font-medium text-white/80 drop-shadow-sm tracking-wide' : 'opacity-60'}`}>
+            <span className={`text-[11px] font-medium tracking-wide ${isEmojiOnly ? (isOwn ? 'text-gray-400' : 'text-gray-500') : (isOwn ? 'text-white/90 drop-shadow-sm' : 'text-gray-500 dark:text-[#98A2B3]')}`}>
               {formatMessageTime(message.created_at)}
             </span>
             {isOwn && <DeliveryIcon status={message.status} />}
@@ -188,7 +187,7 @@ export const MessageBubble = memo(function MessageBubble({
               <button
                 key={emoji}
                 onClick={() => onReact?.(message.id, emoji)}
-                className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gray-200 dark:bg-[#1F2937] border border-gray-300 dark:border-[#374151] hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors text-xs"
+                className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gray-200 dark:bg-[#151922] border border-gray-300 dark:border-[#252A34] hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors text-xs"
               >
                 <span>{emoji}</span>
                 {count > 1 && <span className="text-gray-600 dark:text-gray-400 text-[10px]">{count}</span>}
@@ -208,13 +207,13 @@ export const MessageBubble = memo(function MessageBubble({
           <div className="relative">
             <button
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#1F2937] transition-all text-base"
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#151922] transition-all text-base"
             >
-              😊
+              ðŸ˜Š
             </button>
             {showEmojiPicker && (
               <div className={cn(
-                'absolute bottom-full mb-1 flex gap-1 p-2 bg-gray-100 dark:bg-[#171E2D] border border-gray-300 dark:border-[#374151] rounded-xl shadow-xl z-10',
+                'absolute bottom-full mb-1 flex gap-1 p-2 bg-gray-100 dark:bg-[#11141A] border border-gray-300 dark:border-[#252A34] rounded-[12px] shadow-xl z-10',
                 isOwn ? 'right-0' : 'left-0'
               )}>
                 {QUICK_EMOJIS.map(emoji => (
@@ -232,7 +231,7 @@ export const MessageBubble = memo(function MessageBubble({
 
           <button
             onClick={() => onReply?.(message)}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#1F2937] hover:text-gray-800 dark:text-gray-200 transition-all"
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#151922] hover:text-gray-800 dark:text-gray-200 transition-all"
             title="Reply"
           >
             <Reply className="w-3.5 h-3.5" />
@@ -242,7 +241,7 @@ export const MessageBubble = memo(function MessageBubble({
             <>
               <button
                 onClick={() => onEdit?.(message)}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#1F2937] hover:text-gray-800 dark:text-gray-200 transition-all"
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#151922] hover:text-gray-800 dark:text-gray-200 transition-all"
                 title="Edit"
               >
                 <Edit2 className="w-3.5 h-3.5" />
@@ -259,7 +258,7 @@ export const MessageBubble = memo(function MessageBubble({
 
           <button
             onClick={() => navigator.clipboard.writeText(displayContent || '')}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#1F2937] hover:text-gray-800 dark:text-gray-200 transition-all"
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:bg-[#151922] hover:text-gray-800 dark:text-gray-200 transition-all"
             title="Copy"
           >
             <Copy className="w-3.5 h-3.5" />
@@ -277,6 +276,7 @@ export const MessageBubble = memo(function MessageBubble({
     prev.currentUserId === next.currentUserId
   );
 });
+
 
 
 

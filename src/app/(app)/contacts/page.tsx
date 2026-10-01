@@ -238,12 +238,12 @@ export default function ContactsPage() {
 
         {/* Premium Segmented Control for Tabs */}
         <div className="flex mb-8">
-          <div className="inline-flex items-center p-1.5 bg-gray-200/50 dark:bg-[#111827] rounded-[12px] border border-gray-200/50 dark:border-[#1F2937]">
+          <div className="inline-flex items-center p-1.5 bg-gray-200/50 dark:bg-[#111827] rounded-[12px] border border-gray-200/50 dark:border-[#252A34]">
             <button
               onClick={() => setActiveTab('friends')}
               className={cn(
                 "px-6 py-2.5 rounded-[8px] text-sm font-bold transition-all duration-300",
-                activeTab === 'friends' ? "bg-white dark:bg-[#1F2937] text-gray-900 dark:text-white shadow-sm" : "text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA]"
+                activeTab === 'friends' ? "bg-white dark:bg-[#151922] text-gray-900 dark:text-white shadow-sm" : "text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA]"
               )}
             >
               My Friends
@@ -252,7 +252,7 @@ export default function ContactsPage() {
               onClick={() => setActiveTab('find')}
               className={cn(
                 "px-6 py-2.5 rounded-[8px] text-sm font-bold transition-all duration-300",
-                activeTab === 'find' ? "bg-white dark:bg-[#1F2937] text-gray-900 dark:text-white shadow-sm" : "text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA]"
+                activeTab === 'find' ? "bg-white dark:bg-[#151922] text-gray-900 dark:text-white shadow-sm" : "text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA]"
               )}
             >
               Find People
@@ -270,7 +270,7 @@ export default function ContactsPage() {
                 autoFocus
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search username, e.g. @rahul123"
-                className="w-full bg-white dark:bg-[#111827] border border-gray-100 dark:border-[#1F2937] rounded-[12px] py-4 pl-12 pr-12 text-gray-900 dark:text-white placeholder-gray-400 font-medium focus:outline-none focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 shadow-sm transition-all"
+                className="w-full bg-white dark:bg-[#111827] border border-gray-100 dark:border-[#252A34] rounded-[12px] py-4 pl-12 pr-12 text-gray-900 dark:text-white placeholder-gray-400 font-medium focus:outline-none focus:border-[#8B5CF6] focus:ring-4 focus:ring-[#8B5CF6]/10 shadow-sm transition-all"
               />
               {isSearching && (
                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -282,8 +282,8 @@ export default function ContactsPage() {
             {query.trim() !== '' && (
               <div className="space-y-4">
                 {searchResults.length === 0 && !isSearching ? (
-                  <div className="text-center py-16 bg-white dark:bg-[#111827] rounded-[12px] border border-dashed border-gray-200 dark:border-[#1F2937] shadow-sm">
-                    <div className="w-16 h-16 bg-gray-50 dark:bg-[#1F2937] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="text-center py-16 bg-white dark:bg-[#111827] rounded-[12px] border border-dashed border-gray-200 dark:border-[#252A34] shadow-sm">
+                    <div className="w-16 h-16 bg-gray-50 dark:bg-[#151922] rounded-full flex items-center justify-center mx-auto mb-4">
                        <Users className="w-8 h-8 text-gray-400" />
                     </div>
                     <p className="text-gray-500 font-medium">No user found with that username.</p>
@@ -292,7 +292,7 @@ export default function ContactsPage() {
                   searchResults.map(user => {
                     const status = getRelationshipStatus(user.id);
                     return (
-                      <div key={user.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-5 bg-white dark:bg-[#111827] rounded-[12px] border border-gray-100 dark:border-[#1F2937] hover:border-pink-500/30 hover:shadow-xl hover:shadow-pink-500/5 hover:-translate-y-1 transition-all duration-300 gap-4">
+                      <div key={user.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-5 bg-white dark:bg-[#111827] rounded-[12px] border border-gray-100 dark:border-[#252A34] hover:border-[#8B5CF6]/30 hover:shadow-xl hover:shadow-pink-500/5 hover:-translate-y-1 transition-all duration-300 gap-4">
                         <div 
                           className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer"
                           onClick={() => router.push(`/profile/${user.username || user.id}`)}
@@ -333,7 +333,7 @@ export default function ContactsPage() {
                           {status === 'outgoing_request' && (
                             <button
                               disabled
-                              className="px-5 py-2.5 bg-gray-100 dark:bg-[#1F2937] text-gray-400 rounded-[8px] text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed w-full md:w-auto"
+                              className="px-5 py-2.5 bg-gray-100 dark:bg-[#151922] text-gray-400 rounded-[8px] text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed w-full md:w-auto"
                             >
                               <Clock className="w-4 h-4" /> Request Sent
                             </button>
@@ -361,7 +361,7 @@ export default function ContactsPage() {
                             <button
                               onClick={() => handleStartChat(user)}
                               disabled={isStartingChat === user.id}
-                              className="px-5 py-2.5 gradient-bg text-white rounded-[8px] text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-pink-500/25 w-full md:w-auto"
+                              className="px-5 py-2.5 bg-[#8B5CF6] text-white rounded-[8px] text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-[#8B5CF6]/25 w-full md:w-auto"
                             >
                               {isStartingChat === user.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
                               Message
@@ -378,8 +378,8 @@ export default function ContactsPage() {
             
             {!query.trim() && (
                <div className="text-center py-20">
-                  <div className="w-20 h-20 bg-white dark:bg-[#111827] rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100 dark:border-[#1F2937]">
-                     <Search className="w-10 h-10 text-pink-400" />
+                  <div className="w-20 h-20 bg-white dark:bg-[#111827] rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100 dark:border-[#252A34]">
+                     <Search className="w-10 h-10 text-[#8B5CF6]" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Find your friends</h3>
                   <p className="text-gray-500 font-medium">Search using their exact @username</p>
@@ -399,7 +399,7 @@ export default function ContactsPage() {
                 </h3>
                 <div className="grid gap-4">
                   {incomingRequests.map(req => (
-                    <div key={req.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-5 bg-white dark:bg-[#111827] rounded-[12px] border border-gray-100 dark:border-[#1F2937] hover:border-pink-500/30 hover:shadow-xl hover:shadow-pink-500/5 hover:-translate-y-1 transition-all duration-300 gap-4">
+                    <div key={req.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-5 bg-white dark:bg-[#111827] rounded-[12px] border border-gray-100 dark:border-[#252A34] hover:border-[#8B5CF6]/30 hover:shadow-xl hover:shadow-pink-500/5 hover:-translate-y-1 transition-all duration-300 gap-4">
                       <div 
                         className="flex items-center gap-4 cursor-pointer flex-1 min-w-0"
                         onClick={() => router.push(`/profile/${req.sender?.username || req.sender_id}`)}
@@ -425,7 +425,7 @@ export default function ContactsPage() {
                             await respondToRequest(req.id, req.sender_id, 'declined');
                             fetchFriendsAndRequests();
                           }}
-                          className="px-4 py-2.5 bg-gray-100 dark:bg-[#1F2937] text-gray-600 dark:text-gray-300 rounded-[8px] font-bold hover:bg-gray-200 dark:hover:bg-[#374151] transition-all flex items-center justify-center"
+                          className="px-4 py-2.5 bg-gray-100 dark:bg-[#151922] text-gray-600 dark:text-gray-300 rounded-[8px] font-bold hover:bg-gray-200 dark:hover:bg-[#374151] transition-all flex items-center justify-center"
                         >
                           <XIcon className="w-5 h-5" />
                         </button>
@@ -439,7 +439,7 @@ export default function ContactsPage() {
             {/* Friends List */}
             <div className="space-y-4">
               <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                <Users className="w-4 h-4" /> My Friends {friendships.length > 0 && <span className="bg-gray-200 dark:bg-[#1F2937] text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs">{friendships.length}</span>}
+                <Users className="w-4 h-4" /> My Friends {friendships.length > 0 && <span className="bg-gray-200 dark:bg-[#151922] text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs">{friendships.length}</span>}
               </h3>
               
               {loadingFriends ? (
@@ -447,15 +447,15 @@ export default function ContactsPage() {
                   <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
                 </div>
               ) : friendships.length === 0 ? (
-                <div className="text-center py-16 bg-white dark:bg-[#111827] rounded-[12px] border border-dashed border-gray-200 dark:border-[#1F2937] shadow-sm">
-                  <div className="w-16 h-16 bg-gray-50 dark:bg-[#1F2937] rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="text-center py-16 bg-white dark:bg-[#111827] rounded-[12px] border border-dashed border-gray-200 dark:border-[#252A34] shadow-sm">
+                  <div className="w-16 h-16 bg-gray-50 dark:bg-[#151922] rounded-full flex items-center justify-center mx-auto mb-4">
                      <Users className="w-8 h-8 text-gray-400" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No friends yet</h3>
                   <p className="text-gray-500 font-medium mb-6">Start connecting with people to see them here.</p>
                   <button
                     onClick={() => setActiveTab('find')}
-                    className="px-6 py-2.5 gradient-bg text-white font-bold rounded-[8px] hover:opacity-90 transition-all shadow-lg shadow-pink-500/25"
+                    className="px-6 py-2.5 bg-[#8B5CF6] text-white font-bold rounded-[8px] hover:opacity-90 transition-all shadow-lg shadow-[#8B5CF6]/25"
                   >
                     Find friends
                   </button>
@@ -465,7 +465,7 @@ export default function ContactsPage() {
                   {friendships.map(f => {
                     if (!f.friend) return null;
                     return (
-                      <div key={f.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-5 bg-white dark:bg-[#111827] rounded-[12px] border border-gray-100 dark:border-[#1F2937] hover:border-pink-500/30 hover:shadow-xl hover:shadow-pink-500/5 hover:-translate-y-1 transition-all duration-300 gap-4">
+                      <div key={f.id} className="w-full flex flex-col md:flex-row md:items-center justify-between p-5 bg-white dark:bg-[#111827] rounded-[12px] border border-gray-100 dark:border-[#252A34] hover:border-[#8B5CF6]/30 hover:shadow-xl hover:shadow-pink-500/5 hover:-translate-y-1 transition-all duration-300 gap-4">
                         <div 
                           className="flex items-center gap-4 cursor-pointer flex-1 min-w-0"
                           onClick={() => router.push(`/profile/${f.friend?.username || f.friend?.id}`)}
@@ -480,7 +480,7 @@ export default function ContactsPage() {
                         <button
                           onClick={() => handleStartChat(f.friend!)}
                           disabled={isStartingChat === f.friend.id}
-                          className="flex-1 md:flex-none px-6 py-2.5 gradient-bg text-white rounded-[8px] text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25 w-full md:w-auto"
+                          className="flex-1 md:flex-none px-6 py-2.5 bg-[#8B5CF6] text-white rounded-[8px] text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[#8B5CF6]/25 w-full md:w-auto"
                         >
                           {isStartingChat === f.friend.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
                           Message
@@ -498,3 +498,4 @@ export default function ContactsPage() {
     </div>
   );
 }
+

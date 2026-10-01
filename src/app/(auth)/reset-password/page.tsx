@@ -63,7 +63,7 @@ export default function ResetPasswordPage() {
     }
   }
 
-  const inputClass = "w-full bg-gray-100 dark:bg-[#171E2D]/80 border border-gray-200 dark:border-[#1F2937] rounded-xl py-3 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-all backdrop-blur-sm";
+  const inputClass = "w-full bg-gray-100 dark:bg-[#11141A]/80 border border-gray-200 dark:border-[#252A34] rounded-xl py-3 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 transition-all backdrop-blur-sm";
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0B0F19] flex flex-col items-center justify-center p-4 py-12 relative overflow-hidden">
@@ -108,7 +108,7 @@ export default function ResetPasswordPage() {
                         "h-full flex-1 rounded-full transition-all duration-500",
                         strengthScore >= level 
                           ? strengthScore < 3 ? "bg-red-500" : strengthScore < 5 ? "bg-yellow-500" : "bg-green-500"
-                          : "bg-gray-200 dark:bg-[#1F2937]"
+                          : "bg-gray-200 dark:bg-[#151922]"
                       )} />
                     ))}
                   </div>
@@ -144,7 +144,7 @@ export default function ResetPasswordPage() {
 
             <button
               type="submit" disabled={loading || (password.length > 0 && !isStrong)}
-              className="w-full gradient-bg text-white font-semibold py-3.5 rounded-xl hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-6 shadow-lg shadow-pink-500/25 disabled:opacity-50 disabled:pointer-events-none"
+              className="w-full bg-[#8B5CF6] text-white font-semibold py-3.5 rounded-xl hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-6 shadow-lg shadow-[#8B5CF6]/25 disabled:opacity-50 disabled:pointer-events-none"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
               {loading ? 'Updating Password...' : 'Update Password'}
@@ -155,3 +155,4 @@ export default function ResetPasswordPage() {
     </div>
   );
 }
+

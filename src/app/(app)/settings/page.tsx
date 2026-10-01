@@ -321,7 +321,7 @@ export default function SettingsPage() {
                             </div>
                             <button
                               onClick={() => setIsEditingProfile(true)}
-                              className="bg-white dark:bg-[#1A1F2B] border border-[#EAECF0] dark:border-[#374151] text-[#101828] dark:text-[#F5F7FA] text-[14px] font-medium px-4 py-2 rounded-[10px] hover:bg-[#F8FAFC] dark:hover:bg-[#252A34] transition-all shadow-sm w-full sm:w-auto"
+                              className="bg-white dark:bg-[#1A1F2B] border border-[#EAECF0] dark:border-[#252A34] text-[#101828] dark:text-[#F5F7FA] text-[14px] font-medium px-4 py-2 rounded-[10px] hover:bg-[#F8FAFC] dark:hover:bg-[#252A34] transition-all shadow-sm w-full sm:w-auto"
                             >
                               Edit Profile
                             </button>
@@ -361,7 +361,7 @@ export default function SettingsPage() {
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#98A2B3]" />
                             <input
                               type="text" required value={editForm.display_name} onChange={e => setEditForm({ ...editForm, display_name: e.target.value })}
-                              className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#374151] rounded-[10px] py-2.5 pl-10 pr-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 transition-all shadow-sm"
+                              className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2.5 pl-10 pr-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 transition-all shadow-sm"
                             />
                           </div>
                         </div>
@@ -376,7 +376,7 @@ export default function SettingsPage() {
                                 "w-full bg-white dark:bg-[#11141A] border rounded-[10px] py-2.5 pl-10 pr-10 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:ring-2 transition-all shadow-sm",
                                 isUsernameAvailable === false 
                                   ? "border-[#F04438] focus:border-[#F04438] focus:ring-[#F04438]/20" 
-                                  : "border-[#EAECF0] dark:border-[#374151] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]/20"
+                                  : "border-[#EAECF0] dark:border-[#252A34] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]/20"
                               )}
                             />
                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -399,7 +399,7 @@ export default function SettingsPage() {
                             value={editForm.bio} onChange={e => setEditForm({ ...editForm, bio: e.target.value })}
                             placeholder="Write a short bio..."
                             rows={3}
-                            className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#374151] rounded-[10px] py-2.5 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 transition-all shadow-sm resize-none"
+                            className="w-full bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2.5 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 transition-all shadow-sm resize-none"
                           />
                         </div>
 
@@ -550,7 +550,7 @@ export default function SettingsPage() {
                       <select
                         value={localSettings[item.key as keyof UserSettings] as string || 'everyone'}
                         onChange={e => setLocalSettings({ ...localSettings, [item.key]: e.target.value })}
-                        className="bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#374151] text-[#101828] dark:text-[#F5F7FA] text-[13px] font-medium rounded-[8px] py-2 px-3 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]"
+                        className="bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] text-[#101828] dark:text-[#F5F7FA] text-[13px] font-medium rounded-[8px] py-2 px-3 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]"
                       >
                         <option value="everyone">Everyone</option>
                         <option value="contacts">My Friends</option>

@@ -379,7 +379,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       onDragOver={e => e.preventDefault()}
     >
       {showEmojiPicker && (
-        <div ref={emojiPickerRef} className="absolute bottom-[100%] right-4 mb-2 z-[50] shadow-2xl rounded-xl overflow-hidden border border-[#EAECF0] dark:border-[#252A34]">
+        <div ref={emojiPickerRef} className="absolute bottom-[100%] right-0 md:right-4 mb-2 z-[50] shadow-xl rounded-[12px] overflow-hidden border border-[#EAECF0] dark:border-[#252A34]">
           <EmojiPicker 
             onEmojiClick={handleEmojiClick}
             theme={Theme.DARK}
@@ -431,7 +431,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       <div className="flex items-end gap-2">
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="w-[36px] h-[36px] flex-shrink-0 flex items-center justify-center rounded-[10px] text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922] transition-colors"
+          className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-[10px] text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922] transition-colors"
           aria-label="Attach file"
         >
           <Paperclip size={18} strokeWidth={2} />

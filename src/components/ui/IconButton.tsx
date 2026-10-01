@@ -1,4 +1,4 @@
-import * as React from 'react';
+﻿import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'; // Need to check if tooltip exists
 
@@ -10,9 +10,9 @@ export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
 }
 
 const variantStyles = {
-  default: 'bg-gray-100 dark:bg-[#1F2937] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#374151]',
+  default: 'bg-gray-100 dark:bg-[#151922] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#374151]',
   ghost: 'bg-transparent text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-[#1F2937]',
-  active: 'gradient-bg text-white shadow-md shadow-pink-500/20',
+  active: 'bg-[#8B5CF6] text-white shadow-md shadow-[#8B5CF6]/20',
   destructive: 'bg-transparent text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10',
 };
 
@@ -35,7 +35,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
         ref={ref}
         disabled={disabled}
         className={cn(
-          'inline-flex items-center justify-center rounded-xl transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 disabled:opacity-50 disabled:pointer-events-none active:scale-95',
+          'inline-flex items-center justify-center rounded-xl transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6] disabled:opacity-50 disabled:pointer-events-none active:scale-95',
           variantStyles[variant],
           sizeStyles[size],
           className
@@ -62,3 +62,4 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
 );
 
 IconButton.displayName = 'IconButton';
+

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -54,7 +54,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return (
       <div className="h-screen w-screen bg-white dark:bg-[#0B0F19] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl gradient-bg flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-[#8B5CF6] flex items-center justify-center">
             <Loader2 className="w-6 h-6 text-gray-900 dark:text-white animate-spin" />
           </div>
           <p className="text-gray-600 dark:text-gray-400 text-sm">Loading connectX...</p>
@@ -79,7 +79,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               await supabase.auth.signOut();
               window.location.href = '/login';
             }}
-            className="mt-6 px-6 py-2 bg-gray-200 dark:bg-[#1F2937] hover:bg-gray-300 dark:bg-[#374151] text-gray-900 dark:text-white rounded-xl transition-colors"
+            className="mt-6 px-6 py-2 bg-gray-200 dark:bg-[#151922] hover:bg-gray-300 dark:bg-[#374151] text-gray-900 dark:text-white rounded-xl transition-colors"
           >
             Log Out & Try Again
           </button>
@@ -110,3 +110,4 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+

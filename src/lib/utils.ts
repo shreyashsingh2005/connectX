@@ -109,3 +109,9 @@ export function validateFile(file: File): { valid: boolean; error?: string } {
   
   return { valid: true };
 }
+
+export function isOnlyEmojis(str: string | null | undefined): boolean {
+  if (!str) return false;
+  const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Extended_Pictographic}|\s)+$/gu;
+  return emojiRegex.test(str) && str.trim().length > 0;
+}

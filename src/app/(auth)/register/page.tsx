@@ -91,8 +91,8 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-white dark:bg-[#0B0F19] flex flex-col items-center justify-center p-4 py-12 relative overflow-hidden">
       {/* Premium Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-purple-600/15 blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-pink-600/15 blur-[120px]" />
+        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full hidden" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full hidden" />
       </div>
 
       <div className="w-full max-w-md relative z-10 animate-slide-in-right">
@@ -166,7 +166,7 @@ export default function RegisterPage() {
                         "h-full flex-1 rounded-full transition-all duration-500",
                         strengthScore >= level 
                           ? strengthScore < 3 ? "bg-red-500" : strengthScore < 5 ? "bg-yellow-500" : "bg-green-500"
-                          : "bg-gray-200 dark:bg-[#1F2937]"
+                          : "bg-gray-200 dark:bg-[#151922]"
                       )} />
                     ))}
                   </div>
@@ -202,7 +202,7 @@ export default function RegisterPage() {
 
             <button
               type="submit" disabled={loading || (formData.password.length > 0 && !isStrong)}
-              className="w-full gradient-bg text-white font-semibold py-3.5 rounded-xl hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-6 shadow-lg shadow-pink-500/25 disabled:opacity-50 disabled:pointer-events-none"
+              className="w-full bg-[#8B5CF6] text-white font-semibold py-3.5 rounded-xl hover:opacity-90  transition-all flex items-center justify-center gap-2 mt-6 shadow-sm shadow-[#8B5CF6]/10 disabled:opacity-50 disabled:pointer-events-none"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
               {loading ? 'Creating account...' : 'Create Account'}
@@ -220,4 +220,5 @@ export default function RegisterPage() {
     </div>
   );
 }
+
 

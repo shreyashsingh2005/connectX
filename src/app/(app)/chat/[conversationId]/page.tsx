@@ -84,7 +84,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-pink-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#8B5CF6] animate-spin" />
       </div>
     );
   }
@@ -93,7 +93,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-4">
         <p className="text-gray-600 dark:text-gray-400 text-sm">{error || 'Conversation not found'}</p>
-        <button onClick={() => router.push('/chat')} className="text-pink-400 text-sm hover:underline">
+        <button onClick={() => router.push('/chat')} className="text-[#8B5CF6] text-sm hover:underline">
           Back to chats
         </button>
       </div>

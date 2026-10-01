@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -90,7 +90,7 @@ export default function NotificationsPage() {
             {unreadCount > 0 && <p className="text-sm text-gray-500 mt-1">{unreadCount} unread</p>}
           </div>
           {unreadCount > 0 && (
-            <button onClick={markAllAsRead} className="flex items-center gap-2 text-sm text-pink-500 hover:text-pink-600 dark:text-pink-400 dark:hover:text-pink-300 transition-colors">
+            <button onClick={markAllAsRead} className="flex items-center gap-2 text-sm text-pink-500 hover:text-pink-600 dark:text-[#8B5CF6] dark:hover:text-[#8B5CF6] transition-colors">
               <CheckCheck className="w-4 h-4" />
               Mark all read
             </button>
@@ -108,7 +108,7 @@ export default function NotificationsPage() {
                 key={n.id}
                 className={cn(
                   "p-4 rounded-2xl border transition-all cursor-pointer",
-                  !n.is_read ? "bg-pink-50/50 dark:bg-pink-900/10 border-pink-100 dark:border-pink-900/30" : "bg-gray-50 dark:bg-[#111827] border-gray-100 dark:border-[#1F2937]"
+                  !n.is_read ? "bg-pink-50/50 dark:bg-pink-900/10 border-pink-100 dark:border-pink-900/30" : "bg-gray-50 dark:bg-[#111827] border-gray-100 dark:border-[#252A34]"
                 )}
                 onClick={() => {
                   if (!n.is_read) markAsRead(n.id);
@@ -119,7 +119,7 @@ export default function NotificationsPage() {
                 }}
               >
                 <div className="flex gap-4">
-                  <div className="mt-1 p-2 bg-white dark:bg-[#171E2D] rounded-full shadow-sm flex-shrink-0">
+                  <div className="mt-1 p-2 bg-white dark:bg-[#11141A] rounded-full shadow-sm flex-shrink-0">
                     {getIcon(n.type)}
                   </div>
                   <div className="flex-1">
@@ -141,13 +141,13 @@ export default function NotificationsPage() {
                       <div className="mt-4 flex items-center gap-3">
                         <button
                           onClick={(e) => { e.stopPropagation(); handleAction(n, 'accepted'); }}
-                          className="px-4 py-2 gradient-bg text-white text-sm font-medium rounded-xl hover:opacity-90 transition-all shadow-md shadow-pink-500/20 flex items-center gap-2"
+                          className="px-4 py-2 bg-[#8B5CF6] text-white text-sm font-medium rounded-xl hover:opacity-90 transition-all shadow-md shadow-[#8B5CF6]/20 flex items-center gap-2"
                         >
                           <Check className="w-4 h-4" /> Accept
                         </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); handleAction(n, 'declined'); }}
-                          className="px-4 py-2 bg-gray-200 dark:bg-[#1F2937] text-gray-700 dark:text-gray-300 text-sm font-medium rounded-xl hover:bg-gray-300 dark:hover:bg-[#374151] transition-all flex items-center gap-2"
+                          className="px-4 py-2 bg-gray-200 dark:bg-[#151922] text-gray-700 dark:text-gray-300 text-sm font-medium rounded-xl hover:bg-gray-300 dark:hover:bg-[#374151] transition-all flex items-center gap-2"
                         >
                           <XIcon className="w-4 h-4" /> Decline
                         </button>
@@ -163,3 +163,4 @@ export default function NotificationsPage() {
     </div>
   );
 }
+

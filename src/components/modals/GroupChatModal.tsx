@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -73,10 +73,10 @@ export function GroupChatModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowGroupModal(false)} />
-      <div className="relative w-full max-w-md bg-gray-50 dark:bg-[#111827] rounded-2xl border border-gray-200 dark:border-[#1F2937] shadow-2xl animate-slide-up">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-[#1F2937]">
+      <div className="relative w-full max-w-md bg-gray-50 dark:bg-[#111827] rounded-2xl border border-gray-200 dark:border-[#252A34] shadow-2xl animate-slide-up">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-[#252A34]">
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-pink-400" />
+            <Users className="w-4 h-4 text-[#8B5CF6]" />
             <h2 className="font-semibold text-gray-900 dark:text-white">{step === 'select' ? 'New Group Chat' : 'Group Details'}</h2>
           </div>
           <button onClick={() => setShowGroupModal(false)} className="text-gray-500 hover:text-gray-800 dark:text-gray-200 transition-colors">
@@ -90,9 +90,9 @@ export function GroupChatModal() {
             {selected.length > 0 && (
               <div className="flex flex-wrap gap-2 px-5 pt-4">
                 {selected.map(u => (
-                  <div key={u.id} className="flex items-center gap-1.5 bg-pink-500/10 border border-pink-500/20 rounded-full px-2.5 py-1">
-                    <span className="text-xs text-pink-300">{u.display_name}</span>
-                    <button onClick={() => toggleSelect(u)} className="text-pink-400 hover:text-pink-200">
+                  <div key={u.id} className="flex items-center gap-1.5 bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 rounded-full px-2.5 py-1">
+                    <span className="text-xs text-[#8B5CF6]">{u.display_name}</span>
+                    <button onClick={() => toggleSelect(u)} className="text-[#8B5CF6] hover:text-[#8B5CF6]/80">
                       <X className="w-3 h-3" />
                     </button>
                   </div>
@@ -107,7 +107,7 @@ export function GroupChatModal() {
                   type="text" value={query} autoFocus
                   onChange={e => { setQuery(e.target.value); search(e.target.value); }}
                   placeholder="Search users..."
-                  className="w-full bg-gray-100 dark:bg-[#171E2D] border border-gray-200 dark:border-[#1F2937] rounded-xl py-2.5 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-600 text-sm focus:outline-none focus:border-pink-500/50 transition-all"
+                  className="w-full bg-gray-100 dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] rounded-xl py-2.5 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#8B5CF6]/50 transition-all"
                 />
                 {isSearching && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 animate-spin" />}
               </div>
@@ -117,24 +117,24 @@ export function GroupChatModal() {
               {results.map(user => {
                 const isSelected = !!selected.find(u => u.id === user.id);
                 return (
-                  <button key={user.id} onClick={() => toggleSelect(user)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 dark:bg-[#171E2D] transition-colors text-left">
+                  <button key={user.id} onClick={() => toggleSelect(user)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 dark:bg-[#11141A] transition-colors text-left">
                     <UserAvatar src={user.avatar_url} name={user.display_name} size="sm" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-900 dark:text-white text-sm">{user.display_name}</p>
                       <p className="text-xs text-gray-500">@{user.username}</p>
                     </div>
-                    {isSelected && <Check className="w-4 h-4 text-pink-400" />}
+                    {isSelected && <Check className="w-4 h-4 text-[#8B5CF6]" />}
                   </button>
                 );
               })}
               {!query.trim() && <div className="text-center py-4 text-gray-600 text-sm">Search to add members</div>}
             </div>
 
-            <div className="px-5 py-4 border-t border-gray-200 dark:border-[#1F2937]">
+            <div className="px-5 py-4 border-t border-gray-200 dark:border-[#252A34]">
               <button
                 onClick={() => setStep('info')}
                 disabled={selected.length < 1}
-                className="w-full gradient-bg text-white font-medium py-2.5 rounded-xl hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-[#8B5CF6] text-white font-medium py-2.5 rounded-xl hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <span>Next ({selected.length} selected)</span>
               </button>
@@ -150,18 +150,18 @@ export function GroupChatModal() {
                   onChange={e => setGroupName(e.target.value)}
                   placeholder="e.g. Team Alpha"
                   maxLength={50}
-                  className="w-full bg-gray-100 dark:bg-[#171E2D] border border-gray-200 dark:border-[#1F2937] rounded-xl py-2.5 px-4 text-gray-900 dark:text-white placeholder-gray-600 text-sm focus:outline-none focus:border-pink-500/50 transition-all"
+                  className="w-full bg-gray-100 dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] rounded-xl py-2.5 px-4 text-gray-900 dark:text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#8B5CF6]/50 transition-all"
                 />
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-2">Members ({selected.length + 1})</p>
                 <div className="flex flex-wrap gap-2">
-                  <div className="flex items-center gap-1.5 bg-gray-200 dark:bg-[#1F2937] rounded-full px-2.5 py-1">
+                  <div className="flex items-center gap-1.5 bg-gray-200 dark:bg-[#151922] rounded-full px-2.5 py-1">
                     <UserAvatar src={profile?.avatar_url} name={profile?.display_name || ''} size="sm" />
                     <span className="text-xs text-gray-700 dark:text-gray-300">{profile?.display_name} (you)</span>
                   </div>
                   {selected.map(u => (
-                    <div key={u.id} className="flex items-center gap-1.5 bg-gray-200 dark:bg-[#1F2937] rounded-full px-2.5 py-1">
+                    <div key={u.id} className="flex items-center gap-1.5 bg-gray-200 dark:bg-[#151922] rounded-full px-2.5 py-1">
                       <UserAvatar src={u.avatar_url} name={u.display_name} size="sm" />
                       <span className="text-xs text-gray-700 dark:text-gray-300">{u.display_name}</span>
                     </div>
@@ -170,11 +170,11 @@ export function GroupChatModal() {
               </div>
             </div>
             <div className="px-5 pb-5 flex gap-3">
-              <button onClick={() => setStep('select')} className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-[#374151] text-gray-700 dark:text-gray-300 text-sm hover:bg-gray-100 dark:bg-[#171E2D] transition-colors">Back</button>
+              <button onClick={() => setStep('select')} className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-[#252A34] text-gray-700 dark:text-gray-300 text-sm hover:bg-gray-100 dark:bg-[#11141A] transition-colors">Back</button>
               <button
                 onClick={handleCreate}
                 disabled={!groupName.trim() || isCreating}
-                className="flex-1 gradient-bg text-white font-medium py-2.5 rounded-xl hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                className="flex-1 bg-[#8B5CF6] text-white font-medium py-2.5 rounded-xl hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
               >
                 {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                 Create Group
@@ -186,4 +186,5 @@ export function GroupChatModal() {
     </div>
   );
 }
+
 

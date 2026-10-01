@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -101,7 +101,7 @@ export function UsernameSetupModal() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md bg-white dark:bg-[#111827] rounded-2xl shadow-2xl border border-gray-100 dark:border-[#1F2937] p-8 text-center animate-fade-in">
+      <div className="w-full max-w-md bg-white dark:bg-[#111827] rounded-2xl shadow-2xl border border-gray-100 dark:border-[#252A34] p-8 text-center animate-fade-in">
         <div className="flex justify-center mb-6">
           <ConnectXLogo size={48} />
         </div>
@@ -121,10 +121,10 @@ export function UsernameSetupModal() {
               placeholder="username"
               maxLength={20}
               className={cn(
-                "w-full bg-gray-50 dark:bg-[#171E2D] border rounded-xl py-3 pl-10 pr-10 text-gray-900 dark:text-white focus:outline-none transition-all",
+                "w-full bg-gray-50 dark:bg-[#11141A] border rounded-xl py-3 pl-10 pr-10 text-gray-900 dark:text-white focus:outline-none transition-all",
                 isAvailable === true ? "border-green-500 focus:ring-1 focus:ring-green-500" :
                 isAvailable === false ? "border-red-500 focus:ring-1 focus:ring-red-500" :
-                "border-gray-200 dark:border-[#1F2937] focus:border-pink-500 focus:ring-1 focus:ring-pink-500/50"
+                "border-gray-200 dark:border-[#252A34] focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30"
               )}
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -142,12 +142,12 @@ export function UsernameSetupModal() {
             {isChecking && <span className="text-gray-500">Checking availability...</span>}
             {!isChecking && isAvailable === true && (
               <span className="text-green-500 flex items-center gap-1">
-                ✓ @{username} is available
+                âœ“ @{username} is available
               </span>
             )}
             {!isChecking && isAvailable === false && username.length >= 3 && (
               <span className="text-red-500 flex items-center gap-1">
-                ✕ @{username} is already taken
+                âœ• @{username} is already taken
               </span>
             )}
             {!isChecking && username.length > 0 && username.length < 3 && (
@@ -158,7 +158,7 @@ export function UsernameSetupModal() {
           <button
             onClick={handleSave}
             disabled={!isAvailable || isSaving || username.length < 3}
-            className="w-full gradient-bg text-white font-semibold py-3 rounded-xl hover:opacity-90 active:opacity-80 transition-all flex items-center justify-center gap-2 shadow-lg shadow-pink-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#8B5CF6] text-white font-semibold py-3 rounded-xl hover:opacity-90 active:opacity-80 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#8B5CF6]/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
             {isSaving ? 'Saving...' : 'Confirm Username'}
@@ -168,3 +168,4 @@ export function UsernameSetupModal() {
     </div>
   );
 }
+

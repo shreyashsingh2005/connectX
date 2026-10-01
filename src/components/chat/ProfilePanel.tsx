@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -79,8 +79,8 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-[#0B0F19] border-l border-gray-200 dark:border-[#1F2937] w-72 flex-shrink-0 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 dark:border-[#1F2937]">
+    <div className="flex flex-col h-full bg-white dark:bg-[#0B0F19] border-l border-gray-200 dark:border-[#252A34] w-72 flex-shrink-0 overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 dark:border-[#252A34]">
         <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Profile Info</h3>
         <button onClick={() => setShowProfilePanel(false)} className="text-gray-500 hover:text-gray-800 dark:text-gray-200 transition-colors">
           <X className="w-4 h-4" />
@@ -88,7 +88,7 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
       </div>
 
       <div className="flex-1 overflow-y-auto no-scrollbar">
-        <div className="flex flex-col items-center px-4 py-6 text-center border-b border-gray-200 dark:border-[#1F2937]">
+        <div className="flex flex-col items-center px-4 py-6 text-center border-b border-gray-200 dark:border-[#252A34]">
           <UserAvatar src={avatarUrl} name={name} size="xl" isOnline={isDirect ? isOnline : undefined} />
           <h2 className="mt-3 font-bold text-gray-900 dark:text-white text-base">{name}</h2>
           {isDirect && <OnlineIndicator isOnline={isOnline} showText lastSeen={otherUser?.last_seen ? formatLastSeen(otherUser.last_seen) : undefined} className="mt-1 justify-center" />}
@@ -97,14 +97,14 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
           {isDirect && otherUser?.username && <span className="text-xs text-gray-600 mt-1">@{otherUser.username}</span>}
         </div>
 
-        <div className="p-4 border-b border-gray-200 dark:border-[#1F2937] space-y-1">
-          <button onClick={handleMute} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-[#171E2D] transition-colors">
-            {isMuted ? <Bell className="w-4 h-4 text-pink-400" /> : <BellOff className="w-4 h-4 text-gray-500" />}
+        <div className="p-4 border-b border-gray-200 dark:border-[#252A34] space-y-1">
+          <button onClick={handleMute} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-[#11141A] transition-colors">
+            {isMuted ? <Bell className="w-4 h-4 text-[#8B5CF6]" /> : <BellOff className="w-4 h-4 text-gray-500" />}
             <span>{isMuted ? 'Unmute Notifications' : 'Mute Notifications'}</span>
           </button>
           {isDirect && (
             <>
-              <button onClick={handleBlock} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm hover:bg-gray-100 dark:bg-[#171E2D] transition-colors">
+              <button onClick={handleBlock} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm hover:bg-gray-100 dark:bg-[#11141A] transition-colors">
                 <Shield className={cn('w-4 h-4', isBlocked ? 'text-green-400' : 'text-yellow-500')} />
                 <span className={isBlocked ? 'text-green-400' : 'text-yellow-500'}>{isBlocked ? 'Unblock User' : 'Block User'}</span>
               </button>
@@ -116,9 +116,9 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
         </div>
 
         <div className="p-4">
-          <div className="flex gap-1 mb-3 bg-gray-100 dark:bg-[#171E2D] rounded-xl p-1">
+          <div className="flex gap-1 mb-3 bg-gray-100 dark:bg-[#11141A] rounded-xl p-1">
             {(['media', 'files'] as const).map(tab => (
-              <button key={tab} onClick={() => setActiveTab(tab)} className={cn('flex-1 py-1.5 rounded-lg text-xs font-medium capitalize transition-all', activeTab === tab ? 'gradient-bg text-white' : 'text-gray-500')}>{tab}</button>
+              <button key={tab} onClick={() => setActiveTab(tab)} className={cn('flex-1 py-1.5 rounded-lg text-xs font-medium capitalize transition-all', activeTab === tab ? 'bg-[#8B5CF6] text-white' : 'text-gray-500')}>{tab}</button>
             ))}
           </div>
 
@@ -140,8 +140,8 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
             fileAttachments.length > 0 ? (
               <div className="space-y-2">
                 {fileAttachments.map(att => (
-                  <a key={att.id} href={att.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2 rounded-xl bg-gray-100 dark:bg-[#171E2D] hover:bg-gray-200 dark:bg-[#1F2937] transition-colors">
-                    <FileText className="w-5 h-5 text-pink-400 flex-shrink-0" />
+                  <a key={att.id} href={att.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2 rounded-xl bg-gray-100 dark:bg-[#11141A] hover:bg-gray-200 dark:bg-[#151922] transition-colors">
+                    <FileText className="w-5 h-5 text-[#8B5CF6] flex-shrink-0" />
                     <span className="text-xs text-gray-700 dark:text-gray-300 truncate">{att.file_name}</span>
                   </a>
                 ))}
@@ -160,7 +160,7 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
                     <UserAvatar src={member.profile?.avatar_url} name={member.profile?.display_name || 'User'} size="sm" isOnline={member.profile?.is_online} />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-gray-800 dark:text-gray-200 truncate">{member.profile?.display_name}{member.user_id === profile?.id && <span className="text-gray-500"> (you)</span>}</p>
-                      {member.role !== 'member' && <span className="text-[10px] text-pink-400 capitalize">{member.role}</span>}
+                      {member.role !== 'member' && <span className="text-[10px] text-[#8B5CF6] capitalize">{member.role}</span>}
                     </div>
                   </div>
                 ))}
@@ -172,4 +172,5 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
     </div>
   );
 }
+
 
