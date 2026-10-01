@@ -1,235 +1,31 @@
-'use client';
+const fs = require('fs');
+let code = fs.readFileSync('src/app/(app)/settings/page.tsx', 'utf8');
 
-import { useState, useRef, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { useAuthStore } from '@/store/useAuthStore';
-import { UserSettings } from '@/types';
-import toast from 'react-hot-toast';
-import { cn, generateAvatarUrl, debounce } from '@/lib/utils';
-import { UserAvatar } from '@/components/ui/UserAvatar';
-import { 
+// Update lucide-react imports safely
+const lucideImportRegex = /import\s+\{[\s\S]*?\}\s+from\s+'lucide-react';/;
+const lucideMatch = code.match(lucideImportRegex);
+
+if (lucideMatch) {
+  code = code.replace(
+    lucideImportRegex,
+    `import { 
   Shield, Bell, Eye, Lock, User, ChevronRight, Save, Loader2, 
   Monitor, Moon, Sun, Camera, AtSign, CheckCircle2, Mail, FileText, LogOut, Edit2, KeyRound, Smartphone, Trash2, X
-} from 'lucide-react';
-import { useTheme } from 'next-themes';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+} from 'lucide-react';`
+  );
+} else {
+  console.error("Could not find lucide-react import!");
+  process.exit(1);
+}
 
-type SettingsSection = 'account' | 'appearance' | 'privacy' | 'notifications' | 'security';
+const splitMarker = `  if (!profile) {`;
+const parts = code.split(splitMarker);
+if (parts.length !== 2) {
+  console.error("Could not find split marker!");
+  process.exit(1);
+}
 
-export default function SettingsPage() {
-  const router = useRouter();
-  const { theme, setTheme } = useTheme();
-  const profile = useAuthStore(s => s.profile);
-  const setProfile = useAuthStore(s => s.setProfile);
-  const settings = useAuthStore(s => s.settings);
-  const setSettings = useAuthStore(s => s.setSettings);
-  const supabase = createClient();
-  const [activeSection, setActiveSection] = useState<SettingsSection>('account');
-  const [isSaving, setIsSaving] = useState(false);
-  const [localSettings, setLocalSettings] = useState<Partial<UserSettings>>(settings || {});
-
-  // Password change
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
-
-  // Account editing
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [editForm, setEditForm] = useState({
-    display_name: profile?.display_name || '',
-    username: profile?.username || '',
-    bio: profile?.bio || '',
-  });
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
-  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(true);
-
-  useEffect(() => {
-    if (profile && !isEditingProfile) {
-      setEditForm({
-        display_name: profile.display_name,
-        username: profile.username,
-        bio: profile.bio || '',
-      });
-    }
-  }, [profile, isEditingProfile]);
-
-  useEffect(() => {
-    if (settings) {
-      setLocalSettings(settings);
-    }
-  }, [settings]);
-
-  const checkUsername = useRef(
-    debounce(async (val: string) => {
-      if (!profile || val === profile.username) {
-        setIsUsernameAvailable(true);
-        setIsCheckingUsername(false);
-        return;
-      }
-      if (val.length < 3) {
-        setIsUsernameAvailable(null);
-        setIsCheckingUsername(false);
-        return;
-      }
-      setIsCheckingUsername(true);
-      const normalized = val.toLowerCase();
-      const { error } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('username_normalized', normalized)
-        .single();
-        
-      if (error && error.code === 'PGRST116') {
-        setIsUsernameAvailable(true);
-      } else {
-        setIsUsernameAvailable(false);
-      }
-      setIsCheckingUsername(false);
-    }, 500)
-  ).current;
-
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
-    setEditForm(prev => ({ ...prev, username: val }));
-    if (val !== profile?.username) {
-      setIsCheckingUsername(true);
-      checkUsername(val);
-    } else {
-      setIsUsernameAvailable(true);
-      setIsCheckingUsername(false);
-    }
-  };
-
-  async function handleSaveSettings() {
-    if (!profile) return;
-    setIsSaving(true);
-    try {
-      const { data, error } = await supabase.from('user_settings').update(localSettings).eq('user_id', profile.id).select().single();
-      if (error) throw error;
-      setSettings(data);
-      toast.success('Settings saved!');
-    } catch {
-      toast.error('Failed to save settings');
-    } finally {
-      setIsSaving(false);
-    }
-  }
-
-  async function handleChangePassword() {
-    if (newPassword !== confirmNewPassword) { toast.error('Passwords do not match'); return; }
-    if (newPassword.length < 8) { toast.error('Password must be at least 8 characters'); return; }
-    setIsChangingPassword(true);
-    try {
-      const { error } = await supabase.auth.updateUser({ password: newPassword });
-      if (error) throw error;
-      toast.success('Password updated successfully');
-      setNewPassword('');
-      setConfirmNewPassword('');
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to update password');
-    } finally {
-      setIsChangingPassword(false);
-    }
-  }
-
-  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image must be less than 5MB');
-        return;
-      }
-      setAvatarFile(file);
-      setAvatarPreview(URL.createObjectURL(file));
-    }
-  };
-
-  async function handleUpdateProfile(e: React.FormEvent) {
-    e.preventDefault();
-    if (!profile) return;
-
-    if (editForm.username.length < 3) {
-      toast.error('Username must be at least 3 characters.');
-      return;
-    }
-    if (!isUsernameAvailable) {
-      toast.error('Username is already taken.');
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      let newAvatarUrl = profile.avatar_url;
-
-      if (avatarFile) {
-        const ext = avatarFile.name.split('.').pop();
-        const path = `avatars/${profile.id}/${Date.now()}.${ext}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('attachments')
-          .upload(path, avatarFile, { upsert: true });
-
-        if (uploadError) {
-          toast.error('Failed to upload avatar.');
-        } else {
-          const { data } = supabase.storage.from('attachments').getPublicUrl(path);
-          newAvatarUrl = data.publicUrl;
-        }
-      }
-
-      const normalizedUsername = editForm.username.toLowerCase();
-      
-      const { error } = await supabase.from('profiles').update({
-        display_name: editForm.display_name,
-        username: editForm.username,
-        username_normalized: normalizedUsername,
-        bio: editForm.bio,
-        avatar_url: newAvatarUrl
-      }).eq('id', profile.id);
-
-      if (error) throw error;
-
-      setProfile({
-        ...profile,
-        display_name: editForm.display_name,
-        username: editForm.username,
-        bio: editForm.bio,
-        avatar_url: newAvatarUrl
-      });
-      
-      toast.success('Profile updated successfully');
-      setIsEditingProfile(false);
-      setAvatarFile(null);
-      setAvatarPreview(null);
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to update profile');
-    } finally {
-      setIsSaving(false);
-    }
-  }
-
-  async function handleLogout() {
-    if (confirm('Are you sure you want to log out?')) {
-      await supabase.auth.signOut();
-      router.push('/login');
-    }
-  }
-
-  const sections = [
-    { id: 'account', label: 'Account', icon: User },
-    { id: 'appearance', label: 'Appearance', icon: Monitor },
-    { id: 'privacy', label: 'Privacy', icon: Eye },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'security', label: 'Security', icon: Lock },
-  ] as const;
-
-  if (!profile) {
+const newReturn = `  if (!profile) {
     return (
       <div className="flex-1 flex items-center justify-center bg-[#F8FAFC] dark:bg-[#0B0D12]">
         <Loader2 className="w-8 h-8 animate-spin text-[#8B5CF6]" />
@@ -619,7 +415,7 @@ export default function SettingsPage() {
                   <input
                     type="text" required value={editForm.username} onChange={handleUsernameChange}
                     className={cn(
-                      "w-full bg-[#F8FAFC] dark:bg-[#0B0D12] border rounded-[10px] py-[10px] pl-9 pr-20 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:ring-1 transition-all shadow-sm",
+                      "w-full bg-[#F8FAFC] dark:bg-[#0B0D12] border rounded-[10px] py-[10px] pl-9 pr-10 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:ring-1 transition-all shadow-sm",
                       isUsernameAvailable === false 
                         ? "border-[#F04438] focus:border-[#F04438] focus:ring-[#F04438]/50" 
                         : "border-[#EAECF0] dark:border-[#252A34] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]/50"
@@ -663,3 +459,9 @@ export default function SettingsPage() {
     </div>
   );
 }
+`;
+
+const finalCode = parts[0] + newReturn;
+
+fs.writeFileSync('src/app/(app)/settings/page.tsx', finalCode, 'utf8');
+console.log("Updated Settings Page UI with correct imports");

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import { cn, getInitials } from '@/lib/utils';
 
 interface UserAvatarProps {
@@ -18,23 +19,27 @@ const sizeMap = {
 };
 
 export function UserAvatar({ src, name, size = 'md', isOnline, className }: UserAvatarProps) {
+  const [imgError, setImgError] = useState(false);
+  
+  useEffect(() => setImgError(false), [src]);
   const sizes = sizeMap[size];
   const initials = getInitials(name);
 
   return (
     <div className={cn('relative flex-shrink-0', sizes.container, className)}>
-      {src ? (
+      {src && !imgError ? (
         <Image
           src={src}
           alt={name}
           fill
           className="rounded-full object-cover shadow-sm"
+          onError={() => setImgError(true)}
           sizes="100%"
         />
       ) : (
         <div
           className={cn(
-            'w-full h-full rounded-full flex items-center justify-center font-medium text-[#101828] dark:text-[#F5F7FA] bg-[#F8FAFC] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34]',
+            'w-full h-full rounded-full flex items-center justify-center font-medium  bg-[#8B5CF6]/10 text-[#8B5CF6] border border-[#EAECF0] dark:border-[#252A34]',
             sizes.text
           )}
           aria-label={`Avatar for ${name}`}
