@@ -36,11 +36,12 @@ interface MessageBubbleProps {
 
 const QUICK_EMOJIS = ['Ã¢ÂÂ¤Ã¯Â¸Â', 'Ã°Å¸Ëœâ€š', 'Ã°Å¸â€˜Â', 'Ã°Å¸ËœÂ®', 'Ã°Å¸ËœÂ¢', 'Ã°Å¸â„¢Â'];
 
-function DeliveryIcon({ status }: { status: Message['status'] }) {
-  if (status === 'sending') return <Clock className="w-3 h-3 text-white/70" />;
-  if (status === 'sent') return <Check className="w-[14px] h-[14px] text-white/80 drop-shadow-sm" />;
-  if (status === 'delivered') return <CheckCheck className="w-[14px] h-[14px] text-white/80 drop-shadow-sm" />;
-  if (status === 'read') return <CheckCheck className="w-[15px] h-[15px] text-[#38bdf8] drop-shadow-md brightness-110" />;
+function DeliveryIcon({ status, isEmojiOnly }: { status: Message['status'], isEmojiOnly?: boolean }) {
+  const neutralClass = isEmojiOnly ? "text-gray-400" : "text-white/80 drop-shadow-sm";
+  if (status === 'sending') return <Clock className={cn("w-3 h-3", neutralClass)} />;
+  if (status === 'sent') return <Check className={cn("w-[14px] h-[14px]", neutralClass)} />;
+  if (status === 'delivered') return <CheckCheck className={cn("w-[14px] h-[14px]", neutralClass)} />;
+  if (status === 'read') return <CheckCheck className={cn("w-[15px] h-[15px]", isEmojiOnly ? "text-[#38bdf8]" : "text-[#38bdf8] drop-shadow-md brightness-110")} />;
   return null;
 }
 
@@ -176,7 +177,7 @@ export const MessageBubble = memo(function MessageBubble({
             <span className={`text-[11px] font-medium tracking-wide ${isEmojiOnly ? (isOwn ? 'text-gray-400' : 'text-gray-500') : (isOwn ? 'text-white/90 drop-shadow-sm' : 'text-gray-500 dark:text-[#98A2B3]')}`}>
               {formatMessageTime(message.created_at)}
             </span>
-            {isOwn && <DeliveryIcon status={message.status} />}
+            {isOwn && <DeliveryIcon status={message.status} isEmojiOnly={isEmojiOnly} />}
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -110,6 +110,16 @@ export function useConversations() {
       });
 
       setConversations(enriched);
+
+      // Background task: Mark all sent messages as delivered since client is connected
+      setTimeout(() => {
+        supabase.from('messages')
+          .update({ status: 'delivered' })
+          .eq('status', 'sent')
+          .neq('sender_id', profile.id)
+          .in('conversation_id', conversationIds)
+          .then();
+      }, 500);
     } finally {
       setIsLoadingConversations(false);
     }
