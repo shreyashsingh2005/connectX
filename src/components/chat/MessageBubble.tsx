@@ -34,7 +34,7 @@ interface MessageBubbleProps {
   onReact?: (messageId: string, emoji: string) => void;
 }
 
-const QUICK_EMOJIS = ['Ã¢ÂÂ¤Ã¯Â¸Â', 'Ã°Å¸Ëœâ€š', 'Ã°Å¸â€˜Â', 'Ã°Å¸ËœÂ®', 'Ã°Å¸ËœÂ¢', 'Ã°Å¸â„¢Â'];
+const QUICK_EMOJIS = ['\u{2764}\u{FE0F}', '\u{1F602}', '\u{1F44D}', '\u{1F62E}', '\u{1F622}', '\u{1F64F}'];
 
 function DeliveryIcon({ status, isEmojiOnly }: { status: Message['status'], isEmojiOnly?: boolean }) {
   const neutralClass = isEmojiOnly ? "text-gray-400" : "text-white/80 drop-shadow-sm";
@@ -78,7 +78,7 @@ export const MessageBubble = memo(function MessageBubble({
           isOwn ? 'border-[#2A2F45]' : 'border-gray-200 dark:border-[#252A34]',
           'bg-gray-100 dark:bg-[#11141A]'
         )}>
-          Ã°Å¸Å¡Â« This message was deleted
+          {"\u{1F6AB}"} This message was deleted
         </div>
       </div>
     );
@@ -133,7 +133,7 @@ export const MessageBubble = memo(function MessageBubble({
           )}>
             <div className="min-w-0">
               <span className="font-medium text-[#8B5CF6] block">{message.reply_to.sender?.display_name}</span>
-              <span className="truncate block">{message.reply_to.content || 'Ã°Å¸â€œÅ½ Attachment'}</span>
+              <span className="truncate block">{message.reply_to.content || '{"\u{1F4CE}"} Attachment'}</span>
             </div>
           </div>
         )}
@@ -209,9 +209,9 @@ export const MessageBubble = memo(function MessageBubble({
             <button
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               className="w-7 h-7 rounded-[8px] flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
-            >
-              Ã°Å¸ËœÅ 
-            </button>
+              >
+                {"\u{1F600}"}
+              </button>
             {showEmojiPicker && (
               <div className={cn(
                 'absolute bottom-full mb-1 flex gap-1 p-2 bg-gray-100 dark:bg-[#11141A] border border-gray-300 dark:border-[#252A34] rounded-[12px] shadow-xl z-10',

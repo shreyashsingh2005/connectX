@@ -232,7 +232,10 @@ export function useConversations() {
               (window as any).__chat_channel?.send({ type: 'broadcast', event: 'read', payload: { userId: profile.id } });
             } catch {}
           } else if (!isActive && !isOwn) {
-            // Show toast notification for messages in non-active conversations
+              // Mark as delivered for non-active conversation
+              await supabase.from('messages').update({ status: 'delivered' }).eq('id', newMsgRaw.id).eq('status', 'sent');
+
+              // Show toast notification for messages in non-active conversations
             let senderName = 'Someone';
             let senderAvatar = null;
             
