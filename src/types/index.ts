@@ -67,6 +67,7 @@ export interface Message {
   sender_id: string;
   content: string | null;
   decrypted_content?: string | null;
+  decryption_error?: boolean;
   type: 'text' | 'image' | 'video' | 'audio' | 'document' | 'system';
   status: 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
   reply_to_id: string | null;

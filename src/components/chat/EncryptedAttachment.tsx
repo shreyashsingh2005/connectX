@@ -41,7 +41,7 @@ export function EncryptedAttachment({ attachment, isOwn }: { attachment: Attachm
   }, [isReady, attachment.storage_path]);
 
   if (error) {
-    return <div className="text-xs opacity-70 p-2 border border-red-500/20 rounded">Failed to load encrypted file</div>;
+    return <div className="text-xs opacity-70 p-2 border border-red-500/20 rounded">Unable to decrypt attachment</div>;
   }
 
   if (!objectUrl) {

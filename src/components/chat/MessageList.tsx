@@ -95,12 +95,12 @@ export function MessageList({ conversationId }: MessageListProps) {
             try {
               decrypted = await decrypt(msg.content!);
             } catch (innerErr) {
-              console.error("[E2EE_TRACE] MessageList decryption FAILED for", msg.id, innerErr);
+              if (process.env.NODE_ENV === 'development') { console.error('[E2EE] Decryption failed for message', msg.id); }
               throw innerErr;
             }
           return { id: msg.id, changes: { decrypted_content: decrypted } };
         } catch (e: any) {
-          return { id: msg.id, changes: { decrypted_content: '[Unable to decrypt message: ' + (e?.message || e?.name || String(e)) + ']' } };
+          return { id: msg.id, changes: { decrypted_content: null, decryption_error: true } };
         }
       }));
       

@@ -180,21 +180,22 @@ export async function encryptText(text: string, aesKey: CryptoKey): Promise<stri
     encoded
   );
   
-  // Pack IV + ciphertext
   const payload = new Uint8Array(12 + ciphertext.byteLength);
   payload.set(iv, 0);
   payload.set(new Uint8Array(ciphertext), 12);
   
-  return btoa(String.fromCharCode.apply(null, Array.from(payload)));
+  const binString = Array.from(payload, (byte) => String.fromCharCode(byte)).join('');
+  return btoa(binString);
 }
 
 // Decrypt text message
 export async function decryptText(payloadBase64: string, aesKey: CryptoKey): Promise<string> {
   try {
-    const payloadStr = atob(payloadBase64);
-    const payload = new Uint8Array(payloadStr.length);
-    for (let i = 0; i < payloadStr.length; i++) {
-      payload[i] = payloadStr.charCodeAt(i);
+    const binString = atob(payloadBase64);
+    const payload = Uint8Array.from(binString, (m) => m.codePointAt(0)!);
+    
+    if (payload.length < 12) {
+      throw new Error("Invalid payload length");
     }
     
     const iv = payload.slice(0, 12);
@@ -207,9 +208,8 @@ export async function decryptText(payloadBase64: string, aesKey: CryptoKey): Pro
     );
     return new TextDecoder().decode(decrypted);
   } catch (err: any) {
-      console.error("[E2EE_TRACE] Core E2EE.decryptText FAILED! payloadBase64 length:", payloadBase64?.length, "Key type:", aesKey?.type, "Algorithm:", aesKey?.algorithm?.name, "Error name:", err?.name, "Message:", err?.message);
-      return "[E2EE_TRACE_FAIL: err=" + err?.name + ":" + (err?.message || 'none') + ", payloadLen=" + payloadBase64?.length + ", keyAlgo=" + aesKey?.algorithm?.name + "]";
-    }
+    throw new Error("DECRYPTION_FAILED");
+  }
 }
 
 // Encrypt file Blob
