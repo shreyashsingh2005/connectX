@@ -429,8 +429,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       )}
 
       <div className="flex items-end gap-2">
-        <button
-          onClick={() => fileInputRef.current?.click()}
+        <button type="button" onClick={() => fileInputRef.current?.click()}
           className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-[10px] text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922] transition-colors"
           aria-label="Attach file"
         >
@@ -444,7 +443,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
             onChange={handleTextChange}
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
-            placeholder={isRecording ? `Recording... ${recordingDuration}s` : "Message..."}
+            placeholder={isRecording ? `Recording... ${recordingDuration}s` : "Write a message..."}
             disabled={isRecording || isSending}
             className="flex-1 max-h-32 bg-transparent text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder:text-[#98A2B3] resize-none py-3 px-3 focus:outline-none custom-scrollbar"
             rows={1}
@@ -461,18 +460,11 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
               
 
             </div>
-            <input
-
-            ref={fileInputRef}
-            onChange={handleFileSelect}
-            className="hidden"
-            multiple
-          />
+            <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" multiple />
         </div>
 
         {text.trim() || attachments.length > 0 ? (
-          <button
-            onClick={handleSend}
+          <button type="button" onClick={handleSend}
             disabled={isSending}
             className="w-[36px] h-[36px] flex-shrink-0 flex items-center justify-center rounded-[10px] bg-[#8B5CF6] text-white hover:bg-[#7C3AED] transition-colors disabled:opacity-50"
             aria-label="Send message"
@@ -480,8 +472,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
             {isSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} className="ml-0.5" strokeWidth={2.5} />}
           </button>
         ) : (
-          <button
-            onClick={isRecording ? stopRecording : startRecording}
+          <button type="button" onClick={isRecording ? stopRecording : startRecording}
               className={`w-[36px] h-[36px] flex-shrink-0 flex items-center justify-center rounded-[10px] transition-colors ${isRecording ? "bg-[#F04438] text-white animate-pulse" : "bg-[#F8FAFC] dark:bg-[#151922] text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#EAECF0] dark:hover:bg-[#252A34]"}`}
             aria-label={isRecording ? "Stop recording" : "Record voice message"}
           >
