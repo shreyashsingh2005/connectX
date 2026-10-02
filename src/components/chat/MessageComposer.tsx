@@ -36,7 +36,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const { resolvedTheme } = useTheme();
   const profile = useAuthStore(s => s.profile);
   const activeTheme = useThemeStore(s => s.getEffectiveTheme(conversationId));
-  const { isReady: e2eeReady, encrypt, encryptAttachment } = useE2EE(conversationId);
+  const { isReady: e2eeReady, error: e2eeError, encrypt, encryptAttachment } = useE2EE(conversationId);
   const replyToMessage = useChatStore(s => s.replyToMessage);
   const setReplyToMessage = useChatStore(s => s.setReplyToMessage);
   const addMessage = useChatStore(s => s.addMessage);
@@ -192,55 +192,33 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     }
   };
 
+  
   async function handleSend(e?: React.FormEvent) {
     e?.preventDefault();
     const contentText = text.trim();
     if (!contentText && attachments.length === 0) return;
     if (!profile || isSending || isSubmittingRef.current) return;
     
+    if (e2eeError) {
+      toast.error('E2EE Error: ' + e2eeError + '. Cannot send.');
+      return;
+    }
+    if (!e2eeReady) {
+      toast.error('Encryption not ready, please wait...');
+      return;
+    }
+    
     isSubmittingRef.current = true;
     setIsSending(true);
     const tempId = uuidv4();
 
-    // Optimistic message
-    const optimisticMessage = {
-      id: tempId,
-      conversation_id: conversationId,
-      sender_id: profile.id,
-      content: contentText || null,
-      type: attachments.length > 0 ? (attachments[0].type as 'image' | 'video' | 'audio' | 'document') : 'text' as const,
-      status: 'sending' as const,
-      decrypted_content: contentText || null,
-      reply_to_id: replyToMessage?.id || null,
-      forwarded_from_id: null,
-      is_edited: false,
-      is_deleted: false,
-      deleted_at: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      sender: profile,
-      reply_to: replyToMessage || undefined,
-      attachments: [],
-      reactions: [],
-    };
-
-    addMessage(conversationId, optimisticMessage as any);
-    
     // Save state in case of failure
     const savedText = text;
     const savedAttachments = [...attachments];
     const savedReply = replyToMessage;
 
-    setText('');
-    setReplyToMessage(null);
-    setAttachments([]);
-
-    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-    setIsTyping(false);
-    sendTypingStatus(false);
-
     try {
-      // Encrypt message content
+      // 1. Encrypt message content BEFORE creating optimistic UI
       let finalContent = contentText || null;
       if (finalContent) {
         try {
@@ -248,15 +226,44 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         } catch (encErr) {
           console.error('Encryption failed', encErr);
           toast.error('Failed to encrypt message');
-          updateMessage(conversationId, tempId, { status: 'failed' });
-          setText(savedText);
-          setAttachments(savedAttachments);
-          setReplyToMessage(savedReply);
-          return;
+          throw new Error('Encryption failed');
         }
       }
 
-      // Insert message
+      // 2. ONLY NOW create optimistic UI message
+      const optimisticMessage = {
+        id: tempId,
+        conversation_id: conversationId,
+        sender_id: profile.id,
+        content: finalContent, // Store actual ciphertext or null
+        type: savedAttachments.length > 0 ? (savedAttachments[0].type as 'image' | 'video' | 'audio' | 'document') : 'text' as const,
+        status: 'sending' as const,
+        decrypted_content: contentText || null, // Keep plaintext for UI
+        reply_to_id: savedReply?.id || null,
+        forwarded_from_id: null,
+        is_edited: false,
+        is_deleted: false,
+        deleted_at: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        sender: profile,
+        reply_to: savedReply || undefined,
+        attachments: [],
+        reactions: [],
+      };
+
+      addMessage(conversationId, optimisticMessage as any);
+
+      // Clear UI
+      setText('');
+      setReplyToMessage(null);
+      setAttachments([]);
+
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      setIsTyping(false);
+      sendTypingStatus(false);
+
+      // 3. Insert into DB
       const { data: newMessage, error } = await supabase
         .from('messages')
         .insert({
@@ -273,30 +280,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       if (error) throw error;
 
-      // Upload attachments
-      for (const att of savedAttachments) {
-        const uploadRes = await uploadAttachment(att, newMessage.id);
-        if (uploadRes) {
-          const { url, path } = uploadRes;
-          await supabase.from('attachments').insert({
-            message_id: newMessage.id,
-            conversation_id: conversationId,
-            user_id: profile.id,
-            file_name: att.file.name,
-            file_size: att.file.size,
-            mime_type: att.file.type,
-            storage_path: path,
-            url,
-          });
-        }
-      }
-
-      await supabase.from('conversations').update({ 
-        last_message_id: newMessage.id, 
-        last_message_at: newMessage.created_at 
-      }).eq('id', conversationId);
-
-      // Replace optimistic with real (keep decrypted_content!)
+      // 4. Update status to sent
       updateMessage(conversationId, tempId, { 
         ...newMessage, 
         status: 'sent',
@@ -304,20 +288,39 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         decrypted_content: contentText || null
       });
 
-    } catch (error) {
-      console.error('Send error:', error);
-      updateMessage(conversationId, tempId, { status: 'failed' });
-      toast.error('Failed to send message');
-      
-      // Restore user input for retry
+      // 5. Upload attachments
+      for (const att of savedAttachments) {
+        const uploadRes = await uploadAttachment(att, tempId);
+        if (uploadRes) {
+          const { url, path } = uploadRes;
+          await supabase.from('attachments').insert({
+            message_id: tempId,
+            conversation_id: conversationId,
+            user_id: profile.id,
+            file_name: att.file.name,
+            file_size: att.file.size,
+            mime_type: att.file.type,
+            storage_path: path,
+            url: url
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Send failed:', err);
+      // Restore input text so user can try again
       setText(savedText);
       setAttachments(savedAttachments);
       setReplyToMessage(savedReply);
+      
+      // Remove optimistic message if it was added (if error happened after addMessage)
+      useChatStore.getState().removeMessage(conversationId, tempId);
     } finally {
-      setIsSending(false);
       isSubmittingRef.current = false;
+      setIsSending(false);
     }
   }
+
+
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -454,12 +457,12 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
         {text.trim() || attachments.length > 0 ? (
           <button type="submit"
-            disabled={isSending}
+            disabled={isSending || (!e2eeReady && !e2eeError)}
             className="w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 hover:scale-102 active:scale-95 transition-all shadow-sm disabled:opacity-50 disabled:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#11141A]"
             style={{ backgroundColor: activeTheme.accentColor === 'purple' ? '#8B5CF6' : activeTheme.accentColor === 'blue' ? '#3B82F6' : activeTheme.accentColor === 'pink' ? '#EC4899' : activeTheme.accentColor === 'green' ? '#10B981' : '#F97316' }}
             aria-label="Send message" title="Send message"
           >
-            {isSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
+            {isSending || (!e2eeReady && !e2eeError) ? <Loader2 size={16} className="animate-spin opacity-70" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
           </button>
         ) : (
           <button type="button" onClick={isRecording ? stopRecording : startRecording}
