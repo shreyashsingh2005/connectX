@@ -626,12 +626,16 @@ export default function SettingsPage() {
                 </button>
               </div>
             </form>
-              <div className="p-4 text-xs text-gray-500 font-mono">CONNECTX_BUILD_DEBUG: 6c1ca4f</div>
+              
           </div>
         </div>
       )}
     
       {showPhotoEditor && <ProfilePhotoEditor onClose={() => setShowPhotoEditor(false)} />}
+    
+      <div data-testid="connectx-build-debug" className="p-4 text-center text-xs text-gray-500 font-mono opacity-50">
+        CONNECTX_BUILD_DEBUG: 6c1ca4f
+      </div>
     </div>
   );
 }
