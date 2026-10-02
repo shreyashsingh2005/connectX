@@ -38,7 +38,7 @@ export async function loadKeyPair(userId: string): Promise<{ publicKey: CryptoKe
   const db = await initDB();
   
   // Helper to get from IDB
-  const getFromStore = (key: string): Promise<unknown> => {
+  const getFromStore = (key: string): Promise<CryptoKey | undefined> => {
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, 'readonly');
       const req = tx.objectStore(STORE_NAME).get(key);
