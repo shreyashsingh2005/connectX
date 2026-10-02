@@ -33,8 +33,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
   const addConversation = useChatStore(s => s.addConversation);
   const showProfilePanel = useUIStore(s => s.showProfilePanel);
   const { resolvedTheme } = useTheme();
-  const getEffectiveTheme = useThemeStore(s => s.getEffectiveTheme);
-  const activeTheme = getEffectiveTheme(conversationId);
+  const activeTheme = useThemeStore(s => s.getEffectiveTheme(conversationId));
 
   useEffect(() => {
     setActiveConversationId(conversationId);

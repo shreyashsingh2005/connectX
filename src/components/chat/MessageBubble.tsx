@@ -60,6 +60,7 @@ export const MessageBubble = memo(function MessageBubble({
   onDelete,
   onReact,
 }: MessageBubbleProps) {
+  const activeTheme = useThemeStore(s => s.getEffectiveTheme(message.conversation_id));
   const [showActions, setShowActions] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -164,7 +165,7 @@ export const MessageBubble = memo(function MessageBubble({
           className={cn(
             'relative rounded-[18px] px-4 py-2.5 message-animate',
             isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (isOwn ? `text-white shadow-sm ${showAvatar ? 'rounded-[18px] rounded-br-[5px]' : 'rounded-[18px] rounded-r-[5px]'}` : `bg-[#FFFFFF] dark:bg-[#171B23] text-[#101828] dark:text-[#F5F7FA] shadow-[0_1px_2px_rgba(0,0,0,0.02)] border border-[#EAECF0] dark:border-[#252A34] ${showAvatar ? 'rounded-[18px] rounded-bl-[5px]' : 'rounded-[18px] rounded-l-[5px]'}`),
-          )}
+          )} style={isOwn && !isEmojiOnly ? { backgroundColor: activeTheme.accentColor === 'purple' ? '#8B5CF6' : activeTheme.accentColor === 'blue' ? '#3B82F6' : activeTheme.accentColor === 'pink' ? '#EC4899' : activeTheme.accentColor === 'green' ? '#10B981' : '#F97316' } : {}}
         >
           {/* Text content */}
           {message.type === 'text' && message.content && (

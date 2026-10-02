@@ -48,7 +48,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const supabase = createClient();
   const { resolvedTheme } = useTheme();
   const profile = useAuthStore(s => s.profile);
-  const activeTheme = useThemeStore(s => s.getEffectiveTheme)(conversationId);
+  const activeTheme = useThemeStore(s => s.getEffectiveTheme(conversationId));
   const { isReady: e2eeReady, encrypt, encryptAttachment } = useE2EE(conversationId);
   const replyToMessage = useChatStore(s => s.replyToMessage);
   const setReplyToMessage = useChatStore(s => s.setReplyToMessage);
