@@ -16,19 +16,17 @@ export function useE2EE(conversationId?: string) {
   const profile = useAuthStore(s => s.profile);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [identityReady, setIdentityReady] = useState(false);
 
   // Stable Supabase client — must NOT be recreated on every render.
-  // Putting createClient() in the hook body and including `supabase` in
-  // useEffect deps caused loadConvKey to fire on every render, constantly
-  // racing against itself and leaving conversationKey=null.
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
 
-  // The AES key lives in a ref so encrypt/decrypt always read the live value
-  // without waiting for a React state re-render cycle.
-  // This eliminates the stale-closure bug where encrypt() saw null even after
-  // setConversationKey(aesKey) had been called.
+  // convKeyRef and readyRef are always updated together, synchronously,
+  // before any React state update. This eliminates the race where
+  // isReady===true but convKeyRef.current===null.
   const convKeyRef = useRef<CryptoKey | null>(null);
+  const readyRef = useRef(false); // mirrors isReady but synchronously
 
   // ─── Identity Init ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -52,8 +50,10 @@ export function useE2EE(conversationId?: string) {
             await supabase.from('profiles').update({ public_key: pubKeyB64 }).eq('id', profile!.id);
           }
         }
+        if (!cancelled) setIdentityReady(true);
       } catch (err) {
         console.error('[E2EE] Identity init failed:', err);
+        if (!cancelled) setIdentityReady(true); // still mark ready so conv key can try
       }
     }
 
@@ -63,19 +63,23 @@ export function useE2EE(conversationId?: string) {
   }, [profile?.id]);
 
   // ─── Conversation Key Init ────────────────────────────────────────────────────
+  // Does NOT run until identityReady === true, ensuring IndexedDB keys exist first.
   useEffect(() => {
-    if (!profile?.id || !conversationId) return;
+    if (!profile?.id || !conversationId || !identityReady) return;
 
-    // Reset state for this conversation
+    // Synchronously reset BOTH the ref and the ready flag together
+    convKeyRef.current = null;
+    readyRef.current = false;
     setIsReady(false);
     setError(null);
-    convKeyRef.current = null;
 
     const regKey = registryKey(profile.id, conversationId);
 
-    // Already in the module-level registry — use immediately
+    // If we already have this key in the module-level registry, use it now
     if (keyRegistry.has(regKey)) {
-      convKeyRef.current = keyRegistry.get(regKey)!;
+      const cached = keyRegistry.get(regKey)!;
+      convKeyRef.current = cached;
+      readyRef.current = true;
       setIsReady(true);
       return;
     }
@@ -104,14 +108,14 @@ export function useE2EE(conversationId?: string) {
         let aesKey: CryptoKey | null = null;
 
         if (member?.encrypted_key) {
-          // ── PATH A: Decrypt the existing conversation key ──────────────────────
+          // ── PATH A: Decrypt the existing conversation key ────────────────────
           const rawAesBase64 = await E2EE.decryptConversationKey(
             member.encrypted_key,
             identityKeys.privateKey
           );
           aesKey = await E2EE.importConversationKey(rawAesBase64);
         } else {
-          // ── PATH B: Our member row has no key yet ──────────────────────────────
+          // ── PATH B: Our member row has no key yet ────────────────────────────
           const { data: allMembers, error: allErr } = await supabase
             .from('conversation_members')
             .select('id, user_id, encrypted_key, profiles(public_key)')
@@ -122,11 +126,9 @@ export function useE2EE(conversationId?: string) {
           const anyHasKey = allMembers?.some(m => m.encrypted_key);
 
           if (anyHasKey) {
-            // Other members have the key but our row doesn't. We cannot generate
-            // a replacement — that would break other participants' decryption.
             throw new Error(
-              '[E2EE] Your encrypted_key is missing in conversation_members. ' +
-              'The other participant must re-send or re-invite you.'
+              '[E2EE] Your encrypted_key is missing for this conversation. ' +
+              'The other participant must re-send a message to re-establish the key.'
             );
           }
 
@@ -149,22 +151,25 @@ export function useE2EE(conversationId?: string) {
           }
         }
 
-        if (!aesKey) throw new Error('[E2EE] aesKey is null after initialization — should never happen');
+        if (!aesKey) throw new Error('[E2EE] aesKey is null after init — unexpected');
         return aesKey;
       })();
 
       initPromises.set(regKey, promise);
-      // Evict after 60s so navigation to a new conversation and back re-inits cleanly
       promise.finally(() => setTimeout(() => initPromises.delete(regKey), 60_000));
     }
 
-    // Attach to the (possibly shared) promise
+    // Attach to the (possibly shared) init promise
     let cancelled = false;
     initPromises.get(regKey)!
       .then(aesKey => {
         if (cancelled) return;
+        // Set BOTH the key ref and the ready ref together, synchronously,
+        // before scheduling any React state updates. This ensures encrypt()
+        // can never see readyRef=true with convKeyRef=null.
         keyRegistry.set(regKey, aesKey);
         convKeyRef.current = aesKey;
+        readyRef.current = true;
         setIsReady(true);
         setError(null);
       })
@@ -177,40 +182,47 @@ export function useE2EE(conversationId?: string) {
           errorName: err?.name,
           errorMessage: msg,
         });
+        // DO NOT set convKeyRef or readyRef — key is not available
         setError(msg);
-        setIsReady(true); // Unblock UI — but error is set so Send will show error
+        setIsReady(true); // Unblock UI; e2eeError will block Send in the Composer
       });
 
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile?.id, conversationId]);
+  }, [profile?.id, conversationId, identityReady]);
 
   // ─── Encrypt / Decrypt ────────────────────────────────────────────────────────
-  // All functions read from convKeyRef directly.
-  // This is the critical fix: using a ref means encrypt() NEVER sees a stale
-  // null value from a previous render cycle.
+  // All functions check BOTH readyRef AND convKeyRef to guarantee consistency.
 
   const encrypt = useCallback(async (text: string): Promise<string> => {
     const key = convKeyRef.current;
-    if (!key) throw new Error('[E2EE] Conversation key not available — cannot encrypt');
+    if (!readyRef.current || !key) {
+      throw new Error('[E2EE] Conversation key not ready — cannot encrypt');
+    }
     return E2EE.encryptText(text, key);
   }, []);
 
   const decrypt = useCallback(async (ciphertext: string): Promise<string> => {
     const key = convKeyRef.current;
-    if (!key) throw new Error('[E2EE] Conversation key not available — cannot decrypt');
+    if (!readyRef.current || !key) {
+      throw new Error('[E2EE] Conversation key not ready — cannot decrypt');
+    }
     return E2EE.decryptText(ciphertext, key);
   }, []);
 
   const encryptAttachment = useCallback(async (file: Blob): Promise<Blob> => {
     const key = convKeyRef.current;
-    if (!key) throw new Error('[E2EE] Conversation key not available — cannot encrypt attachment');
+    if (!readyRef.current || !key) {
+      throw new Error('[E2EE] Conversation key not ready — cannot encrypt attachment');
+    }
     return E2EE.encryptFile(file, key);
   }, []);
 
   const decryptAttachment = useCallback(async (file: Blob, mimeType?: string): Promise<Blob> => {
     const key = convKeyRef.current;
-    if (!key) throw new Error('[E2EE] Conversation key not available — cannot decrypt attachment');
+    if (!readyRef.current || !key) {
+      throw new Error('[E2EE] Conversation key not ready — cannot decrypt attachment');
+    }
     return E2EE.decryptFile(file, key, mimeType);
   }, []);
 
