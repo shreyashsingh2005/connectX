@@ -206,7 +206,7 @@ export default function SettingsPage() {
   if (!profile) {
     return (
       <div className="flex-1 flex items-center justify-center bg-[#F8FAFC] dark:bg-[#090B10]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#8B5CF6]" />
+        <Loader2 size={32} strokeWidth={1.75} className="animate-spin text-[#8B5CF6]" />
       </div>
     );
   }
@@ -265,7 +265,7 @@ export default function SettingsPage() {
                 {activeSection === id && (
                   <span className="absolute left-0 top-[8px] bottom-[8px] w-[3px] rounded-r-full bg-[#8B5CF6] hidden md:block"></span>
                 )}
-                <Icon size={18} className={cn("ml-1 md:ml-2 transition-colors", activeSection === id ? 'text-[#8B5CF6]' : 'text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#D0D5DD]')} />
+                <Icon size={17} strokeWidth={1.75} className={cn("ml-1 md:ml-2 transition-colors", activeSection === id ? 'text-[#8B5CF6]' : 'text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#D0D5DD]')} />
                 <span className="text-[14px]">{label}</span>
               </button>
             ))}
@@ -293,7 +293,7 @@ export default function SettingsPage() {
                     onClick={() => setIsEditingProfile(true)}
                     className="flex items-center justify-center gap-2 h-[40px] px-4 bg-[#FFFFFF] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] dark:hover:bg-[#252A34] transition-colors rounded-[9px] text-[14px] font-medium shadow-sm w-full sm:w-auto"
                   >
-                    <Edit2 size={16} /> Edit profile
+                    <Edit2 size={16} strokeWidth={1.75} /> Edit profile
                   </button>
                 </div>
 
@@ -319,7 +319,7 @@ export default function SettingsPage() {
                        <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{profile.email}</p>
                      </div>
                      <div className="flex items-center gap-1.5 self-start sm:self-auto text-[14px] font-medium text-[#667085] dark:text-[#98A2B3]">
-                        <CheckCircle2 size={16} className="text-[#12B76A]" /> Verified
+                        <CheckCircle2 size={16} strokeWidth={1.75} className="text-[#12B76A]" /> Verified
                      </div>
                    </div>
                    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 md:px-6 gap-2 hover:bg-[#F9FAFB] dark:hover:bg-[#151922]/50 transition-colors">
@@ -335,21 +335,21 @@ export default function SettingsPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
                    <div className="bg-[#FFFFFF] dark:bg-[#101319] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] p-5 shadow-sm">
                      <div className="w-10 h-10 rounded-full bg-[#12B76A]/10 flex items-center justify-center text-[#12B76A] mb-4">
-                       <Mail size={18} />
+                       <Mail size={16} strokeWidth={1.75} />
                      </div>
                      <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mb-0.5">Email verification</p>
                      <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Verified</p>
                    </div>
                    <div className="bg-[#FFFFFF] dark:bg-[#101319] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] p-5 shadow-sm">
                      <div className="w-10 h-10 rounded-full bg-[#8B5CF6]/10 flex items-center justify-center text-[#8B5CF6] mb-4">
-                       <ShieldCheck size={18} />
+                       <ShieldCheck size={16} strokeWidth={1.75} />
                      </div>
                      <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mb-0.5">Encryption</p>
                      <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Active</p>
                    </div>
                    <div className="bg-[#FFFFFF] dark:bg-[#101319] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] p-5 shadow-sm">
                      <div className="w-10 h-10 rounded-full bg-[#12B76A]/10 flex items-center justify-center text-[#12B76A] mb-4">
-                       <Monitor size={18} />
+                       <Monitor size={16} strokeWidth={1.75} />
                      </div>
                      <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mb-0.5">Session</p>
                      <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Active now</p>
@@ -398,7 +398,7 @@ export default function SettingsPage() {
                       )}
                     >
                       <div className="flex items-center gap-2.5 mb-3">
-                        <t.icon size={18} className={theme === t.id ? 'text-[#8B5CF6]' : 'text-[#667085] dark:text-[#98A2B3]'} />
+                        <t.icon size={18} strokeWidth={1.75} className={theme === t.id ? 'text-[#8B5CF6]' : 'text-[#667085] dark:text-[#98A2B3]'} />
                         <span className={cn("text-[14px] font-medium", theme === t.id ? "text-[#8B5CF6]" : "text-[#101828] dark:text-[#F5F7FA]")}>{t.label}</span>
                       </div>
                       <ThemePreview mode={t.id as any} />
@@ -423,7 +423,7 @@ export default function SettingsPage() {
                   ].map((item, i) => (
                     <div key={item.key} className={cn("flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:px-6 gap-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922]/50 transition-colors", i !== 0 && "border-t border-[#EAECF0] dark:border-[#252A34]")}>
                       <div className="flex gap-4">
-                        <item.icon size={18} className="text-[#667085] dark:text-[#98A2B3] flex-shrink-0 mt-0.5" />
+                        <item.icon size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3] flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</p>
                           <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-0.5">{item.desc}</p>
@@ -448,7 +448,7 @@ export default function SettingsPage() {
                 <div className="bg-[#FFFFFF] dark:bg-[#101319] border border-[#EAECF0] dark:border-[#252A34] rounded-[16px] shadow-sm overflow-hidden mb-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:px-6 gap-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922]/50 transition-colors">
                     <div className="flex gap-4">
-                      <CheckCircle2 size={18} className="text-[#667085] dark:text-[#98A2B3] flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3] flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Read receipts</p>
                         <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-0.5">Let others know when you've read their messages.</p>
@@ -471,13 +471,13 @@ export default function SettingsPage() {
                 <div className="bg-[#FFFFFF] dark:bg-[#101319] border border-[#EAECF0] dark:border-[#252A34] rounded-[16px] shadow-sm overflow-hidden">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:px-6 gap-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922]/50 transition-colors cursor-pointer">
                     <div className="flex gap-4">
-                      <Ban size={18} className="text-[#667085] dark:text-[#98A2B3] flex-shrink-0 mt-0.5" />
+                      <Ban size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3] flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Blocked users</p>
                         <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-0.5">Manage the users you have blocked.</p>
                       </div>
                     </div>
-                    <ChevronRight size={18} className="text-[#98A2B3] hidden sm:block" />
+                    <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] hidden sm:block" />
                   </div>
                 </div>
               </div>
@@ -500,7 +500,7 @@ export default function SettingsPage() {
                   ].map((item, i) => (
                     <div key={item.key} className={cn("flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:px-6 gap-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922]/50 transition-colors", i !== 0 && "border-t border-[#EAECF0] dark:border-[#252A34]")}>
                       <div className="flex gap-4">
-                        <item.icon size={18} className="text-[#667085] dark:text-[#98A2B3] flex-shrink-0 mt-0.5" />
+                        <item.icon size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3] flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</p>
                           <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-0.5">{item.desc}</p>
@@ -535,7 +535,7 @@ export default function SettingsPage() {
                    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:px-6 border-b border-[#EAECF0] dark:border-[#252A34] gap-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922]/50 transition-colors">
                      <div className="flex gap-4">
                        <div className="w-9 h-9 rounded-full bg-[#12B76A]/10 flex items-center justify-center text-[#12B76A] flex-shrink-0">
-                         <Mail size={16} />
+                         <Mail size={16} strokeWidth={1.75} />
                        </div>
                        <div>
                          <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Email verification</p>
@@ -547,7 +547,7 @@ export default function SettingsPage() {
                    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:px-6 border-b border-[#EAECF0] dark:border-[#252A34] gap-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922]/50 transition-colors">
                      <div className="flex gap-4">
                        <div className="w-9 h-9 rounded-full bg-[#8B5CF6]/10 flex items-center justify-center text-[#8B5CF6] flex-shrink-0">
-                         <ShieldCheck size={16} />
+                         <ShieldCheck size={16} strokeWidth={1.75} />
                        </div>
                        <div>
                          <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">End-to-end encryption</p>
@@ -559,14 +559,14 @@ export default function SettingsPage() {
                    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:px-6 border-b border-[#EAECF0] dark:border-[#252A34] gap-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922]/50 transition-colors cursor-pointer">
                      <div className="flex gap-4">
                        <div className="w-9 h-9 rounded-full bg-[#F8FAFC] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] flex items-center justify-center text-[#667085] dark:text-[#98A2B3] flex-shrink-0">
-                         <KeyRound size={16} />
+                         <KeyRound size={16} strokeWidth={1.75} />
                        </div>
                        <div>
                          <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Password</p>
                          <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-0.5">Manage password</p>
                        </div>
                      </div>
-                     <ChevronRight size={18} className="text-[#98A2B3] hidden sm:block" />
+                     <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] hidden sm:block" />
                    </div>
                 </div>
 
@@ -575,7 +575,7 @@ export default function SettingsPage() {
                    <div className="flex items-center justify-between p-5 sm:px-6 hover:bg-[#F9FAFB] dark:hover:bg-[#151922]/50 transition-colors">
                      <div className="flex items-center gap-4">
                        <div className="w-10 h-10 rounded-full bg-[#F8FAFC] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] flex items-center justify-center text-[#667085] dark:text-[#98A2B3] flex-shrink-0">
-                         <Smartphone size={18} />
+                         <Smartphone size={16} strokeWidth={1.75} />
                        </div>
                        <div>
                          <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">This device</p>
@@ -596,7 +596,7 @@ export default function SettingsPage() {
 
                 <div className="pt-8 border-t border-[#EAECF0] dark:border-[#252A34]">
                   <button onClick={handleLogout} className="flex items-center gap-2 h-[40px] px-4 bg-[#FFFFFF] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#101828] dark:text-[#F5F7FA] rounded-[9px] text-[14px] font-medium hover:bg-[#F9FAFB] dark:hover:bg-[#252A34] transition-colors shadow-sm w-full sm:w-auto justify-center">
-                    <LogOut size={16} /> Sign out
+                    <LogOut size={16} strokeWidth={1.75} /> Sign out
                   </button>
                 </div>
               </div>
@@ -612,7 +612,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between p-6 border-b border-[#EAECF0] dark:border-[#252A34]">
               <h2 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA]">Edit profile</h2>
               <button onClick={() => setIsEditingProfile(false)} className="text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] transition-colors p-1 rounded-full hover:bg-[#F8FAFC] dark:hover:bg-[#151922]">
-                <X size={20} />
+                <X size={18} strokeWidth={1.75} />
               </button>
             </div>
             
@@ -621,7 +621,7 @@ export default function SettingsPage() {
                 <div className="relative group cursor-pointer flex-shrink-0" onClick={() => fileInputRef.current?.click()}>
                   <UserAvatar src={avatarPreview || profile.avatar_url} name={profile.display_name} size="2xl" className="w-[72px] h-[72px]" />
                   <div className="absolute inset-0 bg-[#090B10]/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Camera className="text-white w-6 h-6" />
+                    <Camera size={20} strokeWidth={1.5} className="text-white" />
                   </div>
                 </div>
                 <div>
@@ -636,7 +636,7 @@ export default function SettingsPage() {
               <div className="space-y-1.5">
                 <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Display Name</label>
                 <div className="relative">
-                  <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-[#98A2B3]" />
+                  <UserRound size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#98A2B3]" />
                   <input
                     type="text" required value={editForm.display_name} onChange={e => setEditForm({ ...editForm, display_name: e.target.value })}
                     className="w-full bg-[#FFFFFF] dark:bg-[#090B10] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] h-[44px] pl-9 pr-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm"
@@ -647,7 +647,7 @@ export default function SettingsPage() {
               <div className="space-y-1.5">
                 <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Username</label>
                 <div className="relative">
-                  <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-[#98A2B3]" />
+                  <AtSign size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#98A2B3]" />
                   <input
                     type="text" required value={editForm.username} onChange={handleUsernameChange}
                     className={cn(
@@ -660,7 +660,7 @@ export default function SettingsPage() {
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
                     {isCheckingUsername ? (
                       <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#667085] dark:text-[#98A2B3]">
-                        <Loader2 size={14} className="animate-spin" /> Checking
+                        <Loader2 size={14} strokeWidth={2} className="animate-spin" /> Checking
                       </div>
                     ) : isUsernameAvailable === false ? (
                       <span className="text-[12px] font-medium text-[#D92D20] dark:text-[#F97066]">Taken</span>
@@ -686,7 +686,7 @@ export default function SettingsPage() {
                   Cancel
                 </button>
                 <button type="submit" disabled={isSaving || isUsernameAvailable === false} className="flex-1 h-[44px] bg-[#8B5CF6] text-white rounded-[10px] text-[14px] font-medium hover:bg-[#7C3AED] transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2">
-                  {isSaving ? <Loader2 size={16} className="animate-spin" /> : null}
+                  {isSaving ? <Loader2 size={16} strokeWidth={2} className="animate-spin" /> : null}
                   Save changes
                 </button>
               </div>
