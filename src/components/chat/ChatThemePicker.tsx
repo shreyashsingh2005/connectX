@@ -13,6 +13,22 @@ interface ChatThemePickerProps {
   onClose: () => void;
 }
 
+
+const themeColors: Record<ThemeId, { light: string, dark: string }> = {
+  'connect-purple': { light: '#FBFBFD', dark: '#0B0D12' },
+  'midnight': { light: '#F0F4F8', dark: '#0A101D' },
+  'ocean': { light: '#F0F9FF', dark: '#081729' },
+  'minimal': { light: '#FFFFFF', dark: '#000000' },
+  'amoled': { light: '#FFFFFF', dark: '#000000' },
+  'lavender': { light: '#F5F3FF', dark: '#120F1D' },
+  'mint': { light: '#ECFDF5', dark: '#061E16' },
+  'sunset': { light: '#FFF7ED', dark: '#1E120A' },
+  'rose': { light: '#FFF1F2', dark: '#1E0C10' },
+  'aurora': { light: '#F0FDF4', dark: '#0A1A12' },
+  'graphite': { light: '#F8FAFC', dark: '#0F172A' },
+  'soft-sky': { light: '#F0F9FF', dark: '#0B1521' }
+};
+
 export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProps) {
   const { globalTheme, chatOverrides, setGlobalTheme, setChatOverride } = useThemeStore();
   const { profile } = useAuthStore();
@@ -67,16 +83,14 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
           
           <div className="rounded-[16px] overflow-hidden border border-[#EAECF0] dark:border-[#252A34] h-[180px] relative flex flex-col justify-end p-4 shadow-inner"
             style={{
-              backgroundColor: previewTheme.backgroundId === 'solid' 
-                ? (resolvedTheme === 'dark' ? '#0B0D12' : '#FBFBFD') 
-                : (resolvedTheme === 'dark' ? '#11141A' : '#F7F8FC')
+              backgroundColor: resolvedTheme === 'dark' ? (themeColors[previewTheme.themeId]?.dark || '#0B0D12') : (themeColors[previewTheme.themeId]?.light || '#FBFBFD')
             }}
           >
             {previewTheme.backgroundId !== 'solid' && (
               <div 
                 className="absolute inset-0 pointer-events-none opacity-30" 
                 style={{ 
-                  backgroundImage: `url('/patterns/${previewTheme.backgroundId}.svg')`,
+                  WebkitMaskImage: `url('/patterns/${previewTheme.backgroundId}.svg')`, maskImage: `url('/patterns/${previewTheme.backgroundId}.svg')`, WebkitMaskSize: '100px 100px', maskSize: '100px 100px', backgroundColor: resolvedTheme === 'dark' ? 'white' : 'black',
                   color: resolvedTheme === 'dark' ? 'white' : 'black'
                 }} 
               />

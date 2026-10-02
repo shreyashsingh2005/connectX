@@ -130,7 +130,7 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
       if (profile.avatar_url) {
         const urlObj = new URL(profile.avatar_url);
         const pathSegments = urlObj.pathname.split('/');
-        const filePath = pathSegments[pathSegments.length - 1];
+        const filePath = `${profile.id}/${pathSegments[pathSegments.length - 1]}`;
         if (filePath) await supabase.storage.from('avatars').remove([filePath]);
       }
 
@@ -160,7 +160,7 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
         }, 'image/webp', 0.9);
       });
 
-      const fileName = `${profile.id}_${Date.now()}.webp`;
+      const fileName = `${profile.id}/${Date.now()}.webp`;
 
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage

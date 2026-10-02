@@ -29,8 +29,8 @@ export default function SettingsPage() {
   const settings = useAuthStore(s => s.settings);
   
   const [activeSection, setActiveSection] = useState<SettingsSection>('main');
-  const [showPhotoEditor, setShowPhotoEditor] = useState(false);
   const [showThemePicker, setShowThemePicker] = useState(false);
+  const [showPhotoEditor, setShowPhotoEditor] = useState(false);
   const { globalTheme, setGlobalTheme } = useThemeStore();
   const [localSettings, setLocalSettings] = useState<Partial<UserSettings>>(settings || {});
   
@@ -43,8 +43,8 @@ export default function SettingsPage() {
   });
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  
+  
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
   const usernameCheckTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -74,8 +74,8 @@ export default function SettingsPage() {
         toast.error('Image must be less than 5MB');
         return;
       }
-      setAvatarFile(file);
-      setAvatarPreview(URL.createObjectURL(file));
+      
+
     }
   };
 
@@ -124,23 +124,6 @@ export default function SettingsPage() {
     try {
       let avatarUrl = profile.avatar_url;
       
-      if (avatarFile) {
-        const fileExt = avatarFile.name.split('.').pop();
-        const filePath = `${profile.id}/${Math.random()}.${fileExt}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(filePath, avatarFile);
-          
-        if (uploadError) throw uploadError;
-        
-        const { data: { publicUrl } } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(filePath);
-          
-        avatarUrl = publicUrl;
-      }
-      
       const { error } = await supabase
         .from('profiles')
         .update({
@@ -164,8 +147,8 @@ export default function SettingsPage() {
       
       toast.success('Profile updated successfully');
       setIsEditingProfile(false);
-      setAvatarFile(null);
-      setAvatarPreview(null);
+      
+      
     } catch (error: any) {
       toast.error(error.message || 'Failed to update profile');
     } finally {
@@ -569,19 +552,19 @@ export default function SettingsPage() {
             
             <form onSubmit={handleUpdateProfile} className="flex-1 overflow-y-auto p-5 space-y-5">
               <div className="flex items-center gap-5">
-                <div className="relative group cursor-pointer flex-shrink-0" onClick={() => fileInputRef.current?.click()}>
-                  <UserAvatar src={avatarPreview || profile.avatar_url} name={profile.display_name} size="2xl" className="w-[64px] h-[64px]" />
+                <div className="relative group cursor-pointer flex-shrink-0" onClick={() => setShowPhotoEditor(true)}>
+                  <UserAvatar src={profile.avatar_url} name={profile.display_name} size="2xl" className="w-[64px] h-[64px]" />
                   <div className="absolute inset-0 bg-[#090B10]/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Camera size={18} strokeWidth={1.75} className="text-white" />
                   </div>
                 </div>
                 <div>
-                  <button type="button" onClick={() => fileInputRef.current?.click()} className="h-[34px] px-3 bg-[#FFFFFF] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] dark:hover:bg-[#252A34] transition-colors rounded-[8px] text-[13px] font-medium shadow-sm mb-1.5 outline-none">
+                  <button type="button" onClick={() => setShowPhotoEditor(true)} className="h-[34px] px-3 bg-[#FFFFFF] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] dark:hover:bg-[#252A34] transition-colors rounded-[8px] text-[13px] font-medium shadow-sm mb-1.5 outline-none">
                     Change photo
                   </button>
                   <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">JPG or PNG. Max 5MB.</p>
                 </div>
-                <input type="file" ref={fileInputRef} onChange={handleAvatarSelect} accept="image/*" className="hidden" />
+                
               </div>
 
               <div className="space-y-1.5">
@@ -644,6 +627,8 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+    
+      {showPhotoEditor && <ProfilePhotoEditor onClose={() => setShowPhotoEditor(false)} />}
     </div>
   );
 }
