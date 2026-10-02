@@ -1,27 +1,16 @@
-﻿'use client';
-
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { useChatStore } from '@/store/useChatStore';
-import { useAuthStore } from '@/store/useAuthStore';
+import { useState, useRef, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { AttachmentPreview as AttachmentPreviewType } from '@/types';
-import { cn, validateFile, getFileType, formatFileSize } from '@/lib/utils';
-import toast from 'react-hot-toast';
-import {
-  Send,
-  Paperclip,
-  Smile,
-  X,
-  FileText,
-  Mic,
-  Square,
-  Image as ImageIcon,
-  Loader2, Plus} from 'lucide-react';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useChatStore } from '@/store/useChatStore';
+import { Smile, Paperclip, Mic, Send, X, FileText, Loader2, Square, Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import toast from 'react-hot-toast';
+import { getFileType } from '@/lib/utils';
 import { useE2EE } from '@/hooks/useE2EE';
-import { useTheme } from 'next-themes';
-import { useThemeStore } from '@/store/useThemeStore';
+import { useThemeStore, ThemeId } from '@/store/useThemeStore';
 import EmojiPicker, { Theme } from 'emoji-picker-react';
+import { useTheme } from 'next-themes';
+import { AttachmentPreview as AttachmentPreviewType } from '@/types';
 
 interface MessageComposerProps {
   conversationId: string;
@@ -31,7 +20,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const [text, setText] = useState('');
   const [attachments, setAttachments] = useState<AttachmentPreviewType[]>([]);
   const [isSending, setIsSending] = useState(false);
-    const isSubmittingRef = useRef(false);
+  const isSubmittingRef = useRef(false);
   const [isTyping, setIsTyping] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -39,9 +28,6 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const emojiButtonRef = useRef<HTMLButtonElement>(null);
   
@@ -95,19 +81,33 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     }, 0);
   };
 
-  // Typing indicator
-  const sendTypingStatus = useCallback(async (typing: boolean) => {
+  const startRecording = () => {
+    setIsRecording(true);
+    setRecordingDuration(0);
+    toast.error('Voice messaging coming soon!');
+    setTimeout(() => setIsRecording(false), 1500);
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
+  };
+
+  const sendTypingStatus = async (typing: boolean) => {
     if (!profile) return;
-    const channel = (window as any).__chat_channel;
-    if (channel) {
-      try {
-        await channel.send({
-          type: 'broadcast',
-          event: typing ? 'typing' : 'stop_typing',
-          payload: { userId: profile.id, username: profile.display_name },
-        });
-      } catch (e) {}
-    }
+    const channel = supabase.channel(`room:${conversationId}`);
+    await channel.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload: { userId: profile.id, username: profile.username, typing },
+    });
+  };
+
+  // Cleanup typing timeout
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      if (isTyping) sendTypingStatus(false);
+    };
   }, [profile, conversationId, supabase]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -123,107 +123,19 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     }, 2000);
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    processFiles(files);
-    e.target.value = '';
-  };
-
-  const processFiles = (files: File[]) => {
-    files.forEach(file => {
-      const validation = validateFile(file);
-      if (!validation.valid) {
-        toast.error(validation.error || 'Invalid file');
-        return;
-      }
-      const fileType = getFileType(file.type);
-      const preview: AttachmentPreviewType = {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      const newAtts = files.map(file => ({
         id: uuidv4(),
         file,
-        preview: fileType === 'image' ? URL.createObjectURL(file) : '',
-        type: fileType,
-      };
-      setAttachments(prev => [...prev, preview]);
-    });
-  };
-
-  // Voice Recording
-  const formatDuration = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunksRef.current.push(e.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        if (audioChunksRef.current.length === 0) return;
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const file = new File([audioBlob], `VoiceMessage_${Date.now()}.webm`, { type: 'audio/webm' });
-        
-        const previewUrl = URL.createObjectURL(audioBlob);
-        const preview: AttachmentPreviewType = {
-          id: uuidv4(),
-          file,
-          preview: previewUrl,
-          type: 'audio',
-        };
-        setAttachments(prev => [...prev, preview]);
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-      setRecordingDuration(0);
-      
-      if (timerRef.current) clearInterval(timerRef.current);
-      timerRef.current = setInterval(() => {
-        setRecordingDuration(prev => prev + 1);
-      }, 1000);
-      
-    } catch (error) {
-      toast.error('Could not access microphone.');
+        preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
+        type: getFileType(file.type) as 'image' | 'video' | 'audio' | 'document'
+      }));
+      setAttachments(prev => [...prev, ...newAtts]);
     }
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      if (timerRef.current) clearInterval(timerRef.current);
-    }
-  };
-
-  const cancelRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      audioChunksRef.current = []; // clear to discard
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      if (timerRef.current) clearInterval(timerRef.current);
-    }
-  };
-
-  // Drag & drop
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    processFiles(Array.from(e.dataTransfer.files));
-  }, []);
-
-  const handlePaste = useCallback((e: React.ClipboardEvent) => {
-    const files = Array.from(e.clipboardData.files);
-    if (files.length > 0) {
-      processFiles(files);
-    }
-  }, []);
 
   const removeAttachment = (id: string) => {
     setAttachments(prev => {
@@ -233,41 +145,60 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     });
   };
 
-  const uploadAttachment = async (att: AttachmentPreviewType, messageId: string): Promise<{url: string, path: string} | null> => {
-    const ext = att.file.name.split('.').pop();
-    const path = `${conversationId}/${messageId}/${att.id}.${ext}`;
-    
-    let encryptedBlob: Blob;
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    const files: File[] = [];
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const file = items[i].getAsFile();
+        if (file) files.push(file);
+      }
+    }
+    if (files.length > 0) {
+      e.preventDefault();
+      const newAtts = files.map(file => ({
+        id: uuidv4(),
+        file,
+        preview: URL.createObjectURL(file),
+        type: 'image' as const
+      }));
+      setAttachments(prev => [...prev, ...newAtts]);
+    }
+  };
+
+  const uploadAttachment = async (att: AttachmentPreviewType, messageId: string) => {
+    if (!profile) return null;
     try {
-      encryptedBlob = await encryptAttachment(att.file);
-    } catch (e) {
-      console.error('File encryption failed', e);
+      const encryptedFile = await encryptAttachment(att.file);
+      const ext = att.file.name.split('.').pop();
+      const path = `${conversationId}/${messageId}/${uuidv4()}.${ext}.enc`;
+      
+      const { error: uploadErr } = await supabase.storage
+        .from('chat_attachments')
+        .upload(path, encryptedFile, { contentType: 'application/octet-stream' });
+        
+      if (uploadErr) throw uploadErr;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('chat_attachments')
+        .getPublicUrl(path);
+
+      return { url: publicUrl, path };
+    } catch (err) {
+      console.error('Attachment upload failed', err);
+      toast.error('Failed to upload attachment securely');
       return null;
     }
-    
-    const { error: uploadError } = await supabase.storage
-      .from('attachments')
-      .upload(path, encryptedBlob);
-    
-    if (uploadError) {
-      console.error('Upload error:', uploadError);
-      return null;
-    }
-    
-    const { data: { publicUrl } } = supabase.storage
-      .from('attachments')
-      .getPublicUrl(path);
-    
-    return { url: publicUrl, path };
   };
 
   async function handleSend(e?: React.FormEvent) {
     e?.preventDefault();
-    const content = text.trim();
-    if (!content && attachments.length === 0) return;
+    const contentText = text.trim();
+    if (!contentText && attachments.length === 0) return;
     if (!profile || isSending || isSubmittingRef.current) return;
-      isSubmittingRef.current = true;
-
+    
+    isSubmittingRef.current = true;
     setIsSending(true);
     const tempId = uuidv4();
 
@@ -276,10 +207,10 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       id: tempId,
       conversation_id: conversationId,
       sender_id: profile.id,
-      content: content || null,
+      content: contentText || null,
       type: attachments.length > 0 ? (attachments[0].type as 'image' | 'video' | 'audio' | 'document') : 'text' as const,
       status: 'sending' as const,
-        decrypted_content: text || null,
+      decrypted_content: contentText || null,
       reply_to_id: replyToMessage?.id || null,
       forwarded_from_id: null,
       is_edited: false,
@@ -293,10 +224,15 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       reactions: [],
     };
 
-    addMessage(conversationId, optimisticMessage);
+    addMessage(conversationId, optimisticMessage as any);
+    
+    // Save state in case of failure
+    const savedText = text;
+    const savedAttachments = [...attachments];
+    const savedReply = replyToMessage;
+
     setText('');
     setReplyToMessage(null);
-    const sentAttachments = [...attachments];
     setAttachments([]);
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -304,29 +240,33 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     sendTypingStatus(false);
 
     try {
-      // Insert message
-      let finalContent = content || null;
+      // Encrypt message content
+      let finalContent = contentText || null;
       if (finalContent) {
         try {
-            finalContent = await encrypt(finalContent);
-        } catch (e) {
-          console.error('Encryption failed', e);
+          finalContent = await encrypt(finalContent);
+        } catch (encErr) {
+          console.error('Encryption failed', encErr);
           toast.error('Failed to encrypt message');
-          setIsSending(false);
+          updateMessage(conversationId, tempId, { status: 'failed' });
+          setText(savedText);
+          setAttachments(savedAttachments);
+          setReplyToMessage(savedReply);
           return;
         }
       }
 
+      // Insert message
       const { data: newMessage, error } = await supabase
         .from('messages')
         .insert({
-            id: tempId,
-            conversation_id: conversationId,
+          id: tempId,
+          conversation_id: conversationId,
           sender_id: profile.id,
           content: finalContent,
-          type: sentAttachments.length > 0 ? getFileType(sentAttachments[0].file.type) : 'text',
+          type: savedAttachments.length > 0 ? getFileType(savedAttachments[0].file.type) : 'text',
           status: 'sent',
-          reply_to_id: replyToMessage?.id || null,
+          reply_to_id: savedReply?.id || null,
         })
         .select()
         .single();
@@ -334,10 +274,10 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       if (error) throw error;
 
       // Upload attachments
-      for (const att of sentAttachments) {
+      for (const att of savedAttachments) {
         const uploadRes = await uploadAttachment(att, newMessage.id);
         if (uploadRes) {
-            const { url, path } = uploadRes;
+          const { url, path } = uploadRes;
           await supabase.from('attachments').insert({
             message_id: newMessage.id,
             conversation_id: conversationId,
@@ -351,22 +291,31 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         }
       }
 
-      // Update conversation last_message_id
-        await supabase.from('conversations').update({ last_message_id: newMessage.id, last_message_at: newMessage.created_at }).eq('id', conversationId);
+      await supabase.from('conversations').update({ 
+        last_message_id: newMessage.id, 
+        last_message_at: newMessage.created_at 
+      }).eq('id', conversationId);
 
-        // Replace optimistic with real
-        updateMessage(conversationId, tempId, { 
-          ...newMessage, 
-          status: 'sent',
-          sender: profile,
-          decrypted_content: content || null
-        });
+      // Replace optimistic with real (keep decrypted_content!)
+      updateMessage(conversationId, tempId, { 
+        ...newMessage, 
+        status: 'sent',
+        sender: profile,
+        decrypted_content: contentText || null
+      });
+
     } catch (error) {
       console.error('Send error:', error);
       updateMessage(conversationId, tempId, { status: 'failed' });
       toast.error('Failed to send message');
+      
+      // Restore user input for retry
+      setText(savedText);
+      setAttachments(savedAttachments);
+      setReplyToMessage(savedReply);
     } finally {
       setIsSending(false);
+      isSubmittingRef.current = false;
     }
   }
 
@@ -377,10 +326,24 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     }
   };
 
-  return (
-      <form onSubmit={handleSend}
-        className="border border-[#EAECF0] dark:border-[#252A34] bg-white dark:bg-[#11141A] shadow-md rounded-[24px] flex-shrink-0 px-3 py-2.5 relative mx-2 md:mx-4 mb-2 md:mb-4 mt-2" style={{ marginBottom: 'calc(max(env(safe-area-inset-bottom), 8px))' }}
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const files = Array.from(e.dataTransfer.files);
+      const newAtts = files.map(file => ({
+        id: uuidv4(),
+        file,
+        preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
+        type: getFileType(file.type) as 'image' | 'video' | 'audio' | 'document'
+      }));
+      setAttachments(prev => [...prev, ...newAtts]);
+    }
+  };
 
+  return (
+    <form onSubmit={handleSend}
+      className="border border-[#EAECF0] dark:border-[#252A34] bg-white dark:bg-[#11141A] shadow-md rounded-[24px] flex-shrink-0 px-3 py-2.5 relative mx-2 md:mx-4 mb-2 md:mb-4 mt-2 transition-all" 
+      style={{ marginBottom: 'calc(max(env(safe-area-inset-bottom), 8px))' }}
       onDrop={handleDrop}
       onDragOver={e => e.preventDefault()}
     >
@@ -413,14 +376,15 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
           />
         </div>
       )}
+      
       {/* Reply preview */}
       {replyToMessage && (
         <div className="flex items-center gap-3 px-3 py-2 mb-2 bg-[#F8FAFC] dark:bg-[#11141A] rounded-[10px] border border-[#EAECF0] dark:border-[#252A34]">
           <div className="flex-1 border-l-2 border-[#8B5CF6] pl-2 min-w-0">
-            <p className="text-[12px] font-medium text-[#8B5CF6]">{replyToMessage.sender?.display_name}</p>
-            <p className="text-[12px] text-[#667085] dark:text-[#98A2B3] truncate">{replyToMessage.content || 'Attachment'}</p>
+            <p className="text-[12px] font-medium text-[#8B5CF6] truncate">{replyToMessage.sender?.display_name || 'Someone'}</p>
+            <p className="text-[12px] text-[#667085] dark:text-[#98A2B3] truncate">{replyToMessage.decrypted_content || 'Attachment'}</p>
           </div>
-          <button type="button" onClick={() => setReplyToMessage(null)} className="text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] p-1 rounded-md hover:bg-gray-200 dark:hover:bg-[#252A34] transition-colors">
+          <button type="button" onClick={() => setReplyToMessage(null)} className="text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] p-1 rounded-md hover:bg-gray-200 dark:hover:bg-[#252A34] transition-colors" aria-label="Cancel reply">
             <X size={14} />
           </button>
         </div>
@@ -441,6 +405,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
               <button type="button"
                 onClick={() => removeAttachment(att.id)}
                 className="absolute -top-1 -right-1 bg-[#101828] dark:bg-white text-white dark:text-[#101828] rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Remove attachment"
               >
                 <X size={12} />
               </button>
@@ -454,10 +419,10 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         </div>
       )}
 
-      <div className="flex items-end gap-2">
+      <div className="flex items-end gap-1 sm:gap-2">
         <button type="button" onClick={() => fileInputRef.current?.click()}
-          className="w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922] transition-colors"
-          aria-label="Attach file" title="Attach file"
+          className="w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]"
+          aria-label="Open attachments" title="Open attachments"
         >
           <Plus size={20} strokeWidth={2} />
         </button>
@@ -471,36 +436,34 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
             onPaste={handlePaste}
             placeholder={isRecording ? `Recording... ${recordingDuration}s` : "Write a message..."}
             disabled={isRecording || isSending}
-            className="flex-1 max-h-32 bg-transparent text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder:text-[#98A2B3] resize-none py-3 px-3 focus:outline-none custom-scrollbar"
+            className="flex-1 max-h-32 bg-transparent text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder:text-[#98A2B3] resize-none py-2.5 sm:py-3 px-2 sm:px-3 focus:outline-none custom-scrollbar leading-tight"
             rows={1}
-            style={{ minHeight: '44px' }}
+            style={{ minHeight: '40px' }}
           />
           
-            <div className="relative flex items-center justify-center">
-              <button type="button" ref={emojiButtonRef}
-                onClick={() => setShowEmojiPicker(!showEmojiPicker)} title="Emoji" aria-label="Emoji"
-                className={`flex w-[38px] h-[38px] flex-shrink-0 items-center justify-center rounded-full transition-colors ${showEmojiPicker ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922]"}`}
-              >
-                <Smile size={20} strokeWidth={2} />
-              </button>
-              
-
-            </div>
-            <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" multiple />
+          <div className="relative flex items-center justify-center mr-1">
+            <button type="button" ref={emojiButtonRef}
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)} title="Open emoji picker" aria-label="Open emoji picker"
+              className={`flex w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex-shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6] ${showEmojiPicker ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922]"}`}
+            >
+              <Smile size={18} strokeWidth={2} className="sm:w-5 sm:h-5" />
+            </button>
+          </div>
+          <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" multiple aria-label="Hidden file input" />
         </div>
 
         {text.trim() || attachments.length > 0 ? (
           <button type="submit"
             disabled={isSending}
-            className="w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 transition-all shadow-sm disabled:opacity-50"
+            className="w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 hover:scale-102 active:scale-95 transition-all shadow-sm disabled:opacity-50 disabled:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#11141A]"
             style={{ backgroundColor: activeTheme.accentColor === 'purple' ? '#8B5CF6' : activeTheme.accentColor === 'blue' ? '#3B82F6' : activeTheme.accentColor === 'pink' ? '#EC4899' : activeTheme.accentColor === 'green' ? '#10B981' : '#F97316' }}
             aria-label="Send message" title="Send message"
           >
-            {isSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} className="ml-0.5" strokeWidth={2.5} />}
+            {isSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
           </button>
         ) : (
           <button type="button" onClick={isRecording ? stopRecording : startRecording}
-              className={`w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors hover:opacity-90 shadow-sm ${isRecording ? "bg-[#F04438] text-white animate-pulse" : "text-white"}`}
+              className={`w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full transition-all hover:opacity-90 hover:scale-102 active:scale-95 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#11141A] ${isRecording ? "bg-[#F04438] text-white animate-pulse" : "text-white"}`}
             style={{ backgroundColor: activeTheme.accentColor === 'purple' ? '#8B5CF6' : activeTheme.accentColor === 'blue' ? '#3B82F6' : activeTheme.accentColor === 'pink' ? '#EC4899' : activeTheme.accentColor === 'green' ? '#10B981' : '#F97316' }}
             aria-label={isRecording ? "Stop recording" : "Record voice message"} title={isRecording ? "Stop recording" : "Record voice message"}
           >
@@ -511,20 +474,3 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     </form>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

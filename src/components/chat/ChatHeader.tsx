@@ -87,7 +87,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
           onClick={toggleProfilePanel}
           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
-          <div className="w-[40px] h-[40px] relative flex-shrink-0">
+          <div className="w-[36px] h-[36px] md:w-[42px] md:h-[42px] relative flex-shrink-0">
             <UserAvatar
               src={avatarUrl}
               name={name}
