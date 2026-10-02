@@ -49,8 +49,8 @@ export function useE2EE(conversationId?: string) {
         await initPromises.get(conversationId!);
         if (E2EE.conversationKeyCache.has(conversationId!)) {
           setConversationKey(E2EE.conversationKeyCache.get(conversationId!)!);
-          setIsReady(true);
         }
+        setIsReady(true);
         return;
       }
 
@@ -113,10 +113,11 @@ export function useE2EE(conversationId?: string) {
           
           setConversationKey(aesKey);
           if (conversationId) E2EE.conversationKeyCache.set(conversationId, aesKey);
-          setIsReady(true);
         } catch (err: any) {
           console.error("E2EE Conv init failed:", err);
           setError(err.message);
+        } finally {
+          setIsReady(true);
         }
       })();
       
