@@ -183,7 +183,7 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
         }, 'image/webp', 0.9);
       });
 
-      const fileName = `${user.id}/${Date.now()}.webp`;
+      const fileName = `${user.id}/profile.webp`;
 
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage

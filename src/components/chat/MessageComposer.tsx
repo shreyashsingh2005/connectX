@@ -31,6 +31,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const [text, setText] = useState('');
   const [attachments, setAttachments] = useState<AttachmentPreviewType[]>([]);
   const [isSending, setIsSending] = useState(false);
+    const isSubmittingRef = useRef(false);
   const [isTyping, setIsTyping] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -260,10 +261,12 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     return { url: publicUrl, path };
   };
 
-  async function handleSend() {
+  async function handleSend(e?: React.FormEvent) {
+    e?.preventDefault();
     const content = text.trim();
     if (!content && attachments.length === 0) return;
-    if (!profile || isSending) return;
+    if (!profile || isSending || isSubmittingRef.current) return;
+      isSubmittingRef.current = true;
 
     setIsSending(true);
     const tempId = uuidv4();
@@ -375,7 +378,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   };
 
   return (
-      <div
+      <form onSubmit={handleSend}
         className="border border-[#EAECF0] dark:border-[#252A34] bg-white dark:bg-[#11141A] shadow-md rounded-[24px] flex-shrink-0 px-3 py-2.5 relative mx-2 md:mx-4 mb-2 md:mb-4 mt-2" style={{ marginBottom: 'calc(max(env(safe-area-inset-bottom), 8px))' }}
 
       onDrop={handleDrop}
@@ -487,7 +490,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         </div>
 
         {text.trim() || attachments.length > 0 ? (
-          <button type="button" onClick={handleSend}
+          <button type="submit"
             disabled={isSending}
             className="w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 transition-all shadow-sm disabled:opacity-50"
             style={{ backgroundColor: activeTheme.accentColor === 'purple' ? '#8B5CF6' : activeTheme.accentColor === 'blue' ? '#3B82F6' : activeTheme.accentColor === 'pink' ? '#EC4899' : activeTheme.accentColor === 'green' ? '#10B981' : '#F97316' }}
