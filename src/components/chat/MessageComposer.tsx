@@ -198,44 +198,46 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     const contentText = text.trim();
     if (!contentText && attachments.length === 0) return;
     if (!profile || isSending || isSubmittingRef.current) return;
-    
-    if (e2eeError || !e2eeReady) {
-        toast.error('Encryption is still initializing. Please try again.');
-        return;
-      }
-    
-    
+
+    // Block send if E2EE has an error or is still initializing
+    if (e2eeError) {
+      toast.error('Cannot send: ' + e2eeError);
+      return;
+    }
+    if (!e2eeReady) {
+      toast.error('Encryption is still initializing. Please wait a moment.');
+      return;
+    }
+
     isSubmittingRef.current = true;
     setIsSending(true);
     const tempId = uuidv4();
+    let optimisticAdded = false;
 
-    // Save state in case of failure
+    // Save state in case we need to restore on failure
     const savedText = text;
     const savedAttachments = [...attachments];
     const savedReply = replyToMessage;
 
     try {
-      // 1. Encrypt message content BEFORE creating optimistic UI
-      let finalContent = contentText || null;
+      // ── STEP 1: Encrypt BEFORE touching UI ───────────────────────────────────
+      let finalContent: string | null = contentText || null;
       if (finalContent) {
-        try {
-          finalContent = await encrypt(finalContent);
-        } catch (encErr) {
-          console.error('Encryption failed', encErr);
-          toast.error('Failed to encrypt message');
-          throw new Error('Encryption failed');
-        }
+        finalContent = await encrypt(finalContent);
+        // If encrypt() throws, we never reach the optimistic message creation below.
       }
 
-      // 2. ONLY NOW create optimistic UI message
+      // ── STEP 2: NOW create optimistic UI message (encryption already succeeded) ─
       const optimisticMessage = {
         id: tempId,
         conversation_id: conversationId,
         sender_id: profile.id,
-        content: finalContent, // Store actual ciphertext or null
-        type: savedAttachments.length > 0 ? (savedAttachments[0].type as 'image' | 'video' | 'audio' | 'document') : 'text' as const,
+        content: finalContent,
+        type: savedAttachments.length > 0
+          ? (savedAttachments[0].type as 'image' | 'video' | 'audio' | 'document')
+          : 'text' as const,
         status: 'sending' as const,
-        decrypted_content: contentText || null, // Keep plaintext for UI
+        decrypted_content: contentText || null,
         reply_to_id: savedReply?.id || null,
         forwarded_from_id: null,
         is_edited: false,
@@ -250,18 +252,18 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       };
 
       addMessage(conversationId, optimisticMessage as any);
+      optimisticAdded = true;
 
-      // Clear UI
+      // Clear composer UI
       setText('');
       setReplyToMessage(null);
       setAttachments([]);
-
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       setIsTyping(false);
       sendTypingStatus(false);
 
-      // 3. Insert into DB
-      const { data: newMessage, error } = await supabase
+      // ── STEP 3: Insert into DB ────────────────────────────────────────────────
+      const { data: newMessage, error: insertError } = await supabase
         .from('messages')
         .insert({
           id: tempId,
@@ -275,21 +277,20 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         .select()
         .single();
 
-      if (error) throw error;
+      if (insertError) throw insertError;
 
-      // 4. Update status to sent
-      updateMessage(conversationId, tempId, { 
-        ...newMessage, 
+      // ── STEP 4: Confirm sent ──────────────────────────────────────────────────
+      updateMessage(conversationId, tempId, {
+        ...newMessage,
         status: 'sent',
         sender: profile,
-        decrypted_content: contentText || null
+        decrypted_content: contentText || null,
       });
 
-      // 5. Upload attachments
+      // ── STEP 5: Upload attachments ────────────────────────────────────────────
       for (const att of savedAttachments) {
         const uploadRes = await uploadAttachment(att, tempId);
         if (uploadRes) {
-          const { url, path } = uploadRes;
           await supabase.from('attachments').insert({
             message_id: tempId,
             conversation_id: conversationId,
@@ -297,25 +298,32 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
             file_name: att.file.name,
             file_size: att.file.size,
             mime_type: att.file.type,
-            storage_path: path,
-            url: url
+            storage_path: uploadRes.path,
+            url: uploadRes.url,
           });
         }
       }
-    } catch (err) {
-      console.error('Send failed:', err);
-      // Restore input text so user can try again
-      setText(savedText);
-      setAttachments(savedAttachments);
-      setReplyToMessage(savedReply);
-      
-      // Remove optimistic message if it was added (if error happened after addMessage)
-      useChatStore.getState().removeMessage(conversationId, tempId);
+    } catch (err: any) {
+      console.error('[Composer] Send failed:', err);
+      if (optimisticAdded) {
+        // Message was added to store — mark it failed
+        updateMessage(conversationId, tempId, { status: 'failed' });
+      } else {
+        // Encryption failed before UI was touched — restore input
+        setText(savedText);
+        setAttachments(savedAttachments);
+        setReplyToMessage(savedReply);
+        toast.error(err?.message?.includes('E2EE')
+          ? err.message
+          : 'Failed to send message. Please try again.');
+      }
     } finally {
       isSubmittingRef.current = false;
       setIsSending(false);
     }
   }
+
+
 
 
 
