@@ -199,14 +199,11 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     if (!contentText && attachments.length === 0) return;
     if (!profile || isSending || isSubmittingRef.current) return;
     
-    if (e2eeError) {
-      toast.error('E2EE Error: ' + e2eeError + '. Cannot send.');
-      return;
-    }
-    if (!e2eeReady) {
-      toast.error('Encryption not ready, please wait...');
-      return;
-    }
+    if (e2eeError || !e2eeReady) {
+        toast.error('Encryption is still initializing. Please try again.');
+        return;
+      }
+    
     
     isSubmittingRef.current = true;
     setIsSending(true);

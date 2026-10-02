@@ -46,13 +46,17 @@ export function useE2EE(conversationId?: string) {
 
     async function loadConvKey() {
       if (initPromises.has(conversationId!)) {
-        await initPromises.get(conversationId!);
-        if (E2EE.conversationKeyCache.has(conversationId!)) {
-          setConversationKey(E2EE.conversationKeyCache.get(conversationId!)!);
+          try {
+            await initPromises.get(conversationId!);
+            if (E2EE.conversationKeyCache.has(conversationId!)) {
+              setConversationKey(E2EE.conversationKeyCache.get(conversationId!)!);
+            }
+          } catch (err: any) {
+            setError(err.message);
+          }
+          setIsReady(true);
+          return;
         }
-        setIsReady(true);
-        return;
-      }
 
       const promise = (async () => {
         try {
@@ -88,35 +92,41 @@ export function useE2EE(conversationId?: string) {
           } 
           
           if (!aesKey) {
-            // We need to generate a new key and distribute it!
-            aesKey = await E2EE.generateConversationKey();
-            const rawAesBase64 = await E2EE.exportConversationKey(aesKey);
-            const myPubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
+              // Get all members and their public keys
+              const { data: members, error: membersErr } = await supabase
+                .from('conversation_members')
+                .select('id, user_id, encrypted_key, profiles(public_key)')
+                .eq('conversation_id', conversationId);
+  
+              if (membersErr) throw membersErr;
 
-            // Get all members and their public keys
-            const { data: members, error: membersErr } = await supabase
-              .from('conversation_members')
-              .select('id, user_id, profiles(public_key)')
-              .eq('conversation_id', conversationId);
+              const anyMemberHasKey = members?.some(m => m.encrypted_key);
+              if (anyMemberHasKey) {
+                 console.error("CRITICAL: Conversation key already exists for other members, but is missing or undecryptable for current user. DO NOT regenerate.");
+                 throw new Error("Conversation key exists but is unavailable for this device/session.");
+              }
 
-            if (membersErr) throw membersErr;
-
-            for (const m of members || []) {
-              const pubKey = (m.profiles as any)?.public_key || (m.user_id === profile!.id ? myPubKeyB64 : null);
-              if (pubKey) {
-                const encKey = await E2EE.encryptConversationKey(rawAesBase64, pubKey);
-                const { error: rpcErr } = await supabase.rpc('update_member_key', { p_member_id: m.id, p_encrypted_key: encKey });
-                if (rpcErr) throw rpcErr;
+              // We need to generate a new key and distribute it!
+              aesKey = await E2EE.generateConversationKey();
+              const rawAesBase64 = await E2EE.exportConversationKey(aesKey);
+              const myPubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
+  
+              for (const m of members || []) {
+                const pubKey = (m.profiles as any)?.public_key || (m.user_id === profile!.id ? myPubKeyB64 : null);
+                if (pubKey) {
+                  const encKey = await E2EE.encryptConversationKey(rawAesBase64, pubKey);
+                  const { error: rpcErr } = await supabase.rpc('update_member_key', { p_member_id: m.id, p_encrypted_key: encKey });
+                  if (rpcErr) throw rpcErr;
+                }
               }
             }
-          }
-          
-          setConversationKey(aesKey);
+            setConversationKey(aesKey);
           if (conversationId) E2EE.conversationKeyCache.set(conversationId, aesKey);
         } catch (err: any) {
-          console.error("E2EE Conv init failed:", err);
-          setError(err.message);
-        } finally {
+            console.error("E2EE Conv init failed:", err);
+            setError(err.message);
+            throw err;
+          } finally {
           setIsReady(true);
         }
       })();
