@@ -4,10 +4,12 @@ import { useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useChatStore } from '@/store/useChatStore';
+import { useThemeStore } from '@/store/useThemeStore';
 
 export function useAuth() {
   const { profile, settings, isLoaded, setProfile, setSettings, setIsLoaded, reset } = useAuthStore();
   const chatReset = useChatStore(s => s.reset);
+  const fetchServerPreferences = useThemeStore(s => s.fetchServerPreferences);
   const supabase = createClient();
 
   const loadProfile = useCallback(async (userId: string) => {
@@ -40,6 +42,7 @@ export function useAuth() {
 
     if (profileRes.data) setProfile(profileRes.data);
     if (settingsRes.data) setSettings(settingsRes.data);
+    await fetchServerPreferences(userId);
     setIsLoaded(true);
   }, [supabase, setProfile, setSettings, setIsLoaded]);
 
@@ -58,6 +61,7 @@ export function useAuth() {
       } else if (event === 'SIGNED_OUT') {
         reset();
         chatReset();
+        useThemeStore.setState({ globalTheme: { themeId: 'connect-purple', backgroundId: 'solid', backgroundIntensity: 20, accentColor: 'purple' }, chatOverrides: {} });
       } else if (event === 'USER_UPDATED' && session?.user) {
         await loadProfile(session.user.id);
       }

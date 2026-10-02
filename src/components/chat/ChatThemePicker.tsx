@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useAuthStore } from '@/store/useAuthStore';
 import { useThemeStore, ThemePreferences, ThemeId, BackgroundId, AccentColor } from '@/store/useThemeStore';
 import { useTheme } from 'next-themes';
 import { X, Check } from 'lucide-react';
@@ -14,6 +15,7 @@ interface ChatThemePickerProps {
 
 export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProps) {
   const { globalTheme, chatOverrides, setGlobalTheme, setChatOverride } = useThemeStore();
+  const { profile } = useAuthStore();
   const { resolvedTheme } = useTheme();
 
   // Local state for the picker, initialized from the current effective theme
@@ -26,10 +28,10 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
 
   const handleApply = () => {
     if (isGlobal) {
-      setGlobalTheme(previewTheme);
+      setGlobalTheme(previewTheme, profile?.id);
       toast.success('Global theme updated');
     } else {
-      setChatOverride(conversationId, previewTheme);
+      setChatOverride(conversationId, previewTheme, profile?.id);
       toast.success('Chat theme updated');
     }
     onClose();
@@ -37,7 +39,7 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
 
   const handleReset = () => {
     if (!isGlobal) {
-      setChatOverride(conversationId, null);
+      setChatOverride(conversationId, null, profile?.id);
       toast.success('Chat theme reset to global');
       onClose();
     }
