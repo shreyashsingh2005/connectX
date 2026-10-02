@@ -93,6 +93,7 @@ export function useE2EE(conversationId?: string) {
 
     // Transition to initializing
     convKeyRef.current = null;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setE2eeState('initializing');
     setError(null);
 
@@ -146,7 +147,7 @@ export function useE2EE(conversationId?: string) {
             );
             const aesKey = await E2EE.importConversationKey(rawAesBase64);
             return aesKey;
-          } catch (decErr: any) {
+          } catch (decErr: unknown) {
             // RSA private key in IndexedDB does NOT match the public key used
             // to encrypt this conversation key. This means the user logged in
             // on a different device or cleared IndexedDB.
@@ -190,7 +191,7 @@ export function useE2EE(conversationId?: string) {
         const myPubKeyB64 = await E2EE.exportPublicKey(identityKeys.publicKey);
 
         for (const m of allMembers || []) {
-          const pubKey = (m.profiles as any)?.public_key
+          const pubKey = (m.profiles as { public_key?: string })?.public_key
             || (m.user_id === profile!.id ? myPubKeyB64 : null);
           if (!pubKey) {
             console.warn(`[E2EE] No public key for member ${m.user_id} — skipping key distribution`);
@@ -223,13 +224,12 @@ export function useE2EE(conversationId?: string) {
         setE2eeState('ready');
         setError(null);
       })
-      .catch((err: any) => {
+      .catch((err: unknown) => {
         if (cancelled) return;
-        const msg = err?.message ?? String(err);
+        const msg = err instanceof Error ? err.message : String(err);
         console.error('[E2EE] Conversation key init failed:', {
           conversationId,
           userId: profile?.id,
-          name: err?.name,
           message: msg,
         });
         convKeyRef.current = null; // Ensure key is not available
@@ -252,7 +252,6 @@ export function useE2EE(conversationId?: string) {
       throw new Error(`[E2EE] Cannot encrypt — state is "${e2eeState}", key is ${key ? 'present' : 'null'}`);
     }
     return E2EE.encryptText(text, key);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [e2eeState]); // Re-memoize when state changes
 
   const decrypt = useCallback(async (ciphertext: string): Promise<string> => {
@@ -265,7 +264,6 @@ export function useE2EE(conversationId?: string) {
     const key = convKeyRef.current;
     if (e2eeState !== 'ready' || !key) throw new Error('[E2EE] Cannot encrypt attachment — not ready');
     return E2EE.encryptFile(file, key);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [e2eeState]);
 
   const decryptAttachment = useCallback(async (file: Blob, mimeType?: string): Promise<Blob> => {
@@ -284,3 +282,4 @@ export function useE2EE(conversationId?: string) {
     decryptAttachment,
   };
 }
+

@@ -38,7 +38,7 @@ export async function loadKeyPair(userId: string): Promise<{ publicKey: CryptoKe
   const db = await initDB();
   
   // Helper to get from IDB
-  const getFromStore = (key: string): Promise<any> => {
+  const getFromStore = (key: string): Promise<unknown> => {
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, 'readonly');
       const req = tx.objectStore(STORE_NAME).get(key);
@@ -207,7 +207,7 @@ export async function decryptText(payloadBase64: string, aesKey: CryptoKey): Pro
       ciphertext
     );
     return new TextDecoder().decode(decrypted);
-  } catch (err: any) {
+  } catch {
     throw new Error("DECRYPTION_FAILED");
   }
 }

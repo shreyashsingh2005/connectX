@@ -115,7 +115,7 @@ export const useThemeStore = create<ThemeState>()(
             .maybeSingle();
             
           if (!globalError && globalData) {
-            set((state) => ({
+            set(() => ({
               globalTheme: {
                 themeId: (globalData.theme_id as ThemeId) || defaultTheme.themeId,
                 backgroundId: (globalData.background_id as BackgroundId) || defaultTheme.backgroundId,
@@ -141,7 +141,7 @@ export const useThemeStore = create<ThemeState>()(
                 backgroundIntensity: row.background_intensity ?? defaultTheme.backgroundIntensity,
               };
             });
-            set((state) => ({
+            set(() => ({
               chatOverrides: newOverrides
             }));
           }

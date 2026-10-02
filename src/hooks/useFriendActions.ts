@@ -36,8 +36,9 @@ export function useFriendActions() {
       
       toast.success('Friend request sent!');
       return { success: true, state: 'OUTGOING_PENDING' };
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to send request');
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Failed to send request';
+      toast.error(msg);
       return { success: false, state: 'NONE' };
     } finally {
       setLoading(false);
@@ -65,8 +66,9 @@ export function useFriendActions() {
         toast.success('Friend request declined');
       }
       return true;
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to respond to request');
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Failed to respond to request';
+      toast.error(msg);
       return false;
     } finally {
       setLoading(false);
@@ -85,7 +87,7 @@ export function useFriendActions() {
       if (error) throw error;
       toast.success('Request cancelled');
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error('Failed to cancel request');
       return false;
     } finally {
@@ -102,7 +104,7 @@ export function useFriendActions() {
       if (error) throw error;
       toast.success('Friend removed');
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error('Failed to remove friend');
       return false;
     } finally {
