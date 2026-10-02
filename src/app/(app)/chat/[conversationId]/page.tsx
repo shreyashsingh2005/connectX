@@ -111,7 +111,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
     );
   }
 
-  if (error || !conversation) {
+  if (error) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-4">
         <p className="text-gray-600 dark:text-gray-400 text-sm">{error || 'Conversation not found'}</p>
@@ -129,21 +129,21 @@ export default function ConversationPage({ params }: ConversationPageProps) {
       <div 
         className="flex flex-col flex-1 min-w-0 overflow-hidden relative"
         style={{
-          backgroundColor: resolvedTheme === 'dark' ? (themeColors[activeTheme.themeId]?.dark || '#0B0D12') : (themeColors[activeTheme.themeId]?.light || '#FBFBFD')
+          backgroundColor: resolvedTheme === 'dark' ? (themeColors[activeTheme?.themeId || 'connect-purple']?.dark || '#0B0D12') : (themeColors[activeTheme?.themeId || 'connect-purple']?.light || '#FBFBFD')
         }}
       >
-        {activeTheme.backgroundId !== 'solid' && (
+        {(activeTheme?.backgroundId || 'solid') !== 'solid' && (
           <div 
             className="absolute inset-0 pointer-events-none z-0" 
             style={{ 
-              WebkitMaskImage: `url('/patterns/${activeTheme.backgroundId}.svg')`, maskImage: `url('/patterns/${activeTheme.backgroundId}.svg')`, WebkitMaskSize: '100px 100px', maskSize: '100px 100px', backgroundColor: resolvedTheme === 'dark' ? 'white' : 'black',
-              opacity: activeTheme.backgroundIntensity / 100,
+              WebkitMaskImage: `url('/patterns/${(activeTheme?.backgroundId || 'solid')}.svg')`, maskImage: `url('/patterns/${(activeTheme?.backgroundId || 'solid')}.svg')`, WebkitMaskSize: '100px 100px', maskSize: '100px 100px', backgroundColor: resolvedTheme === 'dark' ? 'white' : 'black',
+              opacity: (activeTheme?.backgroundIntensity || 100) / 100,
               color: resolvedTheme === 'dark' ? 'white' : 'black'
             }} 
           />
         )}
         <div className="flex flex-col flex-1 z-10 overflow-hidden relative">
-          <ChatHeader conversation={conversation} />
+          <ChatHeader conversation={conversation!} />
           <MessageList conversationId={conversationId} />
           <MessageComposer conversationId={conversationId} />
         </div>
@@ -153,7 +153,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
       {/* Profile panel - desktop */}
       {showProfilePanel && (
         <div className="hidden lg:flex">
-          <ProfilePanel conversation={conversation} />
+          <ProfilePanel conversation={conversation!} />
         </div>
       )}
 
@@ -162,7 +162,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
         <div className="lg:hidden fixed inset-0 z-50 flex justify-end">
           <div className="absolute inset-0 bg-black/60" onClick={() => useUIStore.getState().setShowProfilePanel(false)} />
           <div className="relative h-full animate-slide-in-right">
-            <ProfilePanel conversation={conversation} />
+            <ProfilePanel conversation={conversation!} />
           </div>
         </div>
       )}

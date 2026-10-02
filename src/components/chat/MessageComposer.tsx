@@ -420,7 +420,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
             <p className="text-[12px] font-medium text-[#8B5CF6]">{replyToMessage.sender?.display_name}</p>
             <p className="text-[12px] text-[#667085] dark:text-[#98A2B3] truncate">{replyToMessage.content || 'Attachment'}</p>
           </div>
-          <button onClick={() => setReplyToMessage(null)} className="text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] p-1 rounded-md hover:bg-gray-200 dark:hover:bg-[#252A34] transition-colors">
+          <button type="button" onClick={() => setReplyToMessage(null)} className="text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] p-1 rounded-md hover:bg-gray-200 dark:hover:bg-[#252A34] transition-colors">
             <X size={14} />
           </button>
         </div>
@@ -438,7 +438,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
                   <FileText size={20} className="text-[#667085] dark:text-[#98A2B3]" />
                 </div>
               )}
-              <button
+              <button type="button"
                 onClick={() => removeAttachment(att.id)}
                 className="absolute -top-1 -right-1 bg-[#101828] dark:bg-white text-white dark:text-[#101828] rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
               >
