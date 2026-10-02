@@ -1,4 +1,6 @@
+const fs = require('fs');
 
+const code = `
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -120,7 +122,7 @@ export default function SettingsPage() {
       
       if (avatarFile) {
         const fileExt = avatarFile.name.split('.').pop();
-        const filePath = `${profile.id}/${Math.random()}.${fileExt}`;
+        const filePath = \`\${profile.id}/\${Math.random()}.\${fileExt}\`;
         
         const { error: uploadError } = await supabase.storage
           .from('avatars')
@@ -635,3 +637,7 @@ export default function SettingsPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync('src/app/(app)/settings/page.tsx', code, 'utf8');
+console.log("Settings redesigned to match reference.");
