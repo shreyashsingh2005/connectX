@@ -36,7 +36,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const { resolvedTheme } = useTheme();
   const profile = useAuthStore(s => s.profile);
   const activeTheme = useThemeStore(s => s.getEffectiveTheme(conversationId));
-  const { isReady: e2eeReady, error: e2eeError, encrypt, encryptAttachment } = useE2EE(conversationId);
+  const { isReady: e2eeReady, error: e2eeError, e2eeState, encrypt, encryptAttachment } = useE2EE(conversationId);
   const replyToMessage = useChatStore(s => s.replyToMessage);
   const setReplyToMessage = useChatStore(s => s.setReplyToMessage);
   const addMessage = useChatStore(s => s.addMessage);
@@ -199,15 +199,16 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     if (!contentText && attachments.length === 0) return;
     if (!profile || isSending || isSubmittingRef.current) return;
 
-    // Block send if E2EE has an error or is still initializing
-    if (e2eeError) {
-      toast.error('Cannot send: ' + e2eeError);
+    // State machine guard — only 'ready' state allows Send
+    if (e2eeState === 'initializing' || e2eeState === 'idle') {
+      toast.error('Encryption is still initializing. Please wait a moment and try again.');
       return;
     }
-    if (!e2eeReady) {
-      toast.error('Encryption is still initializing. Please wait a moment.');
+    if (e2eeState === 'error') {
+      toast.error(e2eeError ?? 'Encryption failed. Cannot send messages in this conversation.');
       return;
     }
+    // e2eeState === 'ready' — proceed
 
     isSubmittingRef.current = true;
     setIsSending(true);
@@ -462,12 +463,12 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
         {text.trim() || attachments.length > 0 ? (
           <button type="submit"
-            disabled={isSending || (!e2eeReady && !e2eeError)}
+            disabled={isSending || e2eeState === 'initializing' || e2eeState === 'idle'}
             className="w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 hover:scale-102 active:scale-95 transition-all shadow-sm disabled:opacity-50 disabled:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#11141A]"
             style={{ backgroundColor: activeTheme.accentColor === 'purple' ? '#8B5CF6' : activeTheme.accentColor === 'blue' ? '#3B82F6' : activeTheme.accentColor === 'pink' ? '#EC4899' : activeTheme.accentColor === 'green' ? '#10B981' : '#F97316' }}
             aria-label="Send message" title="Send message"
           >
-            {isSending || (!e2eeReady && !e2eeError) ? <Loader2 size={16} className="animate-spin opacity-70" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
+            {(isSending || e2eeState === 'initializing' || e2eeState === 'idle') ? <Loader2 size={16} className="animate-spin opacity-70" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
           </button>
         ) : (
           <button type="button" onClick={isRecording ? stopRecording : startRecording}
