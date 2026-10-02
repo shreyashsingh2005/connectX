@@ -1,4 +1,6 @@
+const fs = require('fs');
 
+const code = `
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -10,7 +12,7 @@ import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { 
   Bell, Eye, Lock, ChevronRight, Loader2, 
-  Monitor, Moon, Sun, Camera, AtSign, CheckCircle2, Mail, LogOut, Edit2, KeyRound, Smartphone, ShieldCheck, UserRound, Palette, X, Ban, Clock
+  Monitor, Moon, Sun, Camera, AtSign, CheckCircle2, Mail, LogOut, Edit2, KeyRound, Smartphone, ShieldCheck, UserRound, Palette, X, Ban
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
@@ -119,7 +121,7 @@ export default function SettingsPage() {
       
       if (avatarFile) {
         const fileExt = avatarFile.name.split('.').pop();
-        const filePath = `${profile.id}/${Math.random()}.${fileExt}`;
+        const filePath = \`\${profile.id}/\${Math.random()}.\${fileExt}\`;
         
         const { error: uploadError } = await supabase.storage
           .from('avatars')
@@ -697,3 +699,7 @@ export default function SettingsPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync('src/app/(app)/settings/page.tsx', code, 'utf8');
+console.log("Written completely new premium settings page.");
