@@ -31,6 +31,8 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState<SettingsSection>('main');
   const [showThemePicker, setShowThemePicker] = useState(false);
   const [showPhotoEditor, setShowPhotoEditor] = useState(false);
+  
+
   const { globalTheme, setGlobalTheme } = useThemeStore();
   const [localSettings, setLocalSettings] = useState<Partial<UserSettings>>(settings || {});
   
