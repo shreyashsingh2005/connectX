@@ -1,24 +1,13 @@
 const fs = require('fs');
+let code = fs.readFileSync('src/components/chat/ChatThemePicker.tsx', 'utf8');
 
-let text = fs.readFileSync('src/components/chat/MessageBubble.tsx', 'utf8');
+// Replace corrupted emojis
+code = code.replace(/Hey! Have you seen the new theme\? [^\<]*</, 'Hey! Have you seen the new theme? <');
+code = code.replace(/Yeah, it looks absolutely stunning! [^\<]*</, 'Yeah, it looks absolutely stunning! <');
 
-// The corrupted array
-text = text.replace(
-  /const QUICK_EMOJIS = \[[^\]]+\];/,
-  "const QUICK_EMOJIS = ['😀', '😂', '❤️', '🔥', '🙏', '👍'];"
-);
+// Actually, just remove the corrupted text safely.
+const fixed1 = code.replace(/Hey! Have you seen the new theme\? [^<]*?<\/div>/, 'Hey! Have you seen the new theme? </div>');
+const fixed2 = fixed1.replace(/Yeah, it looks absolutely stunning! [^<]*?<\/div>/, 'Yeah, it looks absolutely stunning! </div>');
 
-// The corrupted button emoji A,Eo
-text = text.replace(
-  />\s*A\\,Eo\\s*<\/button>/g,
-  '>\n                😀\n              </button>'
-);
-
-// Fallback regex for that button if the above one doesn't match
-text = text.replace(
-  />\s*[A-Za-z0-9,~_?]+s?\s*<\/button>/g,
-  '>\n                😀\n              </button>'
-);
-
-fs.writeFileSync('src/components/chat/MessageBubble.tsx', text, 'utf8');
-console.log("Emojis restored in MessageBubble.tsx!");
+fs.writeFileSync('src/components/chat/ChatThemePicker.tsx', fixed2, 'utf8');
+console.log('Fixed corrupted emojis in ChatThemePicker');

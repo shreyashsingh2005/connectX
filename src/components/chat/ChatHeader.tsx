@@ -7,6 +7,7 @@ import { UserAvatar } from '@/components/ui/UserAvatar';
 import { formatLastSeen, cn } from '@/lib/utils';
 import { useThemeStore } from '@/store/useThemeStore';
 import { Palette } from 'lucide-react';
+import { ChatThemePicker } from '@/components/chat/ChatThemePicker';
 import {
   Search,
   Phone,
@@ -30,6 +31,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   const profile = useAuthStore(s => s.profile);
   const toggleProfilePanel = useUIStore(s => s.toggleProfilePanel);
   const [showMenu, setShowMenu] = useState(false);
+  const [showThemePicker, setShowThemePicker] = useState(false);
   const { setChatOverride, chatOverrides } = useThemeStore();
   const [showClearModal, setShowClearModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -70,6 +72,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   const memberCount = conversation.members?.length || 0;
 
   return (
+    <>
     <header className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-[#252A34] bg-white/80 dark:bg-[#0B0D12]/80 backdrop-blur-xl flex-shrink-0 min-h-[64px]">
       <div className="flex items-center gap-3">
         <button
@@ -171,5 +174,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
         )}
       </div>
     </header>
+    {showThemePicker && <ChatThemePicker conversationId={conversation.id} onClose={() => setShowThemePicker(false)} />}
+    </>
   );
 }
