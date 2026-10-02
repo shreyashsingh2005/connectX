@@ -25,6 +25,8 @@ export function useE2EE(conversationId?: string) {
           
           const pubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
           await supabase.from('profiles').update({ public_key: pubKeyB64 }).eq('id', profile!.id);
+            useAuthStore.getState().setProfile({ ...profile!, public_key: pubKeyB64 });
+            useAuthStore.getState().setProfile({ ...profile!, public_key: pubKeyB64 });
         } else if (!profile?.public_key) {
           // Sync existing local key to profile if missing
           const pubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
@@ -80,7 +82,8 @@ export function useE2EE(conversationId?: string) {
               const rawAesBase64 = await E2EE.decryptConversationKey(member.encrypted_key, keys.privateKey);
               aesKey = await E2EE.importConversationKey(rawAesBase64);
             } catch (decryptErr) {
-              console.warn("Failed to decrypt conversation key (likely changed device or cleared cache). Generating a new key...", decryptErr);
+              console.error("CRITICAL: Failed to decrypt existing conversation key! DO NOT generate a new one.", decryptErr);
+              throw decryptErr;
             }
           } 
           
@@ -88,6 +91,7 @@ export function useE2EE(conversationId?: string) {
             // We need to generate a new key and distribute it!
             aesKey = await E2EE.generateConversationKey();
             const rawAesBase64 = await E2EE.exportConversationKey(aesKey);
+            const myPubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
 
             // Get all members and their public keys
             const { data: members, error: membersErr } = await supabase
@@ -98,7 +102,7 @@ export function useE2EE(conversationId?: string) {
             if (membersErr) throw membersErr;
 
             for (const m of members || []) {
-              const pubKey = (m.profiles as any)?.public_key;
+              const pubKey = (m.profiles as any)?.public_key || (m.user_id === profile!.id ? myPubKeyB64 : null);
               if (pubKey) {
                 const encKey = await E2EE.encryptConversationKey(rawAesBase64, pubKey);
                 const { error: rpcErr } = await supabase.rpc('update_member_key', { p_member_id: m.id, p_encrypted_key: encKey });

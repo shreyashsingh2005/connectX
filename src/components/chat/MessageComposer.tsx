@@ -279,7 +279,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       content: content || null,
       type: attachments.length > 0 ? (attachments[0].type as 'image' | 'video' | 'audio' | 'document') : 'text' as const,
       status: 'sending' as const,
-        decrypted_content: content || null,
+        decrypted_content: text || null,
       reply_to_id: replyToMessage?.id || null,
       forwarded_from_id: null,
       is_edited: false,
