@@ -36,7 +36,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const { resolvedTheme } = useTheme();
   const profile = useAuthStore(s => s.profile);
   const activeTheme = useThemeStore(s => s.getEffectiveTheme(conversationId));
-  const { isReady: e2eeReady, error: e2eeError, e2eeState, encrypt, encryptAttachment } = useE2EE(conversationId);
+  const { isReady: e2eeReady, error: e2eeError, e2eeState, encrypt, encryptAttachment, resetConversationKey } = useE2EE(conversationId);
   const replyToMessage = useChatStore(s => s.replyToMessage);
   const setReplyToMessage = useChatStore(s => s.setReplyToMessage);
   const addMessage = useChatStore(s => s.addMessage);
@@ -356,6 +356,20 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       onDrop={handleDrop}
       onDragOver={e => e.preventDefault()}
     >
+      {e2eeState === 'error' && (
+        <div className="absolute bottom-[100%] left-0 right-0 mb-3 mx-2 p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-sm flex flex-col gap-2 shadow-lg backdrop-blur-sm z-10 animate-in fade-in slide-in-from-bottom-2">
+          <div>
+            <strong>Security Error:</strong> Your current device cannot decrypt this conversation. Old messages are unrecoverable.
+          </div>
+          <button 
+            type="button"
+            onClick={resetConversationKey}
+            className="self-start text-xs font-semibold bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition-colors"
+          >
+            Reset Secure Session
+          </button>
+        </div>
+      )}
       {showEmojiPicker && (
         <div ref={emojiPickerRef} className="absolute bottom-[100%] right-0 md:right-4 mb-3 z-[50] w-[calc(100vw-24px)] sm:w-[350px] shadow-[0_12px_35px_rgba(16,24,40,0.12)] dark:shadow-none rounded-[24px] overflow-hidden border border-[#EAECF0] dark:border-[#252A34] emoji-picker-wrapper animate-in fade-in slide-in-from-bottom-2 duration-150">
           <EmojiPicker 

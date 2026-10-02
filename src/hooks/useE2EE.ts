@@ -280,6 +280,16 @@ export function useE2EE(conversationId?: string) {
     decrypt,
     encryptAttachment,
     decryptAttachment,
+    resetConversationKey: async () => {
+      // Safe development/migration reset.
+      // Clears encrypted_key for all members of this conversation in the DB.
+      // This will force a new key generation on the next load.
+      if (!conversationId) return;
+      await supabaseRef.current.from('conversation_members')
+        .update({ encrypted_key: null })
+        .eq('conversation_id', conversationId);
+      window.location.reload();
+    },
   };
 }
 
