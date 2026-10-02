@@ -1,87 +1,13 @@
-﻿'use client';
+const fs = require('fs');
+let code = fs.readFileSync('src/components/chat/ProfilePanel.tsx', 'utf8');
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { Conversation, Attachment } from '@/types';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useUIStore } from '@/store/useUIStore';
-import { createClient } from '@/lib/supabase/client';
-import { UserAvatar } from '@/components/ui/UserAvatar';
-import { ProfilePhotoEditor } from '@/components/profile/ProfilePhotoEditor';
-import { OnlineIndicator } from '@/components/ui/OnlineIndicator';
-import { cn, formatLastSeen } from '@/lib/utils';
-import toast from 'react-hot-toast';
-import { X, Bell, BellOff, Archive, Flag, Shield, Image as ImageIcon, FileText, Users } from 'lucide-react';
-
-interface ProfilePanelProps {
-  conversation: Conversation;
-}
-
-export function ProfilePanel({ conversation }: ProfilePanelProps) {
-  const [mediaAttachments, setMediaAttachments] = useState<Attachment[]>([]);
-  const [fileAttachments, setFileAttachments] = useState<Attachment[]>([]);
-  const [activeTab, setActiveTab] = useState<'media' | 'files'>('media');
-  const [isMuted, setIsMuted] = useState(false);
-  const [isBlocked, setIsBlocked] = useState(false);
-  const supabase = createClient();
-  const profile = useAuthStore(s => s.profile);
-  const [showPhotoEditor, setShowPhotoEditor] = useState(false);
-  const setShowProfilePanel = useUIStore(s => s.setShowProfilePanel);
-
-  const isDirect = conversation.type === 'direct';
-  const otherUser = conversation.other_member;
-  const name = isDirect ? otherUser?.display_name || 'Unknown' : conversation.name || 'Group';
-  const avatarUrl = isDirect ? otherUser?.avatar_url : conversation.avatar_url;
-  const isOnline = isDirect ? otherUser?.is_online ?? false : false;
-  const bio = isDirect ? otherUser?.bio : conversation.description;
-  const memberCount = conversation.members?.length || 0;
-
-  useEffect(() => {
-    loadMedia();
-    if (isDirect && otherUser && profile) checkBlocked();
-  }, [conversation.id]);
-
-  async function loadMedia() {
-    const { data } = await supabase.from('attachments').select('*').eq('conversation_id', conversation.id).order('created_at', { ascending: false }).limit(20);
-    if (data) {
-      setMediaAttachments(data.filter((a: Attachment) => a.mime_type.startsWith('image/') || a.mime_type.startsWith('video/')));
-      setFileAttachments(data.filter((a: Attachment) => !a.mime_type.startsWith('image/') && !a.mime_type.startsWith('video/')));
-    }
-  }
-
-  async function checkBlocked() {
-    if (!otherUser || !profile) return;
-    const { data } = await supabase.from('blocked_users').select('id').eq('blocker_id', profile.id).eq('blocked_id', otherUser.id).maybeSingle();
-    setIsBlocked(!!data);
-  }
-
-  async function handleBlock() {
-    if (!otherUser || !profile) return;
-    if (isBlocked) {
-      await supabase.from('blocked_users').delete().eq('blocker_id', profile.id).eq('blocked_id', otherUser.id);
-      setIsBlocked(false); toast.success('User unblocked');
-    } else {
-      await supabase.from('blocked_users').insert({ blocker_id: profile.id, blocked_id: otherUser.id });
-      setIsBlocked(true); toast.success('User blocked');
-    }
-  }
-
-  async function handleReport() {
-    if (!otherUser || !profile) return;
-    const reason = window.prompt('Reason (spam, harassment, inappropriate, misinformation, other):');
-    if (!reason) return;
-    await supabase.from('reports').insert({ reporter_id: profile.id, reported_user_id: otherUser.id, reason: reason as 'spam', description: '' });
-    toast.success('Report submitted.');
-  }
-
-  async function handleMute() {
-    await supabase.from('conversation_members').update({ is_muted: !isMuted }).eq('conversation_id', conversation.id).eq('user_id', profile?.id || '');
-    setIsMuted(!isMuted);
-    toast.success(isMuted ? 'Notifications enabled' : 'Muted');
-  }
-
-  const isOwnProfile = profile?.id === otherUser?.id;
-  return (
+const returnPos = code.indexOf('return (');
+if (returnPos !== -1) {
+  // Extract everything BEFORE the return
+  const head = code.substring(0, returnPos);
+  
+  // Create a clean return block
+  const tail = `return (
     <>
       <div className="flex flex-col h-full bg-white dark:bg-[#0E1015] border-l border-[#EAECF0] dark:border-[#252A34] w-72 flex-shrink-0 overflow-hidden">
         <div className="flex items-center justify-between px-4 py-4 border-b border-[#EAECF0] dark:border-[#252A34]">
@@ -182,4 +108,7 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
       {showPhotoEditor && <ProfilePhotoEditor onClose={() => setShowPhotoEditor(false)} />}
     </>
   );
+}
+`;
+  fs.writeFileSync('src/components/chat/ProfilePanel.tsx', head + tail, 'utf8');
 }

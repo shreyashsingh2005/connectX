@@ -7,6 +7,7 @@ import { Message, Profile } from '@/types';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { EncryptedAttachment } from '@/components/chat/EncryptedAttachment';
 import { cn, formatMessageTime, formatFileSize, isOnlyEmojis } from '@/lib/utils';
+import { useThemeStore } from '@/store/useThemeStore';
 import {
   Check,
   CheckCheck,
@@ -162,7 +163,7 @@ export const MessageBubble = memo(function MessageBubble({
           ref={bubbleRef}
           className={cn(
             'relative rounded-[18px] px-4 py-2.5 message-animate',
-            isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (isOwn ? `bg-[#8B5CF6] text-white shadow-sm ${showAvatar ? 'rounded-[18px] rounded-br-[5px]' : 'rounded-[18px] rounded-r-[5px]'}` : `bg-[#FFFFFF] dark:bg-[#171B23] text-[#101828] dark:text-[#F5F7FA] shadow-[0_1px_2px_rgba(0,0,0,0.02)] border border-[#EAECF0] dark:border-[#252A34] ${showAvatar ? 'rounded-[18px] rounded-bl-[5px]' : 'rounded-[18px] rounded-l-[5px]'}`),
+            isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (isOwn ? `text-white shadow-sm ${showAvatar ? 'rounded-[18px] rounded-br-[5px]' : 'rounded-[18px] rounded-r-[5px]'}` : `bg-[#FFFFFF] dark:bg-[#171B23] text-[#101828] dark:text-[#F5F7FA] shadow-[0_1px_2px_rgba(0,0,0,0.02)] border border-[#EAECF0] dark:border-[#252A34] ${showAvatar ? 'rounded-[18px] rounded-bl-[5px]' : 'rounded-[18px] rounded-l-[5px]'}`),
           )}
         >
           {/* Text content */}

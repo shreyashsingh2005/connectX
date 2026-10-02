@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useChatStore } from '@/store/useChatStore';
 import { useUIStore } from '@/store/useUIStore';
+import { useThemeStore } from '@/store/useThemeStore';
+import { useTheme } from 'next-themes';
 import { ChatHeader } from '@/components/chat/ChatHeader';
 import { MessageList } from '@/components/chat/MessageList';
 import { MessageComposer } from '@/components/chat/MessageComposer';
@@ -30,6 +32,9 @@ export default function ConversationPage({ params }: ConversationPageProps) {
   const setActiveConversationId = useChatStore(s => s.setActiveConversationId);
   const addConversation = useChatStore(s => s.addConversation);
   const showProfilePanel = useUIStore(s => s.showProfilePanel);
+  const { resolvedTheme } = useTheme();
+  const getEffectiveTheme = useThemeStore(s => s.getEffectiveTheme);
+  const activeTheme = getEffectiveTheme(conversationId);
 
   useEffect(() => {
     setActiveConversationId(conversationId);
@@ -103,11 +108,32 @@ export default function ConversationPage({ params }: ConversationPageProps) {
   return (
     <div className="flex h-full flex-1 min-w-0 overflow-hidden">
       {/* Chat area */}
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden bg-[#FBFBFD] dark:bg-[#0B0D12]">
-        <ChatHeader conversation={conversation} />
-        <MessageList conversationId={conversationId} />
-        <MessageComposer conversationId={conversationId} />
+      
+      <div 
+        className="flex flex-col flex-1 min-w-0 overflow-hidden relative"
+        style={{
+          backgroundColor: activeTheme.backgroundId === 'solid' 
+            ? (resolvedTheme === 'dark' ? '#0B0D12' : '#FBFBFD') 
+            : (resolvedTheme === 'dark' ? '#11141A' : '#F7F8FC')
+        }}
+      >
+        {activeTheme.backgroundId !== 'solid' && (
+          <div 
+            className="absolute inset-0 pointer-events-none z-0" 
+            style={{ 
+              backgroundImage: `url('/patterns/${activeTheme.backgroundId}.svg')`,
+              opacity: activeTheme.backgroundIntensity / 100,
+              color: resolvedTheme === 'dark' ? 'white' : 'black'
+            }} 
+          />
+        )}
+        <div className="flex flex-col flex-1 z-10 overflow-hidden relative">
+          <ChatHeader conversation={conversation} />
+          <MessageList conversationId={conversationId} />
+          <MessageComposer conversationId={conversationId} />
+        </div>
       </div>
+
 
       {/* Profile panel - desktop */}
       {showProfilePanel && (

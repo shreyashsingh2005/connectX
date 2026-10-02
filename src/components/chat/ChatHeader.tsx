@@ -5,6 +5,8 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useUIStore } from '@/store/useUIStore';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { formatLastSeen, cn } from '@/lib/utils';
+import { useThemeStore } from '@/store/useThemeStore';
+import { Palette } from 'lucide-react';
 import {
   Search,
   Phone,
@@ -28,6 +30,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   const profile = useAuthStore(s => s.profile);
   const toggleProfilePanel = useUIStore(s => s.toggleProfilePanel);
   const [showMenu, setShowMenu] = useState(false);
+  const { setChatOverride, chatOverrides } = useThemeStore();
   const [showClearModal, setShowClearModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
