@@ -108,32 +108,32 @@ export function ConversationList() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-transparent border-r border-[#EAECF0] dark:border-[#252A34] w-full md:w-80 flex-shrink-0">
+    <div className="flex flex-col h-full bg-[#FFFFFF] dark:bg-[#11141A] border-r border-[#EAECF0] dark:border-[#252A34] w-full md:w-[320px] flex-shrink-0">
       {/* Header */}
-      <div className="px-4 pt-5 pb-3 border-b border-gray-200 dark:border-[#252A34]">
+      <div className="px-4 pt-5 pb-3">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Messages</h2>
+          <h2 className="text-[20px] font-bold text-gray-900 dark:text-white">Chats</h2>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowGroupModal(true)}
               title="New Group"
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:bg-[#151922] transition-all"
+              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] transition-all"
             >
-              <Users className="w-4 h-4" />
+              <Users className="w-5 h-5" />
             </button>
             <button
               onClick={() => setShowNewChatModal(true)}
               title="New Chat"
-              className="w-[36px] h-[36px] rounded-[8px] flex items-center justify-center bg-[#8B5CF6] text-white hover:bg-[#7C3AED] shadow-sm transition-colors"
+              className="w-[36px] h-[36px] rounded-full flex items-center justify-center bg-[#8B5CF6] text-white hover:bg-[#7C3AED] shadow-sm transition-colors"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Search */}
         <div className="relative mt-2">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#667085]" />
           <input
             type="text"
             autoComplete="off"
@@ -141,21 +141,21 @@ export function ConversationList() {
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-[#F9FAFB] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2 h-[42px] pl-10 pr-4 text-[14px] rounded-[10px] text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/20 transition-all"
+            className="w-full bg-[#F9FAFB] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2 h-[42px] pl-10 pr-4 text-[14px] text-gray-900 dark:text-white placeholder-[#667085] focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/20 transition-all"
           />
         </div>
 
         {/* Filter tabs */}
-        <div className="flex bg-[#F9FAFB] dark:bg-[#151922] p-1 rounded-[10px] mt-4">
+        <div className="flex items-center gap-1 mt-4">
           {(['all', 'unread', 'pinned'] as const).map(f => (
             <button
               key={f}
               onClick={() => setFilter(f)}
               className={cn(
-                'flex-1 text-[13px] py-1.5 rounded-lg font-medium transition-all duration-150 capitalize flex items-center justify-center gap-1.5',
+                'px-4 py-1.5 text-[13px] rounded-full font-medium transition-all duration-150 capitalize flex items-center justify-center gap-1.5',
                 filter === f
-                  ? 'bg-white dark:bg-[#252A34] text-gray-900 dark:text-white shadow-sm'
-                  : 'text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] bg-transparent'
+                  ? 'bg-[#8B5CF6] text-white'
+                  : 'bg-transparent text-[#667085] hover:bg-[#F9FAFB] dark:hover:bg-[#151922]'
               )}
             >
               {f === 'pinned' ? <Pin className="w-3.5 h-3.5" /> : null}
@@ -201,39 +201,40 @@ export function ConversationList() {
                 className={cn(
                   'w-full flex items-center gap-3 px-4 py-3 transition-all duration-150 text-left group relative',
                   isActive
-                    ? 'bg-gray-100/80 dark:bg-[#151922] before:absolute before:left-0 before:top-[10%] before:h-[80%] before:w-[3px] before:bg-[#8B5CF6] before:rounded-r-md'
-                    : 'hover:bg-[#F9FAFB] dark:hover:bg-[#151922]/80 bg-transparent'
+                    ? 'bg-[#8B5CF6]/10 dark:bg-[#8B5CF6]/10 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] before:bg-[#8B5CF6]'
+                    : 'hover:bg-[#F9FAFB] dark:hover:bg-[#151922] bg-transparent'
                 )}
               >
                 {/* Avatar */}
-                <UserAvatar
-                  src={avatarUrl}
-                  name={name}
-                  size="md"
-                  isOnline={isOnline}
-                />
+                <div className="w-[44px] h-[44px] flex-shrink-0">
+                  <UserAvatar
+                    src={avatarUrl}
+                    name={name}
+                    size="md"
+                    isOnline={isOnline}
+                  />
+                </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <span className={cn(
-                      'font-semibold text-[14px] truncate',
-                      isActive ? 'text-gray-900 dark:text-white' : 'text-gray-800 dark:text-gray-200',
-                      unreadCount > 0 && 'font-semibold'
+                      'font-bold text-[14px] truncate',
+                      isActive ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-white'
                     )}>
                       {name}
                     </span>
-                    <span className="text-xs text-gray-500 flex-shrink-0">{lastMsgTime}</span>
+                    <span className="text-[11px] text-[#667085] flex-shrink-0">{lastMsgTime}</span>
                   </div>
                   <div className="flex items-center justify-between gap-2 mt-0.5">
                     <span className={cn(
-                      'text-xs truncate',
-                      unreadCount > 0 ? 'text-gray-700 dark:text-gray-300' : 'text-gray-500'
+                      'text-[12px] truncate',
+                      unreadCount > 0 ? 'text-gray-900 dark:text-gray-100 font-medium' : 'text-[#667085]'
                     )}>
                       {getLastMessagePreview(conv)}
                     </span>
                     {unreadCount > 0 && (
-                      <span className="flex-shrink-0 min-w-[18px] h-[18px] rounded-full bg-[#8B5CF6] text-white text-[10px] font-bold flex items-center justify-center px-1">
+                      <span className="flex-shrink-0 min-w-[20px] h-[20px] rounded-full bg-[#8B5CF6] text-white text-[10px] font-bold flex items-center justify-center px-1">
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}
@@ -247,9 +248,3 @@ export function ConversationList() {
     </div>
   );
 }
-
-
-
-
-
-

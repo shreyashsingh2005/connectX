@@ -1,38 +1,24 @@
 const fs = require('fs');
+
 let code = fs.readFileSync('src/components/chat/MessageBubble.tsx', 'utf8');
 
-if (!code.includes('Lock,')) {
-  code = code.replace(
-    /Video,/,
-    "Video,\n  Lock,"
-  );
-}
+// 1. Update radii logic
+code = code.replace(
+  /isOwn \? `bg-\[\#8B5CF6\] text-white shadow-sm \$\{showAvatar \? 'rounded-\[16px\] rounded-br-\[4px\]' : 'rounded-\[16px\] rounded-r-\[4px\]'\}` : `bg-\[\#F2F4F7\] dark:bg-\[\#171B23\] text-\[\#101828\] dark:text-\[\#F5F7FA\] shadow-sm \$\{showAvatar \? 'rounded-\[16px\] rounded-bl-\[4px\]' : 'rounded-\[16px\] rounded-l-\[4px\]'\}`/g,
+  "isOwn ? `bg-[#8B5CF6] text-white shadow-sm ${showAvatar ? 'rounded-[18px] rounded-br-[5px]' : 'rounded-[18px] rounded-r-[5px]'}` : `bg-[#FFFFFF] dark:bg-[#171B23] text-[#101828] dark:text-[#F5F7FA] shadow-[0_1px_2px_rgba(0,0,0,0.02)] border border-[#EAECF0] dark:border-[#252A34] ${showAvatar ? 'rounded-[18px] rounded-bl-[5px]' : 'rounded-[18px] rounded-l-[5px]'}`"
+);
 
-// Add decryption error render
-if (!code.includes('message.decryption_error')) {
-  code = code.replace(
-    /if \(message\.is_deleted\) \{/,
-    `if (message.decryption_error) {
-    return (
-      <div className={cn('flex gap-2 mb-1 group', isOwn ? 'flex-row-reverse' : 'flex-row')}>
-        {!isOwn && showAvatar ? (
-          <UserAvatar src={message.sender?.avatar_url} name={message.sender?.display_name || '?'} size="sm" className="w-[28px] h-[28px] self-end mb-1" />
-        ) : (!isOwn && <div className="w-[28px] flex-shrink-0" />)}
-        
-        <div className={cn(
-          'max-w-[78%] md:max-w-[65%] rounded-[16px] px-4 py-3 text-[13px] border flex items-center gap-3',
-          isOwn ? 'border-[#8B5CF6]/20 bg-[#8B5CF6]/5 dark:bg-[#8B5CF6]/10 text-[#8B5CF6]' : 'border-[#EAECF0] dark:border-[#252A34] bg-[#F8FAFC] dark:bg-[#151922] text-[#667085] dark:text-[#98A2B3]'
-        )}>
-          <Lock size={16} className="opacity-70 flex-shrink-0" /> 
-          <span>Unable to decrypt this message</span>
-        </div>
-      </div>
-    );
-  }
+// 2. Also update the general bubble shape block just in case
+code = code.replace(/rounded-\[16px\]/g, 'rounded-[18px]');
 
-  if (message.is_deleted) {`
-  );
-}
+// 3. Update grouping margin. "Group consecutive messages from the same sender. Reduce vertical spacing between grouped messages."
+// Currently: showAvatar ? 'mt-3 mb-0.5' : 'mb-0.5'
+code = code.replace(/showAvatar \? 'mt-3 mb-0\.5' : 'mb-0\.5'/g, "showAvatar ? 'mt-4 mb-0.5' : 'mb-[2px]'");
+
+// 4. Update the receipt logic to place it inside the bubble for outgoing
+// Actually, it's currently rendered next to the timestamp. We can ensure the timestamp and receipt are small (10-11px).
+// Let's check where formatMessageTime is used.
+code = code.replace(/<span className="text-\[10px\] opacity-70 ml-1">/g, '<span className="text-[11px] opacity-70 ml-2 mt-1">');
 
 fs.writeFileSync('src/components/chat/MessageBubble.tsx', code, 'utf8');
-console.log("Updated MessageBubble to handle decryption_error");
+console.log("Updated MessageBubble styles");

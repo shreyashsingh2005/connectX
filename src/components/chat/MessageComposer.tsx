@@ -16,8 +16,7 @@ import {
   Mic,
   Square,
   Image as ImageIcon,
-  Loader2,
-} from 'lucide-react';
+  Loader2, Plus} from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { useE2EE } from '@/hooks/useE2EE';
 import { useTheme } from 'next-themes';
@@ -375,13 +374,13 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
   return (
       <div
-        className="border border-[#EAECF0] dark:border-[#252A34] bg-white dark:bg-[#11141A] shadow-md rounded-[16px] flex-shrink-0 px-3 py-2.5 relative mx-2 md:mx-4 mb-2 md:mb-4 mt-2" style={{ marginBottom: 'calc(max(env(safe-area-inset-bottom), 8px))' }}
+        className="border border-[#EAECF0] dark:border-[#252A34] bg-white dark:bg-[#11141A] shadow-md rounded-[24px] flex-shrink-0 px-3 py-2.5 relative mx-2 md:mx-4 mb-2 md:mb-4 mt-2" style={{ marginBottom: 'calc(max(env(safe-area-inset-bottom), 8px))' }}
 
       onDrop={handleDrop}
       onDragOver={e => e.preventDefault()}
     >
       {showEmojiPicker && (
-        <div ref={emojiPickerRef} className="absolute bottom-[100%] right-0 md:right-4 mb-3 z-[50] w-[calc(100vw-24px)] sm:w-[350px] shadow-[0_12px_35px_rgba(16,24,40,0.12)] dark:shadow-none rounded-[16px] overflow-hidden border border-[#EAECF0] dark:border-[#252A34] emoji-picker-wrapper animate-in fade-in slide-in-from-bottom-2 duration-150">
+        <div ref={emojiPickerRef} className="absolute bottom-[100%] right-0 md:right-4 mb-3 z-[50] w-[calc(100vw-24px)] sm:w-[350px] shadow-[0_12px_35px_rgba(16,24,40,0.12)] dark:shadow-none rounded-[24px] overflow-hidden border border-[#EAECF0] dark:border-[#252A34] emoji-picker-wrapper animate-in fade-in slide-in-from-bottom-2 duration-150">
           <EmojiPicker 
             onEmojiClick={handleEmojiClick}
             theme={resolvedTheme === 'dark' ? Theme.DARK : Theme.LIGHT}
@@ -455,7 +454,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
           className="w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922] transition-colors"
           aria-label="Attach file" title="Attach file"
         >
-          <Paperclip size={18} strokeWidth={2} />
+          <Plus size={20} strokeWidth={2} />
         </button>
 
         <div className="flex-1 min-h-[40px] max-h-32 bg-transparent flex items-center px-1 transition-all overflow-hidden relative">
@@ -495,7 +494,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
           </button>
         ) : (
           <button type="button" onClick={isRecording ? stopRecording : startRecording}
-              className={`w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors ${isRecording ? "bg-[#F04438] text-white animate-pulse" : "bg-[#F8FAFC] dark:bg-[#151922] text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#EAECF0] dark:hover:bg-[#252A34]"}`}
+              className={`w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors ${isRecording ? "bg-[#F04438] text-white animate-pulse" : "bg-[#8B5CF6] text-white hover:bg-[#7C3AED] shadow-sm shadow-[#8B5CF6]/20"}`}
             aria-label={isRecording ? "Stop recording" : "Record voice message"} title={isRecording ? "Stop recording" : "Record voice message"}
           >
             {isRecording ? <Square size={16} className="fill-current" /> : <Mic size={18} strokeWidth={2} />}

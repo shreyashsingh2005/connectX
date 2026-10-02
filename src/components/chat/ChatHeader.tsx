@@ -4,7 +4,6 @@ import { Conversation } from '@/types';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useUIStore } from '@/store/useUIStore';
 import { UserAvatar } from '@/components/ui/UserAvatar';
-import { OnlineIndicator } from '@/components/ui/OnlineIndicator';
 import { formatLastSeen, cn } from '@/lib/utils';
 import {
   Search,
@@ -47,9 +46,8 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
       const clearedChats = JSON.parse(localStorage.getItem('cleared_chats') || '{}');
       clearedChats[conversation.id] = new Date().toISOString();
       localStorage.setItem('cleared_chats', JSON.stringify(clearedChats));
-        window.dispatchEvent(new Event('chat_cleared'));
+      window.dispatchEvent(new Event('chat_cleared'));
       
-      // Remove locally from Zustand store
       useChatStore.getState().setMessages(conversation.id, []);
       
       toast.success('Chat cleared for you');
@@ -69,10 +67,8 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   const memberCount = conversation.members?.length || 0;
 
   return (
-    <header className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-[#252A34] bg-white/80 dark:bg-[#0B0D12]/80 backdrop-blur-xl flex-shrink-0">
-      {/* Left: Back (mobile) + Avatar + Info */}
+    <header className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-[#252A34] bg-white/80 dark:bg-[#0B0D12]/80 backdrop-blur-xl flex-shrink-0 min-h-[64px]">
       <div className="flex items-center gap-3">
-        {/* Back button - mobile only */}
         <button
           onClick={() => router.push('/chat')}
           className="md:hidden w-8 h-8 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors"
@@ -85,60 +81,48 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
           onClick={toggleProfilePanel}
           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
-          <UserAvatar
-            src={avatarUrl}
-            name={name}
-            size="sm"
-            isOnline={isDirect ? isOnline : undefined}
-          />
-          <div className="text-left">
-            <h3 className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">{name}</h3>
+          <div className="w-[40px] h-[40px] relative flex-shrink-0">
+            <UserAvatar
+              src={avatarUrl}
+              name={name}
+              className="w-full h-full text-sm"
+              isOnline={isDirect ? isOnline : undefined}
+            />
+          </div>
+          <div className="text-left flex flex-col justify-center">
+            <h3 className="font-semibold text-gray-900 dark:text-white text-[15px] leading-tight">{name}</h3>
             {isDirect ? (
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className={cn("w-1.5 h-1.5 rounded-full", isOnline ? "bg-green-500" : "bg-gray-400 dark:bg-gray-600")} />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {isOnline ? 'online' : (lastSeen ? formatLastSeen(lastSeen) : 'offline')}
+              <div className="flex items-center gap-1.5 mt-[2px]">
+                <span className={cn("w-2 h-2 rounded-full", isOnline ? "bg-green-500" : "bg-gray-400 dark:bg-gray-600")} />
+                <span className="text-[13px] font-medium text-gray-500 dark:text-gray-400">
+                  {isOnline ? 'Online' : (lastSeen ? formatLastSeen(lastSeen) : 'Offline')}
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-1 mt-0.5">
-                <Users className="w-3 h-3 text-gray-500" />
-                <span className="text-xs text-gray-500">{memberCount} members</span>
+              <div className="flex items-center gap-1 mt-[2px]">
+                <Users className="w-3.5 h-3.5 text-gray-500" />
+                <span className="text-[13px] text-gray-500">{memberCount} members</span>
               </div>
             )}
           </div>
         </button>
       </div>
 
-      {/* Right: Actions */}
-      <div className="flex items-center gap-1">
-        <button
-          title="Search messages"
-          className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-[#1A1E29] transition-colors"
-        >
-          <Search className="w-4.5 h-4.5" />
-        </button>
+      <div className="flex items-center gap-2">
         <button
           title="Voice call (coming soon)"
           disabled
-          className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-600 cursor-not-allowed opacity-50"
+          className="w-10 h-10 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 cursor-not-allowed opacity-50 transition-colors"
         >
-          <Phone className="w-4.5 h-4.5" />
-        </button>
-        <button
-          title="Video call (coming soon)"
-          disabled
-          className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-600 cursor-not-allowed opacity-50"
-        >
-          <Video className="w-4.5 h-4.5" />
+          <Phone className="w-5 h-5" />
         </button>
         <div className="relative" ref={menuRef}>
           <button
+            title="More options"
             onClick={() => setShowMenu(!showMenu)}
-            title="Options"
-            className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-[#1A1E29] transition-colors"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#1A1E29] transition-colors relative"
           >
-            <MoreVertical className="w-4.5 h-4.5" />
+            <MoreVertical className="w-5 h-5" />
           </button>
           
           {showMenu && (

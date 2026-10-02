@@ -103,7 +103,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
   return (
     <div className="flex h-full flex-1 min-w-0 overflow-hidden">
       {/* Chat area */}
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden bg-[#FCFCFD] dark:bg-[#0E1015]">
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden bg-[#FBFBFD] dark:bg-[#0B0D12]">
         <ChatHeader conversation={conversation} />
         <MessageList conversationId={conversationId} />
         <MessageComposer conversationId={conversationId} />

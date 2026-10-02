@@ -76,7 +76,7 @@ export const MessageBubble = memo(function MessageBubble({
         ) : (!isOwn && <div className="w-[28px] flex-shrink-0" />)}
         
         <div className={cn(
-          'max-w-[78%] md:max-w-[65%] rounded-[16px] px-4 py-3 text-[13px] border flex items-center gap-3',
+          'max-w-[78%] md:max-w-[65%] rounded-[18px] px-4 py-3 text-[13px] border flex items-center gap-3',
           isOwn ? 'border-[#8B5CF6]/20 bg-[#8B5CF6]/5 dark:bg-[#8B5CF6]/10 text-[#8B5CF6]' : 'border-[#EAECF0] dark:border-[#252A34] bg-[#F8FAFC] dark:bg-[#151922] text-[#667085] dark:text-[#98A2B3]'
         )}>
           <Lock size={16} className="opacity-70 flex-shrink-0" /> 
@@ -93,7 +93,7 @@ export const MessageBubble = memo(function MessageBubble({
           <div className="w-8 flex-shrink-0" />
         )}
         <div className={cn(
-          'max-w-[78%] md:max-w-[65%] rounded-[16px] px-4 py-2.5 italic text-gray-500 text-sm border',
+          'max-w-[78%] md:max-w-[65%] rounded-[18px] px-4 py-2.5 italic text-gray-500 text-sm border',
           isOwn ? 'border-[#2A2F45]' : 'border-gray-200 dark:border-[#252A34]',
           'bg-gray-100 dark:bg-[#11141A]'
         )}>
@@ -111,7 +111,7 @@ export const MessageBubble = memo(function MessageBubble({
 
   return (
     <div
-      className={cn('flex gap-2 group', isOwn ? 'flex-row-reverse' : 'flex-row', showAvatar ? 'mt-3 mb-0.5' : 'mb-0.5')}
+      className={cn('flex gap-2 group', isOwn ? 'flex-row-reverse' : 'flex-row', showAvatar ? 'mt-4 mb-0.5' : 'mb-[2px]')}
       onMouseEnter={() => setShowActions(true)}
         onMouseLeave={() => { setShowActions(false); setShowEmojiPicker(false); }}
         onContextMenu={(e) => {
@@ -161,8 +161,8 @@ export const MessageBubble = memo(function MessageBubble({
         <div
           ref={bubbleRef}
           className={cn(
-            'relative rounded-[16px] px-4 py-2.5 message-animate',
-            isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (isOwn ? `bg-[#8B5CF6] text-white shadow-sm ${showAvatar ? 'rounded-[16px] rounded-br-[4px]' : 'rounded-[16px] rounded-r-[4px]'}` : `bg-[#F2F4F7] dark:bg-[#171B23] text-[#101828] dark:text-[#F5F7FA] shadow-sm ${showAvatar ? 'rounded-[16px] rounded-bl-[4px]' : 'rounded-[16px] rounded-l-[4px]'}`),
+            'relative rounded-[18px] px-4 py-2.5 message-animate',
+            isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (isOwn ? `bg-[#8B5CF6] text-white shadow-sm ${showAvatar ? 'rounded-[18px] rounded-br-[5px]' : 'rounded-[18px] rounded-r-[5px]'}` : `bg-[#FFFFFF] dark:bg-[#171B23] text-[#101828] dark:text-[#F5F7FA] shadow-[0_1px_2px_rgba(0,0,0,0.02)] border border-[#EAECF0] dark:border-[#252A34] ${showAvatar ? 'rounded-[18px] rounded-bl-[5px]' : 'rounded-[18px] rounded-l-[5px]'}`),
           )}
         >
           {/* Text content */}
