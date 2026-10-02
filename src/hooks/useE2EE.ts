@@ -89,46 +89,52 @@ export function useE2EE(conversationId?: string) {
               console.error("CRITICAL: Failed to decrypt existing conversation key! DO NOT generate a new one.", decryptErr);
               throw decryptErr;
             }
-          } 
-          
+          }
+
+          // Only generate when absolutely no key exists in database
           if (!aesKey) {
-              // Get all members and their public keys
-              const { data: members, error: membersErr } = await supabase
-                .from('conversation_members')
-                .select('id, user_id, encrypted_key, profiles(public_key)')
-                .eq('conversation_id', conversationId);
-  
-              if (membersErr) throw membersErr;
+            const { data: members, error: membersErr } = await supabase
+              .from('conversation_members')
+              .select('id, user_id, encrypted_key, profiles(public_key)')
+              .eq('conversation_id', conversationId);
 
-              const anyMemberHasKey = members?.some(m => m.encrypted_key);
-              if (anyMemberHasKey) {
-                 console.error("CRITICAL: Conversation key already exists for other members, but is missing or undecryptable for current user. DO NOT regenerate.");
-                 throw new Error("Conversation key exists but is unavailable for this device/session.");
-              }
+            if (membersErr) throw membersErr;
 
-              // We need to generate a new key and distribute it!
-              aesKey = await E2EE.generateConversationKey();
-              const rawAesBase64 = await E2EE.exportConversationKey(aesKey);
-              const myPubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
-  
-              for (const m of members || []) {
-                const pubKey = (m.profiles as any)?.public_key || (m.user_id === profile!.id ? myPubKeyB64 : null);
-                if (pubKey) {
-                  const encKey = await E2EE.encryptConversationKey(rawAesBase64, pubKey);
-                  const { error: rpcErr } = await supabase.rpc('update_member_key', { p_member_id: m.id, p_encrypted_key: encKey });
-                  if (rpcErr) throw rpcErr;
-                }
+            const anyMemberHasKey = members?.some(m => m.encrypted_key);
+            if (anyMemberHasKey) {
+              console.error("CRITICAL: Conversation key already exists for other members, but is missing or undecryptable for current user. DO NOT regenerate.");
+              throw new Error("Conversation key exists but is unavailable for this device/session.");
+            }
+
+            // Fresh conversation — generate and distribute
+            aesKey = await E2EE.generateConversationKey();
+            const rawAesBase64 = await E2EE.exportConversationKey(aesKey);
+            const myPubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
+
+            for (const m of members || []) {
+              const pubKey = (m.profiles as any)?.public_key || (m.user_id === profile!.id ? myPubKeyB64 : null);
+              if (pubKey) {
+                const encKey = await E2EE.encryptConversationKey(rawAesBase64, pubKey);
+                const { error: rpcErr } = await supabase.rpc('update_member_key', { p_member_id: m.id, p_encrypted_key: encKey });
+                if (rpcErr) throw rpcErr;
               }
             }
-            setConversationKey(aesKey);
+          }
+
+          // CRITICAL FIX: setConversationKey must be OUTSIDE the if(!aesKey) block.
+          // Previously it was trapped inside, so when decryption succeeded aesKey was set
+          // but setConversationKey was never called — leaving conversationKey=null forever.
+          if (!aesKey) throw new Error("Failed to obtain a conversation key");
+          setConversationKey(aesKey);
           if (conversationId) E2EE.conversationKeyCache.set(conversationId, aesKey);
         } catch (err: any) {
-            console.error("E2EE Conv init failed:", err);
-            setError(err.message);
-            throw err;
-          } finally {
+          console.error("E2EE Conv init failed:", err);
+          setError(err.message);
+          throw err;
+        } finally {
           setIsReady(true);
         }
+
       })();
       
       initPromises.set(conversationId!, promise);
