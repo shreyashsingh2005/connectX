@@ -508,7 +508,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
           </button>
         )}
       </div>
-    </div>
+    </form>
   );
 }
 
