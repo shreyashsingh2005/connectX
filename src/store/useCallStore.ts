@@ -37,6 +37,8 @@ export interface CallSession {
 }
 
 interface CallStore {
+  startCallFn: ((receiverId: string, conversationId: string, type: 'audio' | 'video') => Promise<void>) | null;
+  setStartCallFn: (fn: any) => void;
   currentCall: CallSession | null;
   callStatus: CallStatus;
   localStream: MediaStream | null;
@@ -54,6 +56,8 @@ interface CallStore {
 }
 
 export const useCallStore = create<CallStore>((set) => ({
+  startCallFn: null,
+  setStartCallFn: (fn: any) => set({ startCallFn: fn }),
   currentCall: null,
   callStatus: 'idle',
   localStream: null,

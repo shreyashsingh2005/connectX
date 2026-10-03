@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 let cachedIceServers: any = null;
 
 export function useWebRTC() {
+  const setStartCallFn = useCallStore(s => s.setStartCallFn);
   const supabase = createClient();
   const profile = useAuthStore((s) => s.profile);
   
@@ -221,6 +222,10 @@ export function useWebRTC() {
       stream.getVideoTracks().forEach(t => t.enabled = !isVideoOff);
     }
   }, [isMuted, isVideoOff]);
+
+     useEffect(() => {
+    setStartCallFn(startCall);
+  }, [startCall, setStartCallFn]);
 
   return { startCall, acceptCall, endCall };
 }

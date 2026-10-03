@@ -6,7 +6,7 @@ import { useUIStore } from '@/store/useUIStore';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { formatLastSeen, cn } from '@/lib/utils';
 import { useThemeStore } from '@/store/useThemeStore';
-import { useWebRTC } from '@/hooks/useWebRTC';
+import { useCallStore } from '@/store/useCallStore';
 import { Palette } from 'lucide-react';
 import { ChatThemePicker } from '@/components/chat/ChatThemePicker';
 import {
@@ -31,7 +31,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   const router = useRouter();
   const profile = useAuthStore(s => s.profile);
   const toggleProfilePanel = useUIStore(s => s.toggleProfilePanel);
-  const { startCall } = useWebRTC();
+  const startCall = useCallStore(s => s.startCallFn);
   const [showMenu, setShowMenu] = useState(false);
   const [showThemePicker, setShowThemePicker] = useState(false);
   const { setChatOverride, chatOverrides } = useThemeStore();
@@ -123,7 +123,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
               title="Audio call"
               onClick={() => {
                 const otherMember = conversation.members?.find(m => m.user_id !== profile?.id)?.profile;
-                if (otherMember) startCall(otherMember.id, conversation.id, 'audio');
+                if (otherMember) startCall?.(otherMember.id, conversation.id, 'audio');
               }}
               className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F9FAFB] dark:hover:bg-[#1A1E29] transition-colors"
             >
@@ -133,7 +133,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
               title="Video call"
               onClick={() => {
                 const otherMember = conversation.members?.find(m => m.user_id !== profile?.id)?.profile;
-                if (otherMember) startCall(otherMember.id, conversation.id, 'video');
+                if (otherMember) startCall?.(otherMember.id, conversation.id, 'video');
               }}
               className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F9FAFB] dark:hover:bg-[#1A1E29] transition-colors"
             >
