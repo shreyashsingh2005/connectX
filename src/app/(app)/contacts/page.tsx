@@ -489,7 +489,7 @@ export default function ContactsPage() {
                   )}
 
                   {/* Suggestions */}
-                  {suggestions.length > 0 && incomingRequests.length === 0 && (
+                  {suggestions.length > 0 && (
                     <div className="space-y-4">
                       <h2 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] px-1">People you may know</h2>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
