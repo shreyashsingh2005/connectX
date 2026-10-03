@@ -116,7 +116,7 @@ export function useE2EE(conversationId?: string) {
         table: 'conversation_members',
         filter: `conversation_id=eq.${conversationId}`,
       }, (payload) => {
-        if (payload.new.user_id === profile.id) {
+        if (payload.new.user_id === profile.id && JSON.stringify(payload.new.encrypted_keys) !== JSON.stringify(payload.old?.encrypted_keys)) {
           initPromises.delete(rKey);
           keyRegistry.delete(rKey);
           setRefreshTrigger(prev => prev + 1);
@@ -187,27 +187,52 @@ export function useE2EE(conversationId?: string) {
 
         const keysObj = member.encrypted_keys || {};
         
+        let recoveredAesKey: CryptoKey | null = null;
+        let recoveredEncStr: string | null = null;
+
         // CASE A: Device explicitly authorized
         if (keysObj[myDeviceId]) {
           try {
             const rawAesBase64 = await E2EE.decryptConversationKey(keysObj[myDeviceId], identityKeys.privateKey);
-            return await E2EE.importConversationKey(rawAesBase64);
+            recoveredAesKey = await E2EE.importConversationKey(rawAesBase64);
+            recoveredEncStr = keysObj[myDeviceId];
           } catch {
-            throw new Error('[E2EE] Failed to decrypt conversation key with this device key.');
+            // Failed to decrypt with current device id
           }
         }
 
-        // CASE B: Legacy key fallback (migration)
-        if (member.encrypted_key) {
+        // CASE B: Recovery from other device IDs mapped to the same RSA key
+        if (!recoveredAesKey) {
+          for (const [devId, encStr] of Object.entries(keysObj)) {
+            if (devId === myDeviceId) continue;
+            try {
+              const rawAesBase64 = await E2EE.decryptConversationKey(encStr as string, identityKeys.privateKey);
+              recoveredAesKey = await E2EE.importConversationKey(rawAesBase64);
+              recoveredEncStr = encStr as string;
+              break;
+            } catch {
+              // ignore
+            }
+          }
+        }
+
+        // CASE C: Legacy key fallback (migration)
+        if (!recoveredAesKey && member.encrypted_key) {
           try {
             const rawAesBase64 = await E2EE.decryptConversationKey(member.encrypted_key, identityKeys.privateKey);
-            const aesKey = await E2EE.importConversationKey(rawAesBase64);
-            keysObj[myDeviceId] = member.encrypted_key;
-            await supabase.rpc('update_member_keys', { p_member_id: member.id, p_encrypted_keys: keysObj });
-            return aesKey;
+            recoveredAesKey = await E2EE.importConversationKey(rawAesBase64);
+            recoveredEncStr = member.encrypted_key;
           } catch {
-            // Unrecoverable local key mismatch for legacy
+            // ignore
           }
+        }
+
+        if (recoveredAesKey && recoveredEncStr) {
+           if (!keysObj[myDeviceId]) {
+              keysObj[myDeviceId] = recoveredEncStr;
+              await supabase.rpc('update_member_keys', { p_member_id: member.id, p_encrypted_keys: keysObj });
+           }
+           return recoveredAesKey;
         }
 
         // CASE C: Check if ANY member has keys (Waiting for authorization)
