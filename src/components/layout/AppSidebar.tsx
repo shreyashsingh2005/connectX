@@ -37,32 +37,46 @@ export function AppSidebar() {
   const supabase = createClient();
 
   const [unreadCount, setUnreadCount] = useState(0);
+  const [pendingRequests, setPendingRequests] = useState(0);
 
   useEffect(() => {
     if (!profile) return;
     
-    supabase
-      .from('notifications')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', profile.id)
-      .eq('is_read', false)
-      .then(({ count }) => setUnreadCount(count || 0));
+    const fetchCounts = async () => {
+      const { count: notifCount } = await supabase
+        .from('notifications')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', profile.id)
+        .eq('is_read', false)
+        .not('type', 'in', '("friend_request","friend_accept")');
+        
+      setUnreadCount(notifCount || 0);
 
-    const channel = supabase
+      const { count: reqCount } = await supabase
+        .from('friend_requests')
+        .select('id', { count: 'exact', head: true })
+        .eq('receiver_id', profile.id)
+        .eq('status', 'pending');
+        
+      setPendingRequests(reqCount || 0);
+    };
+
+    fetchCounts();
+
+    const notifChannel = supabase
       .channel(`sidebar_notifications:${profile.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${profile.id}` }, 
-        () => {
-           supabase
-            .from('notifications')
-            .select('id', { count: 'exact', head: true })
-            .eq('user_id', profile.id)
-            .eq('is_read', false)
-            .then(({ count }) => setUnreadCount(count || 0));
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${profile.id}` }, fetchCounts)
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    const reqChannel = supabase
+      .channel(`sidebar_requests:${profile.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'friend_requests', filter: `receiver_id=eq.${profile.id}` }, fetchCounts)
+      .subscribe();
+
+    return () => { 
+      supabase.removeChannel(notifChannel);
+      supabase.removeChannel(reqChannel); 
+    };
   }, [profile?.id, supabase]);
 
   async function handleLogout() {
@@ -104,6 +118,12 @@ export function AppSidebar() {
               {label === 'Notifications' && unreadCount > 0 && (
                 <div className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#8B5CF6] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#FFFFFF] dark:border-[#090B10] shadow-sm">
                   {unreadCount > 9 ? '9+' : unreadCount}
+                </div>
+              )}
+              
+              {label === 'Friends' && pendingRequests > 0 && (
+                <div className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#F04438] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#FFFFFF] dark:border-[#090B10] shadow-sm">
+                  {pendingRequests > 9 ? '9+' : pendingRequests}
                 </div>
               )}
               
