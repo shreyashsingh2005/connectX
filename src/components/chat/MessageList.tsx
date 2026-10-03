@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -71,7 +71,30 @@ export function MessageList({ conversationId }: MessageListProps) {
   const [latestLocalMessageId, setLatestLocalMessageId] = useState<string | null>(null);
   const isFirstLoad = useRef(true);
   const typingTimeouts = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-  const { isReady, decrypt } = useE2EE(conversationId);
+  const { isReady, decrypt, e2eeState } = useE2EE(conversationId);
+
+  // If E2EE falls into a permanent error state, mark all undecided messages as decryption errors
+  useEffect(() => {
+    if (e2eeState !== 'error' || messages.length === 0) return;
+    
+    const toFail = messages.filter(m => 
+      m.content && 
+      m.decrypted_content === undefined && 
+      m.status !== 'sending' && 
+      m.status !== 'failed' &&
+      m.type !== 'system' &&
+      !m.decryption_error
+    );
+
+    if (toFail.length === 0) return;
+
+    const updates = toFail.map(msg => ({
+      id: msg.id,
+      changes: { decrypted_content: null, decryption_error: true }
+    }));
+    
+    bulkUpdateMessages(conversationId, updates);
+  }, [messages, e2eeState, conversationId, bulkUpdateMessages]);
 
   useEffect(() => {
     if (!isReady || messages.length === 0) return;

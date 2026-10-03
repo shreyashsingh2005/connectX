@@ -59,11 +59,14 @@ export function useE2EE(conversationId?: string) {
             await supabase.from('profiles').update({ public_key: pubKeyB64 }).eq('id', profile!.id);
             useAuthStore.getState().setProfile({ ...profile!, public_key: pubKeyB64 });
           }
-        } else if (!profile?.public_key) {
-          // Keys exist in IndexedDB but profile is missing the public key in DB
+        } else {
+          // Keys exist locally. Ensure the database advertises THIS device's public key.
           const pubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
-          if (!cancelled) {
-            await supabase.from('profiles').update({ public_key: pubKeyB64 }).eq('id', profile!.id);
+          if (profile?.public_key !== pubKeyB64) {
+            if (!cancelled) {
+              await supabase.from('profiles').update({ public_key: pubKeyB64 }).eq('id', profile!.id);
+              useAuthStore.getState().setProfile({ ...profile!, public_key: pubKeyB64 });
+            }
           }
         }
         // Identity is ready only when we successfully loaded/created the keypair
@@ -191,8 +194,10 @@ export function useE2EE(conversationId?: string) {
         const myPubKeyB64 = await E2EE.exportPublicKey(identityKeys.publicKey);
 
         for (const m of allMembers || []) {
-          const pubKey = (m.profiles as { public_key?: string })?.public_key
-            || (m.user_id === profile!.id ? myPubKeyB64 : null);
+          // CRITICAL FIX: ALWAYS use our own strictly known public key for ourselves.
+          const pubKey = m.user_id === profile!.id 
+            ? myPubKeyB64 
+            : (m.profiles as { public_key?: string })?.public_key;
           if (!pubKey) {
             console.warn(`[E2EE] No public key for member ${m.user_id} — skipping key distribution`);
             continue;
