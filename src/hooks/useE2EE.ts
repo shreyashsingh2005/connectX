@@ -120,14 +120,15 @@ export function useE2EE(conversationId?: string) {
           setRefreshTrigger(prev => prev + 1);
         }
       })
-      .on('broadcast', { event: 'REQUEST_PROVISION' }, () => {
+      .on('broadcast', { event: 'REQUEST_PROVISION' }, (payload) => {
+        const p = payload.payload as any;
         if (convKeyRef.current) {
-          autoProvisionMissingDevices(convKeyRef.current);
+          autoProvisionMissingDevices(convKeyRef.current, p.user_id, p.device_id);
         }
       })
       .subscribe();
 
-    const autoProvisionMissingDevices = async (aesKey: CryptoKey) => {
+    const autoProvisionMissingDevices = async (aesKey: CryptoKey, forceUserId?: string, forceDeviceId?: string) => {
       try {
         const { data: members } = await supabase
           .from('conversation_members')
@@ -149,7 +150,8 @@ export function useE2EE(conversationId?: string) {
           let updated = false;
 
           for (const d of mDevices) {
-            if (!currentKeys[d.device_id]) {
+            const force = d.user_id === forceUserId && d.device_id === forceDeviceId;
+            if (!currentKeys[d.device_id] || force) {
                const encKey = await E2EE.encryptConversationKey(rawAesBase64, d.public_key);
                currentKeys[d.device_id] = encKey;
                updated = true;
@@ -311,11 +313,18 @@ export function useE2EE(conversationId?: string) {
           setE2eeState('waiting_for_device_authorization');
           setError('This device needs access to the conversation key. Open this chat on your original device to automatically securely sync the keys.');
           
-          supabase.channel(channelName).send({
-            type: 'broadcast',
-            event: 'REQUEST_PROVISION',
-            payload: {}
-          });
+          const sendReq = () => {
+            const myDeviceId = localStorage.getItem('connectx_device_id');
+            channel.send({
+              type: 'broadcast',
+              event: 'REQUEST_PROVISION',
+              payload: { user_id: profile!.id, device_id: myDeviceId }
+            }).catch(() => {});
+          };
+          // Channel might still be JOINING, retry a few times
+          setTimeout(sendReq, 500);
+          setTimeout(sendReq, 2000);
+          setTimeout(sendReq, 5000);
         } else {
           setE2eeState('error');
           setError(msg);
