@@ -20,8 +20,12 @@ const sizeMap = {
 
 export function UserAvatar({ src, name, size = 'md', isOnline, className }: UserAvatarProps) {
   const [imgError, setImgError] = useState(false);
-  
-  useEffect(() => setImgError(false), [src]);
+  const [prevSrc, setPrevSrc] = useState(src);
+
+  if (src !== prevSrc) {
+    setPrevSrc(src);
+    setImgError(false);
+  }
   const sizes = sizeMap[size];
   const initials = getInitials(name);
 
