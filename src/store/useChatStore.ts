@@ -80,13 +80,28 @@ export const useChatStore = create<ChatState>()(set => ({
     set(state => {
       const current = state.messages[conversationId] || [];
       const currentMap = new Map(current.map(m => [m.id, m]));
+      const newMap = new Map(messages.map(m => [m.id, m]));
       
-      const merged = messages.map(m => {
-        if (currentMap.has(m.id)) {
-          return mergeMessage(currentMap.get(m.id)!, m);
+      const merged: Message[] = [];
+      
+      // 1. Keep optimistic messages that aren't in the DB fetch yet
+      for (const m of current) {
+        if (!newMap.has(m.id) && (m.status === 'sending' || m.status === 'failed')) {
+          merged.push(m);
         }
-        return m;
-      });
+      }
+      
+      // 2. Add incoming messages (merged with existing ones if they exist)
+      for (const m of messages) {
+        if (currentMap.has(m.id)) {
+          merged.push(mergeMessage(currentMap.get(m.id)!, m));
+        } else {
+          merged.push(m);
+        }
+      }
+      
+      // Sort to ensure chronological order (assuming created_at can be compared)
+      merged.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
       
       return { messages: { ...state.messages, [conversationId]: merged } };
     }),
