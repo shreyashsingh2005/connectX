@@ -23,6 +23,9 @@ import {
   Video,
   Lock,
   AlertCircle,
+  Phone,
+  PhoneOff,
+  VideoOff
 } from 'lucide-react';
 
 interface MessageBubbleProps {
@@ -73,6 +76,38 @@ export const MessageBubble = memo(function MessageBubble({
   const displayContent = needsDecryption ? null : (message.decrypted_content ?? message.content);
   const isEmojiOnly = isOnlyEmojis(displayContent) && (!message.attachments || message.attachments.length === 0) && !message.reply_to_id;
 
+
+  if (message.type === 'system') {
+    if (displayContent && displayContent.startsWith('CALL_HISTORY|')) {
+      const parts = displayContent.split('|');
+      const callType = parts[1];
+      const duration = parts[2];
+      
+      let Icon = Phone;
+      let text = '';
+      
+      if (callType === 'audio') { text = 'Audio call' + (duration ? ` · ${duration}` : ''); }
+      else if (callType === 'video') { Icon = Video; text = 'Video call' + (duration ? ` · ${duration}` : ''); }
+      else if (callType === 'missed_audio') { Icon = PhoneOff; text = 'Missed audio call'; }
+      else if (callType === 'missed_video') { Icon = VideoOff; text = 'Missed video call'; }
+      
+      return (
+        <div className="flex justify-center my-4 w-full">
+          <div className="px-4 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 text-xs font-medium inline-flex items-center gap-1.5 shadow-sm border border-gray-200/50 dark:border-gray-700/50">
+            <Icon className="w-3.5 h-3.5" />
+            <span>{text}</span>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="flex justify-center my-4 w-full">
+        <div className="px-4 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 text-xs font-medium shadow-sm border border-gray-200/50 dark:border-gray-700/50">
+          {displayContent}
+        </div>
+      </div>
+    );
+  }
 
   if (message.decryption_error) {
     return (

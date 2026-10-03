@@ -6,7 +6,7 @@ import { useCallStore } from '@/store/useCallStore';
 import { useWebRTC } from '@/hooks/useWebRTC';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { Phone, PhoneOff, Mic, MicOff, Video, VideoOff, SwitchCamera } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/store/useChatStore';
 
@@ -14,6 +14,24 @@ export function CallOverlay() {
   const { currentCall, callStatus, localStream, remoteStream, isMuted, isVideoOff, setIsMuted, setIsVideoOff } = useCallStore();
   const { acceptCall, endCall } = useWebRTC();
   const conversations = useChatStore(s => s.conversations);
+
+  const [duration, setDuration] = useState(0);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (callStatus === 'connected') {
+      interval = setInterval(() => setDuration(d => d + 1), 1000);
+    } else {
+      setDuration(0);
+    }
+    return () => clearInterval(interval);
+  }, [callStatus]);
+
+  const formatDuration = (seconds: number) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
 
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -71,7 +89,7 @@ export function CallOverlay() {
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <UserAvatar src={avatarUrl || undefined} name={displayName || 'User'} size="xl" className="w-32 h-32 mb-6 opacity-50" />
             <h2 className="text-white text-2xl font-bold">{displayName}</h2>
-            <p className="text-gray-300 mt-2 capitalize">{callStatus.replace('_', ' ')}...</p>
+            <p className="text-gray-300 mt-2 capitalize">{callStatus === 'connected' ? formatDuration(duration) : callStatus.replace('_', ' ') + '...'}</p>
           </div>
         )}
 
@@ -104,7 +122,7 @@ export function CallOverlay() {
       <div className="flex flex-col items-center justify-center mb-12">
         <UserAvatar src={avatarUrl || undefined} name={displayName || 'User'} size="xl" className="w-32 h-32 mb-6 ring-4 ring-[#8B5CF6]/30 ring-offset-4 ring-offset-gray-900 shadow-2xl" />
         <h2 className="text-white text-3xl font-bold mb-2">{displayName}</h2>
-        <p className="text-gray-400 capitalize">{callStatus.replace('_', ' ')}</p>
+        <p className="text-gray-400 capitalize">{callStatus === 'connected' ? formatDuration(duration) : callStatus.replace('_', ' ')}</p>
       </div>
       
       {/* Hidden audio tags */}

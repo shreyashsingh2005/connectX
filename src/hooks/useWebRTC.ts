@@ -6,21 +6,20 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useCallStore, CallSession } from '@/store/useCallStore';
 import toast from 'react-hot-toast';
 
-const ICE_SERVERS = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    ...(process.env.NEXT_PUBLIC_TURN_URL ? [{
-      urls: process.env.NEXT_PUBLIC_TURN_URL,
-      username: process.env.NEXT_PUBLIC_TURN_USERNAME,
-      credential: process.env.NEXT_PUBLIC_TURN_CREDENTIAL,
-    }] : []),
-  ],
-};
+let cachedIceServers: any = null;
 
 export function useWebRTC() {
   const supabase = createClient();
   const profile = useAuthStore((s) => s.profile);
   
+  useEffect(() => {
+    if (!cachedIceServers) {
+      fetch('/api/turn').then(r => r.json()).then(data => {
+        if (data.iceServers) cachedIceServers = { iceServers: data.iceServers };
+      }).catch(() => {});
+    }
+  }, []);
+
   const { 
     currentCall, setCurrentCall, 
     callStatus, setCallStatus,
@@ -33,7 +32,7 @@ export function useWebRTC() {
   const setupPeerConnection = useCallback((callId: string, isCaller: boolean) => {
     if (pcRef.current) pcRef.current.close();
     
-    const pc = new RTCPeerConnection(ICE_SERVERS);
+    const pc = new RTCPeerConnection(cachedIceServers || { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
     pcRef.current = pc;
 
     pc.onicecandidate = async (event) => {
@@ -73,7 +72,28 @@ export function useWebRTC() {
       const isCaller = call.caller_id === profile?.id;
       const finalReason = call.status === 'outgoing_ringing' && isCaller ? 'cancelled' : 
                           call.status === 'incoming_ringing' && !isCaller ? 'rejected' : reason;
-      await supabase.from('call_sessions').update({ status: finalReason, ended_at: new Date().toISOString(), ended_reason: finalReason }).eq('id', call.id);
+     await supabase.from('call_sessions').update({ status: finalReason, ended_at: new Date().toISOString(), ended_reason: finalReason }).eq('id', call.id);
+      
+      let durationStr = '';
+      if (call.answered_at && (finalReason === 'ended' || finalReason === 'failed' || reason === 'ended' || reason === 'failed')) {
+        const seconds = Math.floor((Date.now() - new Date(call.answered_at).getTime()) / 1000);
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        durationStr = '|' + m + ':' + s;
+      }
+      
+      let callSystemType = call.type;
+      if (['rejected', 'missed', 'cancelled'].includes(finalReason)) {
+        callSystemType = 'missed_' + call.type;
+      }
+      
+      await supabase.from('messages').insert({
+        conversation_id: call.conversation_id,
+        sender_id: profile?.id || '',
+        type: 'system',
+        content: 'CALL_HISTORY|' + callSystemType + durationStr,
+        status: 'sent'
+      });
     }
     reset();
   }, [profile, supabase, reset]);
@@ -158,6 +178,15 @@ export function useWebRTC() {
           setCurrentCall(newCall);
           setCallStatus('incoming_ringing');
         }
+     } else if (currentId !== newCall.id && newCall.status === 'ringing' && !isCaller) {
+        await supabase.from('call_sessions').update({ status: 'busy', ended_at: new Date().toISOString(), ended_reason: 'busy' }).eq('id', newCall.id);
+        await supabase.from('messages').insert({
+          conversation_id: newCall.conversation_id,
+          sender_id: profile?.id || '',
+          type: 'system',
+          content: 'CALL_HISTORY|missed_' + newCall.type,
+          status: 'sent'
+        });
       } else if (currentId === newCall.id) {
         setCurrentCall(newCall);
         const pc = pcRef.current;
