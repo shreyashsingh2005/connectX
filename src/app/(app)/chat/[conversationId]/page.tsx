@@ -105,8 +105,45 @@ export default function ConversationPage({ params }: ConversationPageProps) {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#8B5CF6] animate-spin" />
+      <div className="flex flex-col flex-1 z-10 overflow-hidden relative bg-[#F8FAFC] dark:bg-[#0B0D12]">
+        {/* Header Skeleton */}
+        <header className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-[#252A34] bg-white/80 dark:bg-[#0B0D12]/80 min-h-[64px]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 md:hidden bg-gray-200 dark:bg-[#1A1E29] rounded-xl animate-pulse" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-[#1A1E29] animate-pulse" />
+              <div className="flex flex-col gap-1.5">
+                <div className="w-24 h-4 bg-gray-200 dark:bg-[#1A1E29] rounded animate-pulse" />
+                <div className="w-16 h-3 bg-gray-200 dark:bg-[#1A1E29] rounded animate-pulse" />
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-[#1A1E29] animate-pulse hidden md:block" />
+            <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-[#1A1E29] animate-pulse hidden md:block" />
+            <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-[#1A1E29] animate-pulse" />
+          </div>
+        </header>
+
+        {/* Message List Skeleton */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+          <div className="flex gap-2">
+            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-[#1A1E29] animate-pulse flex-shrink-0" />
+            <div className="w-[60%] max-w-[280px] h-[80px] rounded-[18px] bg-gray-200 dark:bg-[#1A1E29] animate-pulse" />
+          </div>
+          <div className="flex gap-2 flex-row-reverse mt-6">
+            <div className="w-[45%] max-w-[220px] h-[60px] rounded-[18px] bg-[#8B5CF6]/10 animate-pulse" />
+          </div>
+          <div className="flex gap-2 mt-6">
+            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-[#1A1E29] animate-pulse flex-shrink-0" />
+            <div className="w-[70%] max-w-[320px] h-[100px] rounded-[18px] bg-gray-200 dark:bg-[#1A1E29] animate-pulse" />
+          </div>
+        </div>
+
+        {/* Composer Skeleton */}
+        <div className="px-4 py-3 bg-white/80 dark:bg-[#0B0D12]/80 border-t border-gray-200 dark:border-[#252A34] min-h-[72px]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+          <div className="w-full h-[44px] rounded-[20px] bg-gray-200 dark:bg-[#1A1E29] animate-pulse" />
+        </div>
       </div>
     );
   }

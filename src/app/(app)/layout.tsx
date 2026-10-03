@@ -53,16 +53,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [profile?.id, updateOnlineStatus]);
 
   if (!isLoaded) {
-    return (
-      <div className="h-screen w-screen bg-[#F7F8FC] dark:bg-[#0B0D12] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#8B5CF6] flex items-center justify-center">
-            <Loader2 className="w-6 h-6 text-gray-900 dark:text-white animate-spin" />
-          </div>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">Loading connectX...</p>
-        </div>
-      </div>
-    );
+    return <AppBootScreen />;
   }
 
   if (!profile) {
