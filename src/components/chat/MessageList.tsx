@@ -432,7 +432,7 @@ export function MessageList({ conversationId }: MessageListProps) {
                   scrollToBottom('smooth');
                   setHasNewMessages(false);
                 }}
-                className="bg-[#8B5CF6] text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg hover:bg-[#7C3AED] transition-all flex items-center gap-2"
+                className="bg-[var(--chat-outgoing-bg)] text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg hover:opacity-90 transition-all flex items-center gap-2"
               >
                 New messages
               </button>

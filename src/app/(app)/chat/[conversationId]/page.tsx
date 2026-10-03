@@ -49,7 +49,32 @@ export default function ConversationPage({ params }: ConversationPageProps) {
   const addConversation = useChatStore(s => s.addConversation);
   const showProfilePanel = useUIStore(s => s.showProfilePanel);
   const { resolvedTheme } = useTheme();
+  
   const activeTheme = useThemeStore(s => s.getEffectiveTheme(conversationId));
+
+const getAccentHex = (color: string | undefined) => {
+    switch(color) {
+      case 'blue': return '#3B82F6';
+      case 'pink': return '#EC4899';
+      case 'green': return '#10B981';
+      case 'orange': return '#F97316';
+      case 'purple':
+      default: return '#8B5CF6';
+    }
+  };
+
+  const accentHex = getAccentHex(activeTheme?.accentColor);
+  const cssVariables = {
+    '--chat-outgoing-bg': accentHex,
+    '--chat-outgoing-text': '#FFFFFF',
+    '--chat-outgoing-muted': 'rgba(255, 255, 255, 0.8)',
+    '--chat-outgoing-border': 'rgba(255, 255, 255, 0.15)',
+    '--chat-incoming-bg': resolvedTheme === 'dark' ? '#151922' : '#FFFFFF',
+    '--chat-incoming-text': resolvedTheme === 'dark' ? '#F5F7FA' : '#101828',
+    '--chat-incoming-muted': resolvedTheme === 'dark' ? '#98A2B3' : '#667085',
+    '--chat-incoming-border': resolvedTheme === 'dark' ? '#252A34' : '#EAECF0',
+    backgroundColor: resolvedTheme === 'dark' ? (themeColors[activeTheme?.themeId || 'connect-purple']?.dark || '#0B0D12') : (themeColors[activeTheme?.themeId || 'connect-purple']?.light || '#FBFBFD')
+  } as React.CSSProperties;
   
 
 
@@ -165,9 +190,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
       
       <div 
         className="flex flex-col flex-1 min-w-0 overflow-hidden relative"
-        style={{
-          backgroundColor: resolvedTheme === 'dark' ? (themeColors[activeTheme?.themeId || 'connect-purple']?.dark || '#0B0D12') : (themeColors[activeTheme?.themeId || 'connect-purple']?.light || '#FBFBFD')
-        }}
+        style={cssVariables}
       >
         {(activeTheme?.backgroundId || 'solid') !== 'solid' && (
           <div 

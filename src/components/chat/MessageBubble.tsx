@@ -118,7 +118,7 @@ export const MessageBubble = memo(function MessageBubble({
         
         <div className={cn(
           'max-w-[85%] md:max-w-[75%] rounded-[18px] px-4 py-3 text-[13px] border flex items-center gap-3',
-          isOwn ? 'border-transparent bg-black/5 dark:bg-white/10 text-white'  : 'border-[#EAECF0] dark:border-[#252A34] bg-[#F8FAFC] dark:bg-[#151922] text-[#667085] dark:text-[#98A2B3]'
+          isOwn ? 'border-[var(--chat-outgoing-border)] bg-black/10 dark:bg-white/10 text-[var(--chat-outgoing-text)]' : 'border-[var(--chat-incoming-border)] bg-black/5 dark:bg-white/5 text-[var(--chat-incoming-text)]'
         )}>
           <Lock size={16} className="opacity-70 flex-shrink-0" /> 
           <span>Unable to decrypt this message</span>
@@ -180,7 +180,7 @@ export const MessageBubble = memo(function MessageBubble({
       <div className={cn('flex flex-col max-w-[85%] md:max-w-[75%]', isOwn ? 'items-end' : 'items-start')}>
         {/* Sender name (group) */}
         {showSender && !isOwn && (
-          <span className="text-xs font-medium text-[#8B5CF6] mb-1 ml-1">
+          <span className="text-xs font-medium text-[var(--chat-outgoing-bg)] mb-1 ml-1">
             {message.sender?.display_name}
           </span>
         )}
@@ -192,7 +192,7 @@ export const MessageBubble = memo(function MessageBubble({
             'bg-gray-200 dark:bg-[#151922] text-gray-600 dark:text-gray-400 cursor-pointer hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors'
           )}>
             <div className="min-w-0">
-              <span className="font-medium text-[#8B5CF6] block">{message.reply_to.sender?.display_name}</span>
+              <span className={cn("font-medium block", isOwn ? 'text-[var(--chat-outgoing-text)] font-semibold' : 'text-[var(--chat-outgoing-bg)]')}>{message.reply_to.sender?.display_name}</span>
               <span className="truncate block">{message.reply_to.content || '{"\u{1F4CE}"} Attachment'}</span>
             </div>
           </div>
@@ -205,8 +205,8 @@ export const MessageBubble = memo(function MessageBubble({
             'relative px-3.5 py-2.5 message-animate max-w-full shadow-sm',
             isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (
               isOwn 
-                ? `text-white ${showAvatar ? 'rounded-[14px] rounded-br-[4px]' : 'rounded-[14px] rounded-r-[4px]'}` 
-                : `bg-white dark:bg-[#151922] text-[#101828] dark:text-[#F5F7FA] border border-[#EAECF0] dark:border-[#252A34] ${showAvatar ? 'rounded-[14px] rounded-bl-[4px]' : 'rounded-[14px] rounded-l-[4px]'}`
+                ? `bg-[var(--chat-outgoing-bg)] text-[var(--chat-outgoing-text)] ${showAvatar ? 'rounded-[14px] rounded-br-[4px]' : 'rounded-[14px] rounded-r-[4px]'}` 
+                : `bg-[var(--chat-incoming-bg)] text-[var(--chat-incoming-text)] border border-[var(--chat-incoming-border)] ${showAvatar ? 'rounded-[14px] rounded-bl-[4px]' : 'rounded-[14px] rounded-l-[4px]'}`
             )
           )}
         >
@@ -238,7 +238,7 @@ export const MessageBubble = memo(function MessageBubble({
             {message.is_edited && (
               <span className="text-[10px] opacity-50">edited</span>
             )}
-            <span className={`text-[11px] font-medium tracking-wide ${isEmojiOnly ? (isOwn ? 'text-gray-400' : 'text-gray-500') : (isOwn ? 'text-white/90 drop-shadow-sm' : 'text-gray-500 dark:text-[#98A2B3]')}`}>
+            <span className={`text-[11px] font-medium tracking-wide ${isOwn ? 'text-[var(--chat-outgoing-muted)] drop-shadow-sm' : 'text-[var(--chat-incoming-muted)]'}`}>
               {formatMessageTime(message.created_at)}
             </span>
             {isOwn && <DeliveryIcon status={message.status} isEmojiOnly={isEmojiOnly} />}

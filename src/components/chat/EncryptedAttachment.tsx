@@ -113,7 +113,7 @@ export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { atta
   if (attachment.mime_type.startsWith('audio/')) {
     return (
       <div className="flex items-center gap-2 min-w-[180px]">
-        <Music className="w-4 h-4 text-[#8B5CF6]" />
+        <Music className="w-4 h-4 text-[var(--chat-outgoing-bg)]" />
         <audio controls className="flex-1" style={{ height: 32 }}>
           <source src={objectUrl} type={attachment.mime_type} />
         </audio>
@@ -130,8 +130,8 @@ export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { atta
         isOwn ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-50 dark:bg-[#111827] hover:bg-white dark:bg-[#0B0F19]'
       )}
     >
-      <div className="w-8 h-8 rounded-lg bg-[#8B5CF6]/20 flex items-center justify-center flex-shrink-0">
-        <FileText className="w-4 h-4 text-[#8B5CF6]" />
+      <div className="w-8 h-8 rounded-lg bg-[var(--chat-outgoing-bg)]/20 flex items-center justify-center flex-shrink-0">
+        <FileText className="w-4 h-4 text-[var(--chat-outgoing-bg)]" />
       </div>
       <div className="flex-1 min-w-0">
         <p className={cn("text-[13px] font-medium truncate", isOwn ? "text-white" : "text-gray-900 dark:text-gray-100")}>{attachment.file_name}</p>
