@@ -5,40 +5,23 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import * as E2EE from '@/lib/e2ee';
 
-// ─── Module-level Key Registry ─────────────────────────────────────────────────
-// Keys survive component remounts, chat-list re-renders, and hot-reloads.
-// Format: `${userId}:${conversationId}` → CryptoKey (AES-256-GCM)
 const keyRegistry = new Map<string, CryptoKey>();
-
-// Deduplicates concurrent init calls for the same conversation
 const initPromises = new Map<string, Promise<CryptoKey>>();
 
 function regKey(userId: string, conversationId: string) {
   return `${userId}:${conversationId}`;
 }
 
-// ─── E2EE State Machine ────────────────────────────────────────────────────────
-// States: 'idle' | 'initializing' | 'ready' | 'error'
-// Send is only enabled in the 'ready' state.
+export type E2EEState = 'idle' | 'initializing' | 'waiting_for_device_authorization' | 'key_provisioning' | 'ready' | 'error';
 
 export function useE2EE(conversationId?: string) {
   const profile = useAuthStore(s => s.profile);
-
-  // React state for UI rendering
-  const [e2eeState, setE2eeState] = useState<'idle' | 'initializing' | 'ready' | 'error'>('idle');
+  const [e2eeState, setE2eeState] = useState<E2EEState>('idle');
   const [error, setError] = useState<string | null>(null);
 
-  // Stable Supabase client — createClient() inside hook body + in deps array was
-  // the original catastrophic bug (new reference every render → infinite useEffect loop)
   const supabaseRef = useRef(createClient());
-
-  // The AES key lives in a ref so encrypt() always reads the live value
-  // without any React render cycle delay. Both are updated atomically.
   const convKeyRef = useRef<CryptoKey | null>(null);
 
-  // ─── Identity Init ────────────────────────────────────────────────────────────
-  // Run once per userId. Ensures RSA keypair exists in IndexedDB before
-  // conversation key init starts.
   const [identityReady, setIdentityReady] = useState(false);
   const identityReadyRef = useRef(false);
 
@@ -49,215 +32,247 @@ export function useE2EE(conversationId?: string) {
 
     async function initIdentity() {
       try {
+        let deviceId = localStorage.getItem('connectx_device_id');
+        if (!deviceId) {
+          deviceId = 'dev_' + crypto.randomUUID().replace(/-/g, '');
+          localStorage.setItem('connectx_device_id', deviceId);
+        }
+
         let keys = await E2EE.loadKeyPair(profile!.id);
         if (!keys) {
-          // No keys in IndexedDB — generate fresh RSA-2048 keypair
           keys = await E2EE.generateRSAKeyPair();
           await E2EE.storeKeyPair(profile!.id, keys.publicKey, keys.privateKey);
-          const pubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
+        }
+        
+        const pubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
+
+        const { data: existingDevice } = await supabase
+          .from('user_devices')
+          .select('id, public_key')
+          .eq('device_id', deviceId)
+          .eq('user_id', profile!.id)
+          .single();
+
+        if (!existingDevice) {
           if (!cancelled) {
-            await supabase.from('profiles').update({ public_key: pubKeyB64 }).eq('id', profile!.id);
-            useAuthStore.getState().setProfile({ ...profile!, public_key: pubKeyB64 });
+            await supabase.from('user_devices').insert({
+              user_id: profile!.id,
+              device_id: deviceId,
+              public_key: pubKeyB64
+            });
           }
-        } else {
-          // Keys exist locally. Ensure the database advertises THIS device's public key.
-          const pubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
-          if (profile?.public_key !== pubKeyB64) {
-            if (!cancelled) {
-              await supabase.from('profiles').update({ public_key: pubKeyB64 }).eq('id', profile!.id);
-              useAuthStore.getState().setProfile({ ...profile!, public_key: pubKeyB64 });
-            }
+        } else if (existingDevice.public_key !== pubKeyB64) {
+          if (!cancelled) {
+            await supabase.from('user_devices').update({ public_key: pubKeyB64 }).eq('id', existingDevice.id);
           }
         }
-        // Identity is ready only when we successfully loaded/created the keypair
+
         if (!cancelled) {
           identityReadyRef.current = true;
           setIdentityReady(true);
         }
       } catch (err) {
         console.error('[E2EE] Identity init failed:', err);
-        // DO NOT set identityReady=true on error — conversation key init must not run
-        // The user will see a permanent "initializing" spinner, which is correct since
-        // we cannot encrypt without identity keys.
       }
     }
 
-    initIdentity();
+    if (!identityReadyRef.current) {
+      initIdentity();
+    }
     return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.id]);
 
-  // ─── Conversation Key Init ────────────────────────────────────────────────────
   useEffect(() => {
-    // Hard guard: never run without all three prerequisites
-    if (!profile?.id || !conversationId || !identityReady) return;
+    if (!profile?.id || !conversationId) {
+      setE2eeState('idle');
+      return;
+    }
+    if (!identityReady) {
+      setE2eeState('initializing');
+      return;
+    }
 
-    const supabase = supabaseRef.current;
-
-    // Transition to initializing
-    convKeyRef.current = null;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setE2eeState('initializing');
     setError(null);
 
     const rKey = regKey(profile.id, conversationId);
+    const supabase = supabaseRef.current;
 
-    // Fast path: key already in module-level registry
+    const autoProvisionMissingDevices = async (convId: string, aesKey: CryptoKey) => {
+      try {
+        const { data: members } = await supabase
+          .from('conversation_members')
+          .select('id, user_id, encrypted_keys')
+          .eq('conversation_id', convId);
+        if (!members) return;
+
+        const { data: allDevices } = await supabase
+          .from('user_devices')
+          .select('id, user_id, device_id, public_key')
+          .in('user_id', members.map(m => m.user_id));
+        if (!allDevices) return;
+
+        const rawAesBase64 = await E2EE.exportConversationKey(aesKey);
+
+        for (const m of members) {
+          const mDevices = allDevices.filter(d => d.user_id === m.user_id);
+          const currentKeys = m.encrypted_keys || {};
+          let updated = false;
+
+          for (const d of mDevices) {
+            if (!currentKeys[d.device_id]) {
+               const encKey = await E2EE.encryptConversationKey(rawAesBase64, d.public_key);
+               currentKeys[d.device_id] = encKey;
+               updated = true;
+            }
+          }
+
+          if (updated) {
+            await supabase.rpc('update_member_keys', { p_member_id: m.id, p_encrypted_keys: currentKeys });
+          }
+        }
+      } catch (err) {
+        console.error('[E2EE] Auto-provisioning failed:', err);
+      }
+    };
+
     if (keyRegistry.has(rKey)) {
       convKeyRef.current = keyRegistry.get(rKey)!;
       setE2eeState('ready');
+      autoProvisionMissingDevices(conversationId, convKeyRef.current);
       return;
     }
 
-    // Deduplicate concurrent inits (React StrictMode runs effects twice in dev)
     if (!initPromises.has(rKey)) {
       const promise = (async (): Promise<CryptoKey> => {
-        // 1. Load RSA identity keys (guaranteed to exist since identityReady=true)
         const identityKeys = await E2EE.loadKeyPair(profile!.id);
-        if (!identityKeys) {
-          throw new Error(
-            '[E2EE] Identity keys not found in IndexedDB. ' +
-            'This should not happen after identity init succeeded. ' +
-            'Try refreshing or logging out and back in.'
-          );
-        }
+        if (!identityKeys) throw new Error('[E2EE] Identity keys missing.');
+        const myDeviceId = localStorage.getItem('connectx_device_id')!;
 
-        // 2. Fetch this user's member row for the conversation
         const { data: member, error: memberErr } = await supabase
           .from('conversation_members')
-          .select('id, encrypted_key')
+          .select('id, encrypted_key, encrypted_keys')
           .eq('conversation_id', conversationId)
           .eq('user_id', profile!.id)
           .single();
 
-        if (memberErr && memberErr.code !== 'PGRST116') {
-          throw new Error(`[E2EE] Could not fetch member row: ${memberErr.message}`);
-        }
+        if (memberErr && memberErr.code !== 'PGRST116') throw new Error(`Fetch error: ${memberErr.message}`);
+        if (!member) throw new Error(`You are not a member of conversation ${conversationId}.`);
 
-        if (!member) {
-          throw new Error(
-            `[E2EE] You are not a member of conversation ${conversationId}. ` +
-            'Cannot load encryption key.'
-          );
-        }
-
-        // ── CASE A: Member has an encrypted_key — try to decrypt it ─────────────
-        if (member.encrypted_key) {
+        const keysObj = member.encrypted_keys || {};
+        
+        // CASE A: Device explicitly authorized
+        if (keysObj[myDeviceId]) {
           try {
-            const rawAesBase64 = await E2EE.decryptConversationKey(
-              member.encrypted_key,
-              identityKeys.privateKey
-            );
-            const aesKey = await E2EE.importConversationKey(rawAesBase64);
-            return aesKey;
-          } catch (decErr: unknown) {
-            // RSA private key in IndexedDB does NOT match the public key used
-            // to encrypt this conversation key. This means the user logged in
-            // on a different device or cleared IndexedDB.
-            // We MUST NOT generate a replacement key — that breaks other members.
-            throw new Error(
-              '[E2EE] Your device key cannot decrypt this conversation. ' +
-              'The conversation key was encrypted for a different device session. ' +
-              'Existing messages in this conversation cannot be recovered. ' +
-              'Start a new conversation to chat securely.'
-            );
+            const rawAesBase64 = await E2EE.decryptConversationKey(keysObj[myDeviceId], identityKeys.privateKey);
+            return await E2EE.importConversationKey(rawAesBase64);
+          } catch (e) {
+            throw new Error('[E2EE] Failed to decrypt conversation key with this device key.');
           }
         }
 
-        // ── CASE B: Member row has no encrypted_key ──────────────────────────────
-        // Fetch all members to determine if this is a genuinely new conversation
-        const { data: allMembers, error: allErr } = await supabase
-          .from('conversation_members')
-          .select('id, user_id, encrypted_key, profiles(public_key)')
-          .eq('conversation_id', conversationId);
-
-        if (allErr) throw new Error(`[E2EE] Failed to fetch all members: ${allErr.message}`);
-
-        const otherMembersHaveKeys = allMembers?.some(
-          m => m.user_id !== profile!.id && m.encrypted_key
-        );
-
-        if (otherMembersHaveKeys) {
-          // Someone else has a key but we don't. Cannot generate a replacement.
-          throw new Error(
-            '[E2EE] Conversation already has an encryption key for other members, ' +
-            'but your member row has no encrypted_key. ' +
-            'Cannot generate a new key — that would break existing messages. ' +
-            'Contact the other participant to re-establish the conversation.'
-          );
+        // CASE B: Legacy key fallback (migration)
+        if (member.encrypted_key) {
+          try {
+            const rawAesBase64 = await E2EE.decryptConversationKey(member.encrypted_key, identityKeys.privateKey);
+            const aesKey = await E2EE.importConversationKey(rawAesBase64);
+            keysObj[myDeviceId] = member.encrypted_key;
+            await supabase.rpc('update_member_keys', { p_member_id: member.id, p_encrypted_keys: keysObj });
+            return aesKey;
+          } catch (e) {
+            // Unrecoverable local key mismatch for legacy
+          }
         }
 
-        // Genuinely new conversation — no member has a key yet.
-        // Generate and distribute securely.
+        // CASE C: Check if ANY member has keys (Waiting for authorization)
+        const { data: allMembers, error: allErr } = await supabase
+          .from('conversation_members')
+          .select('id, user_id, encrypted_key, encrypted_keys')
+          .eq('conversation_id', conversationId);
+
+        if (allErr) throw new Error(`Fetch members error: ${allErr.message}`);
+
+        const othersHaveKeys = allMembers?.some(m => {
+          if (m.encrypted_key) return true;
+          if (m.encrypted_keys && Object.keys(m.encrypted_keys).length > 0) return true;
+          return false;
+        });
+
+        if (othersHaveKeys) {
+          const wErr = new Error('WAITING_FOR_DEVICE_AUTHORIZATION');
+          wErr.name = 'WAITING_FOR_DEVICE_AUTHORIZATION';
+          throw wErr;
+        }
+
+        // CASE D: Genuinely new conversation
         const aesKey = await E2EE.generateConversationKey();
         const rawAesBase64 = await E2EE.exportConversationKey(aesKey);
         const myPubKeyB64 = await E2EE.exportPublicKey(identityKeys.publicKey);
 
         for (const m of allMembers || []) {
-          // CRITICAL FIX: ALWAYS use our own strictly known public key for ourselves.
-          const pubKey = m.user_id === profile!.id 
-            ? myPubKeyB64 
-            : (m.profiles as { public_key?: string })?.public_key;
-          if (!pubKey) {
-            console.warn(`[E2EE] No public key for member ${m.user_id} — skipping key distribution`);
-            continue;
+          const newKeysObj = m.encrypted_keys || {};
+          let legacyPubKey = myPubKeyB64;
+          
+          if (m.user_id !== profile!.id) {
+             const { data: mDevices } = await supabase.from('user_devices').select('device_id, public_key').eq('user_id', m.user_id);
+             if (mDevices && mDevices.length > 0) {
+               for (const d of mDevices) {
+                 newKeysObj[d.device_id] = await E2EE.encryptConversationKey(rawAesBase64, d.public_key);
+               }
+               legacyPubKey = mDevices[0].public_key;
+             }
+          } else {
+             newKeysObj[myDeviceId] = await E2EE.encryptConversationKey(rawAesBase64, myPubKeyB64);
           }
-          const encKey = await E2EE.encryptConversationKey(rawAesBase64, pubKey);
-          const { error: rpcErr } = await supabase.rpc('update_member_key', {
-            p_member_id: m.id,
-            p_encrypted_key: encKey,
-          });
-          if (rpcErr) throw new Error(`[E2EE] update_member_key failed: ${rpcErr.message}`);
+          
+          await supabase.rpc('update_member_keys', { p_member_id: m.id, p_encrypted_keys: newKeysObj });
+          
+          const legacyEncKey = await E2EE.encryptConversationKey(rawAesBase64, legacyPubKey);
+          await supabase.rpc('update_member_key', { p_member_id: m.id, p_encrypted_key: legacyEncKey });
         }
 
         return aesKey;
       })();
 
       initPromises.set(rKey, promise);
-      // Evict from dedup map after 60s so future navigations can re-init cleanly
       promise.finally(() => setTimeout(() => initPromises.delete(rKey), 60_000));
     }
 
-    // Attach to the (possibly shared) promise
     let cancelled = false;
     initPromises.get(rKey)!
       .then(aesKey => {
         if (cancelled) return;
-        // Store in registry and ref BEFORE updating React state
         keyRegistry.set(rKey, aesKey);
         convKeyRef.current = aesKey;
         setE2eeState('ready');
         setError(null);
+        autoProvisionMissingDevices(conversationId, aesKey);
       })
-      .catch((err: unknown) => {
+      .catch((err: any) => {
         if (cancelled) return;
         const msg = err instanceof Error ? err.message : String(err);
-        console.error('[E2EE] Conversation key init failed:', {
-          conversationId,
-          userId: profile?.id,
-          message: msg,
-        });
-        convKeyRef.current = null; // Ensure key is not available
-        setError(msg);
-        setE2eeState('error');
+        convKeyRef.current = null;
+        if (err.name === 'WAITING_FOR_DEVICE_AUTHORIZATION' || msg.includes('WAITING_FOR_DEVICE_AUTHORIZATION')) {
+          setE2eeState('waiting_for_device_authorization');
+          setError('This device needs access to the conversation key. Open this chat on your original device to automatically securely sync the keys.');
+        } else {
+          setE2eeState('error');
+          setError(msg);
+        }
       });
 
     return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.id, conversationId, identityReady]);
-
-  // ─── Public Interface ─────────────────────────────────────────────────────────
 
   const isReady = e2eeState === 'ready';
 
   const encrypt = useCallback(async (text: string): Promise<string> => {
-    // Check BOTH the state machine and the actual key ref
     const key = convKeyRef.current;
     if (e2eeState !== 'ready' || !key) {
       throw new Error(`[E2EE] Cannot encrypt — state is "${e2eeState}", key is ${key ? 'present' : 'null'}`);
     }
     return E2EE.encryptText(text, key);
-  }, [e2eeState]); // Re-memoize when state changes
+  }, [e2eeState]);
 
   const decrypt = useCallback(async (ciphertext: string): Promise<string> => {
     const key = convKeyRef.current;
@@ -280,21 +295,17 @@ export function useE2EE(conversationId?: string) {
   return {
     isReady,
     error,
-    e2eeState, // Expose full state for UI
+    e2eeState,
     encrypt,
     decrypt,
     encryptAttachment,
     decryptAttachment,
     resetConversationKey: async () => {
-      // Safe development/migration reset.
-      // Clears encrypted_key for all members of this conversation in the DB.
-      // This will force a new key generation on the next load.
       if (!conversationId) return;
       await supabaseRef.current.from('conversation_members')
-        .update({ encrypted_key: null })
+        .update({ encrypted_key: null, encrypted_keys: {} })
         .eq('conversation_id', conversationId);
       window.location.reload();
     },
   };
 }
-

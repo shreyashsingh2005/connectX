@@ -370,6 +370,14 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
           </button>
         </div>
       )}
+      
+      {e2eeState === 'waiting_for_device_authorization' && (
+        <div className="absolute bottom-[100%] left-0 right-0 mb-3 mx-2 p-3 bg-blue-500/10 border border-blue-500/20 text-blue-500 rounded-xl text-sm flex flex-col gap-2 shadow-lg backdrop-blur-sm z-10 animate-in fade-in slide-in-from-bottom-2">
+          <div>
+            <strong>Connect this device:</strong> Open this chat on your existing trusted device (e.g. Phone) to grant access to this conversation securely.
+          </div>
+        </div>
+      )}
       {showEmojiPicker && (
         <div ref={emojiPickerRef} className="absolute bottom-[100%] right-0 md:right-4 mb-3 z-[50] w-[calc(100vw-24px)] sm:w-[350px] shadow-[0_12px_35px_rgba(16,24,40,0.12)] dark:shadow-none rounded-[24px] overflow-hidden border border-[#EAECF0] dark:border-[#252A34] emoji-picker-wrapper animate-in fade-in slide-in-from-bottom-2 duration-150">
           <EmojiPicker 
