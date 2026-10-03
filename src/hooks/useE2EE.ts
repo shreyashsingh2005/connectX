@@ -18,6 +18,7 @@ export function useE2EE(conversationId?: string) {
   const profile = useAuthStore(s => s.profile);
   const [e2eeState, setE2eeState] = useState<E2EEState>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const supabaseRef = useRef(createClient());
   const convKeyRef = useRef<CryptoKey | null>(null);
@@ -97,6 +98,22 @@ export function useE2EE(conversationId?: string) {
 
     const rKey = regKey(profile.id, conversationId);
     const supabase = supabaseRef.current;
+
+    // Listen for key rotation/updates from other devices
+    const channel = supabase.channel(`e2ee_keys_${conversationId}`)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'conversation_members',
+        filter: `conversation_id=eq.${conversationId}`,
+      }, (payload) => {
+        if (payload.new.user_id === profile.id) {
+          initPromises.delete(rKey);
+          keyRegistry.delete(rKey);
+          setRefreshTrigger(prev => prev + 1);
+        }
+      })
+      .subscribe();
 
     const autoProvisionMissingDevices = async (convId: string, aesKey: CryptoKey) => {
       try {
@@ -261,8 +278,11 @@ export function useE2EE(conversationId?: string) {
         }
       });
 
-    return () => { cancelled = true; };
-  }, [profile?.id, conversationId, identityReady]);
+    return () => { 
+      cancelled = true; 
+      supabase.removeChannel(channel);
+    };
+  }, [profile?.id, conversationId, identityReady, refreshTrigger]);
 
   const isReady = e2eeState === 'ready';
 
@@ -300,6 +320,13 @@ export function useE2EE(conversationId?: string) {
     decrypt,
     encryptAttachment,
     decryptAttachment,
+    reloadKey: () => {
+      if (!conversationId || !profile?.id) return;
+      const rKey = regKey(profile.id, conversationId);
+      initPromises.delete(rKey);
+      keyRegistry.delete(rKey);
+      setRefreshTrigger(prev => prev + 1);
+    },
     resetConversationKey: async () => {
       if (!conversationId) return;
       const { error } = await supabaseRef.current.rpc('reset_conversation_keys', { p_conversation_id: conversationId });

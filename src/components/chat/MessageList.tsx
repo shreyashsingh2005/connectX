@@ -73,6 +73,18 @@ export function MessageList({ conversationId }: MessageListProps) {
   const typingTimeouts = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const { isReady, decrypt, e2eeState } = useE2EE(conversationId);
 
+  // Retry decryption if key state becomes ready (e.g., after realtime key rotation auto-provisioning)
+  useEffect(() => {
+    if (isReady && messages.length > 0) {
+      const updates = messages
+        .filter(m => m.decryption_error)
+        .map(m => ({ id: m.id, changes: { decrypted_content: undefined, decryption_error: undefined } as any }));
+      if (updates.length > 0) {
+        bulkUpdateMessages(conversationId, updates);
+      }
+    }
+  }, [isReady, conversationId]);
+
   // If E2EE falls into a permanent error state, mark all undecided messages as decryption errors
   useEffect(() => {
     if (e2eeState !== 'error' || messages.length === 0) return;
