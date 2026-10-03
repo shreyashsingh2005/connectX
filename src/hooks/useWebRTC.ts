@@ -38,11 +38,14 @@ export function useWebRTC() {
 
     pc.onicecandidate = async (event) => {
       if (event.candidate) {
-        const { data } = await supabase.from('call_sessions').select('*').eq('id', callId).single();
-        if (data) {
-          const field = isCaller ? 'caller_candidates' : 'receiver_candidates';
-          const candidates = data[field] || [];
-          await supabase.from('call_sessions').update({ [field]: [...candidates, event.candidate.toJSON()] }).eq('id', callId);
+        try {
+          await supabase.rpc('append_call_ice_candidate', {
+            p_call_id: callId,
+            p_side: isCaller ? 'caller' : 'receiver',
+            p_candidate: event.candidate.toJSON()
+          });
+        } catch (e) {
+          console.error('ICE RPC error', e);
         }
       }
     };
@@ -142,7 +145,14 @@ export function useWebRTC() {
       const pc = setupPeerConnection(call.id, false);
       stream.getTracks().forEach(track => pc.addTrack(track, stream));
 
-      if (call.offer) await pc.setRemoteDescription(new RTCSessionDescription(call.offer));
+      if (call.offer) {
+        await pc.setRemoteDescription(new RTCSessionDescription(call.offer));
+        if (call.caller_candidates && call.caller_candidates.length > 0) {
+          for (const c of call.caller_candidates) {
+            try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch (e) {}
+          }
+        }
+      }
 
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
@@ -198,7 +208,7 @@ export function useWebRTC() {
         }
 
         if (pc) {
-          if (newCall.status === 'accepted' && isCaller && status === 'outgoing_ringing' && newCall.answer) {
+          if (newCall.status === 'accepted' && isCaller && !pc.remoteDescription && newCall.answer) {
             setCallStatus('connecting');
             try { await pc.setRemoteDescription(new RTCSessionDescription(newCall.answer)); } catch(e) {}
           }
@@ -206,9 +216,9 @@ export function useWebRTC() {
           // Process ICE candidates
           const remoteCandidates = isCaller ? newCall.receiver_candidates : newCall.caller_candidates;
           if (remoteCandidates && remoteCandidates.length > 0 && pc.remoteDescription) {
-            remoteCandidates.forEach(async (c: any) => {
+            for (const c of remoteCandidates) {
               try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch(e) {}
-            });
+            }
           }
         }
       }
