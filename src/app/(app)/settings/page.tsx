@@ -54,6 +54,17 @@ export default function SettingsPage() {
   const supabase = createClient();
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const section = params.get("section");
+      if (section && ["main", "account", "appearance", "privacy", "notifications", "security", "help", "about"].includes(section)) {
+        setActiveSection(section);
+      }
+    }
+  }, []);
+
+
+  useEffect(() => {
     if (settings) {
       setLocalSettings(settings);
     }
@@ -226,7 +237,7 @@ export default function SettingsPage() {
             <h1 className="text-2xl font-bold text-[#101828] dark:text-[#F5F7FA] mb-6">Settings</h1>
 
             {/* Compact Profile Header */}
-            <div className="flex items-center gap-4 bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] p-4 mb-6 cursor-pointer hover:bg-[#F9FAFB] dark:hover:bg-[#1A1F2B] transition-colors" onClick={() => router.push('/profile')}>
+            <div className="flex items-center gap-4 bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] p-4 mb-6 cursor-pointer hover:bg-[#F9FAFB] dark:hover:bg-[#1A1F2B] transition-colors" onClick={() => setActiveSection("account")}>
               <UserAvatar src={profile.avatar_url} name={profile.display_name} size="lg" className="w-[48px] h-[48px]" isOnline={true} />
               <div className="flex-1 min-w-0">
                 <h2 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA] truncate">{profile.display_name}</h2>
