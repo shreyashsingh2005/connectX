@@ -71,12 +71,14 @@ export const useCallStore = create<CallStore>((set) => ({
   setRemoteStream: (stream) => set({ remoteStream: stream }),
   setIsMuted: (isMuted) => set({ isMuted }),
   setIsVideoOff: (isVideoOff) => set({ isVideoOff }),
-  reset: () => set({
+  reset: () => { set((state) => { if (state.localStream) { state.localStream.getTracks().forEach(track => track.stop()); } return {
     currentCall: null,
     callStatus: 'idle',
     localStream: null,
     remoteStream: null,
     isMuted: false,
     isVideoOff: false,
-  }),
+  };
+  });
+  },
 }));
