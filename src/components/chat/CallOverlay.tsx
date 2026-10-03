@@ -87,7 +87,19 @@ export function CallOverlay() {
           <video ref={remoteVideoRef} autoPlay playsInline className="absolute inset-0 w-full h-full object-cover" />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <UserAvatar src={avatarUrl || undefined} name={displayName || 'User'} size="xl" className="w-32 h-32 mb-6 opacity-50" />
+            
+            <div className="relative mb-6">
+              <UserAvatar 
+                src={avatarUrl || undefined} 
+                name={displayName || 'User'} 
+                size="2xl" 
+                className={cn(
+                  "w-24 h-24 md:w-32 md:h-32 rounded-full opacity-60 transition-all duration-500",
+                  ['connecting', 'outgoing_ringing', 'accepting', 'reconnecting'].includes(callStatus) ? 'ring-2 ring-[#8B5CF6]/50 ring-offset-4 ring-offset-black animate-pulse' : ''
+                )} 
+              />
+            </div>
+
             <h2 className="text-white text-2xl font-bold">{displayName}</h2>
             <p className="text-gray-300 mt-2 capitalize">{callStatus === 'connected' ? formatDuration(duration) : callStatus.replace('_', ' ') + '...'}</p>
           </div>
@@ -120,7 +132,21 @@ export function CallOverlay() {
   return (
     <div className="fixed inset-0 z-[200] bg-gray-900 flex flex-col items-center justify-center p-4">
       <div className="flex flex-col items-center justify-center mb-12">
-        <UserAvatar src={avatarUrl || undefined} name={displayName || 'User'} size="xl" className="w-32 h-32 mb-6 ring-4 ring-[#8B5CF6]/30 ring-offset-4 ring-offset-gray-900 shadow-2xl" />
+        
+        <div className="relative mb-8 mt-4">
+          <UserAvatar 
+            src={avatarUrl || undefined} 
+            name={displayName || 'User'} 
+            size="2xl" 
+            className={cn(
+              "w-24 h-24 md:w-32 md:h-32 rounded-full transition-all duration-500",
+              callStatus === 'connected' ? 'ring-2 ring-green-500/80 ring-offset-4 ring-offset-gray-900' :
+              ['connecting', 'outgoing_ringing', 'accepting', 'reconnecting'].includes(callStatus) ? 'ring-2 ring-[#8B5CF6]/60 ring-offset-4 ring-offset-gray-900 animate-pulse' :
+              ''
+            )} 
+          />
+        </div>
+
         <h2 className="text-white text-3xl font-bold mb-2">{displayName}</h2>
         <p className="text-gray-400 capitalize">{callStatus === 'connected' ? formatDuration(duration) : callStatus.replace('_', ' ')}</p>
       </div>
