@@ -201,8 +201,8 @@ export function ConversationList() {
                 className={cn(
                   'w-full flex items-center gap-3 px-4 py-3 transition-all duration-150 text-left group relative',
                   isActive
-                    ? 'bg-[#8B5CF6]/10 dark:bg-[#8B5CF6]/10 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] before:bg-[#8B5CF6]'
-                    : 'hover:bg-[#F9FAFB] dark:hover:bg-[#151922] bg-transparent'
+                    ? 'bg-[#F1F3F5] dark:bg-[#1A1F2B]'
+                    : 'hover:bg-[#F1F3F5] dark:hover:bg-[#1A1F2B] bg-transparent'
                 )}
               >
                 {/* Avatar */}
@@ -234,7 +234,7 @@ export function ConversationList() {
                       {getLastMessagePreview(conv)}
                     </span>
                     {unreadCount > 0 && (
-                      <span className="flex-shrink-0 min-w-[20px] h-[20px] rounded-full bg-[#8B5CF6] text-white text-[10px] font-bold flex items-center justify-center px-1">
+                      <span className="flex-shrink-0 min-w-[20px] h-[20px] rounded-full bg-[#101828] dark:bg-[#F5F7FA] text-white dark:text-[#101828] text-[10px] font-bold flex items-center justify-center px-1">
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}

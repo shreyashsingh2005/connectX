@@ -63,10 +63,10 @@ export function AppSidebar() {
               aria-label={label}
               title={label}
               className={cn(
-                'relative group w-10 h-10 rounded-[8px] flex items-center justify-center transition-all duration-150',
+                'relative group w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-150',
                 isActive
-                  ? 'bg-[#8B5CF6]/10 text-[#8B5CF6] dark:text-[#A78BFA] relative before:absolute before:left-[0px] before:top-[25%] before:h-[50%] before:w-[3px] before:bg-[#8B5CF6] before:rounded-r-md '
-                  : 'text-[#667085] hover:text-[#344054] dark:hover:text-[#F5F7FA] hover:bg-gray-100 dark:hover:bg-[#151922]'
+                  ? 'text-[#101828] dark:text-[#F5F7FA] bg-[#F1F3F5] dark:bg-[#1A1F2B]'
+                  : 'text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F1F3F5] dark:hover:bg-[#1A1F2B]'
               )}
             >
               <Icon size={18} strokeWidth={isActive ? 2.25 : 1.75} />
@@ -102,10 +102,10 @@ export function AppSidebar() {
           aria-label="Settings"
           title="Settings"
           className={cn(
-            'relative group w-10 h-10 rounded-[8px] flex items-center justify-center transition-all duration-150',
+            'relative group w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-150',
             pathname.startsWith('/settings')
-              ? 'bg-[#A855F7]/10 text-[#8B5CF6] dark:text-[#A78BFA]'
-              : 'text-[#667085] hover:text-[#344054] dark:hover:text-[#F5F7FA] hover:bg-gray-100 dark:hover:bg-[#151922]'
+              ? 'text-[#101828] dark:text-[#F5F7FA] bg-[#F1F3F5] dark:bg-[#1A1F2B]'
+              : 'text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F1F3F5] dark:hover:bg-[#1A1F2B]'
           )}
         >
           <Settings size={18} strokeWidth={2} />
@@ -118,7 +118,7 @@ export function AppSidebar() {
           onClick={handleLogout}
           aria-label="Logout"
           title="Logout"
-          className="relative group w-10 h-10 rounded-[8px] flex items-center justify-center text-[#667085] hover:text-[#F04438] hover:bg-red-50 dark:hover:bg-[#F04438]/10 transition-all duration-150"
+          className="relative group w-10 h-10 rounded-xl flex items-center justify-center text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F1F3F5] dark:hover:bg-[#1A1F2B] transition-all duration-150"
         >
           <LogOut size={18} strokeWidth={2} />
           <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-gray-900 dark:bg-[#F5F7FA] text-white dark:text-gray-900 text-xs font-medium rounded-md px-2.5 py-1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50 shadow-sm translate-x-[-4px] group-hover:translate-x-0">

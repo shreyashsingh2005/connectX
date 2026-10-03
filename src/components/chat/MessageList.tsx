@@ -59,6 +59,8 @@ export function MessageList({ conversationId }: MessageListProps) {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [deleteModalMsg, setDeleteModalMsg] = useState<Message | null>(null);
   const [deletedLocalIds, setDeletedLocalIds] = useState<string[]>([]);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [hasNewMessages, setHasNewMessages] = useState(false);
 
   useEffect(() => {
     try {
@@ -249,8 +251,18 @@ export function MessageList({ conversationId }: MessageListProps) {
       scrollToBottom('instant');
       isFirstLoad.current = false;
     } else if (messages.length > 0) {
-      const last = messages[messages.length - 1]; // We don't need to change this for scroll logic
-      if (last.sender_id === profile?.id) scrollToBottom();
+      const last = messages[messages.length - 1];
+      const el = scrollContainerRef.current;
+      if (last.sender_id === profile?.id) {
+        scrollToBottom();
+      } else if (el) {
+        const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 150;
+        if (isNearBottom) {
+          scrollToBottom();
+        } else {
+          setHasNewMessages(true);
+        }
+      }
     }
   }, [messages.length, messages, profile?.id, scrollToBottom]);
 
@@ -314,7 +326,11 @@ export function MessageList({ conversationId }: MessageListProps) {
 
   const handleScroll = useCallback(() => {
     const el = scrollContainerRef.current;
-    if (!el || !hasMore || isLoadingMore) return;
+    if (!el) return;
+    const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 150;
+    setShowScrollButton(!isNearBottom);
+    if (isNearBottom) setHasNewMessages(false);
+    if (!hasMore || isLoadingMore) return;
     if (el.scrollTop < 100) {
       const savedScrollHeight = el.scrollHeight;
       loadMessages(oldestMessageIdRef.current || undefined).then(() => {
@@ -405,7 +421,30 @@ export function MessageList({ conversationId }: MessageListProps) {
   }
 
   return (
-    <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-4">
+    <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-4 relative">
+        {showScrollButton && (
+          <div className="fixed bottom-24 right-8 z-50 flex flex-col items-end gap-2">
+            {hasNewMessages && (
+              <button
+                onClick={() => {
+                  scrollToBottom('smooth');
+                  setHasNewMessages(false);
+                }}
+                className="bg-[#8B5CF6] text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg hover:bg-[#7C3AED] transition-all flex items-center gap-2"
+              >
+                New messages
+              </button>
+            )}
+            <button
+              onClick={() => scrollToBottom('smooth')}
+              className="w-10 h-10 bg-white dark:bg-[#151922] border border-gray-200 dark:border-[#252A34] rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 dark:hover:bg-[#1A1F2B] transition-colors"
+            >
+              <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+              </svg>
+            </button>
+          </div>
+        )}
       {deleteModalMsg && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
           <div className="bg-white dark:bg-[#151922] w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-[#252A34]">

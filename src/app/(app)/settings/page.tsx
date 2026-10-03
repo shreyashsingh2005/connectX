@@ -222,58 +222,49 @@ export default function SettingsPage() {
         
         {/* MAIN OVERVIEW */}
         {activeSection === 'main' && (
-          <div className="flex-1 flex flex-col animate-in fade-in duration-200">
-            {/* Header / Profile Area */}
-            <div className="flex flex-col items-center pt-8 pb-10 px-4 md:pt-12 md:pb-12 text-center">
-              <div className="w-full flex justify-start mb-6 md:hidden">
-                <span className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA]">Settings</span>
+          <div className="flex-1 flex flex-col animate-in fade-in duration-200 px-4 md:px-0 py-6">
+            <h1 className="text-2xl font-bold text-[#101828] dark:text-[#F5F7FA] mb-6">Settings</h1>
+
+            {/* Compact Profile Header */}
+            <div className="flex items-center gap-4 bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] p-4 mb-6 cursor-pointer hover:bg-[#F9FAFB] dark:hover:bg-[#1A1F2B] transition-colors" onClick={() => router.push('/profile')}>
+              <UserAvatar src={profile.avatar_url} name={profile.display_name} size="lg" className="w-[48px] h-[48px]" isOnline={true} />
+              <div className="flex-1 min-w-0">
+                <h2 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA] truncate">{profile.display_name}</h2>
+                <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] truncate">@{profile.username}</p>
               </div>
-              <UserAvatar src={profile.avatar_url} name={profile.display_name} size="2xl" className="w-[72px] h-[72px] mb-4 shadow-sm" isOnline={false} />
-              <h1 className="text-[20px] font-[650] text-[#101828] dark:text-[#F5F7FA] tracking-tight">{profile.display_name}</h1>
-              <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-0.5 mb-2">@{profile.username}</p>
-              <div className="flex items-center gap-1.5 text-[12px] text-[#10B981] dark:text-[#32D583] font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] dark:bg-[#32D583]"></span>
-                Active
-              </div>
+              <ChevronRight size={18} strokeWidth={1.75} className="text-[#98A2B3]" />
             </div>
 
-            {/* Settings Sheet */}
-            <div className="flex-1 bg-[#FFFFFF] dark:bg-[#11141A] rounded-t-[24px] md:rounded-[24px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-[0_8px_30px_rgba(16,24,40,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] px-4 py-6 md:mb-10">
-              <h3 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA] mb-4 ml-2">Settings</h3>
-              
-              <div className="flex flex-col gap-1">
-                {mainSections.map((item) => (
-                  <button key={item.id} onClick={() => setActiveSection(item.id as any)} className="flex items-center justify-between w-full p-2 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors outline-none group">
-                    <div className="flex items-center gap-3">
-                      <div className={cn("w-[28px] h-[28px] rounded-full flex items-center justify-center", item.colorClass)}>
-                        <item.icon size={15} strokeWidth={1.75} />
+            {/* Compact Lists */}
+            <div className="flex flex-col gap-6">
+              <div>
+                <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2 px-1">Preferences</h3>
+                <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] overflow-hidden">
+                  {mainSections.map((item, index) => (
+                    <button key={item.id} onClick={() => setActiveSection(item.id as any)} className={cn("flex items-center justify-between w-full p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#1A1F2B] transition-colors outline-none group", index !== mainSections.length - 1 && "border-b border-[#EAECF0] dark:border-[#252A34]")}>
+                      <div className="flex items-center gap-3">
+                        <item.icon size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3] group-hover:text-[#101828] dark:group-hover:text-[#F5F7FA] transition-colors" />
+                        <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</span>
                       </div>
-                      <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-[#98A2B3]">
-                      {item.status && <span className="text-[12px]">{item.status}</span>}
-                      <ChevronRight size={16} strokeWidth={1.75} className="group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA] transition-colors" />
-                    </div>
-                  </button>
-                ))}
+                      <ChevronRight size={16} strokeWidth={1.75} className="text-[#D0D5DD] dark:text-[#475467] group-hover:text-[#667085] dark:group-hover:text-[#98A2B3] transition-colors" />
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-16px)] mx-auto my-4" />
-
-              <div className="flex flex-col gap-1">
-                {secondarySections.map((item) => (
-                  <button key={item.id} onClick={() => setActiveSection(item.id as any)} className="flex items-center justify-between w-full p-2 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors outline-none group">
-                    <div className="flex items-center gap-3">
-                      <div className={cn("w-[28px] h-[28px] rounded-full flex items-center justify-center", item.colorClass)}>
-                        <item.icon size={15} strokeWidth={1.75} />
+              <div>
+                <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2 px-1">More</h3>
+                <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] overflow-hidden">
+                  {secondarySections.map((item, index) => (
+                    <button key={item.id} onClick={() => setActiveSection(item.id as any)} className={cn("flex items-center justify-between w-full p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#1A1F2B] transition-colors outline-none group", index !== secondarySections.length - 1 && "border-b border-[#EAECF0] dark:border-[#252A34]")}>
+                      <div className="flex items-center gap-3">
+                        <item.icon size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3] group-hover:text-[#101828] dark:group-hover:text-[#F5F7FA] transition-colors" />
+                        <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</span>
                       </div>
-                      <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-[#98A2B3]">
-                      <ChevronRight size={16} strokeWidth={1.75} className="group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA] transition-colors" />
-                    </div>
-                  </button>
-                ))}
+                      <ChevronRight size={16} strokeWidth={1.75} className="text-[#D0D5DD] dark:text-[#475467] group-hover:text-[#667085] dark:group-hover:text-[#98A2B3] transition-colors" />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

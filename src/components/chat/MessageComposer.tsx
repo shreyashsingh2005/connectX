@@ -2,12 +2,12 @@ import { useState, useRef, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useChatStore } from '@/store/useChatStore';
-import { Smile, Paperclip, Mic, Send, X, FileText, Loader2, Square, Plus } from 'lucide-react';
+import { Smile, Mic, Send, X, FileText, Loader2, Square, Plus, Image as ImageIcon, Video as VideoIcon, Music } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
-import { getFileType } from '@/lib/utils';
+import { getFileType, cn } from '@/lib/utils';
 import { useE2EE } from '@/hooks/useE2EE';
-import { useThemeStore, ThemeId } from '@/store/useThemeStore';
+import { useThemeStore } from '@/store/useThemeStore';
 import EmojiPicker, { Theme } from 'emoji-picker-react';
 import { useTheme } from 'next-themes';
 import { AttachmentPreview as AttachmentPreviewType } from '@/types';
@@ -24,12 +24,15 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const [isTyping, setIsTyping] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const emojiButtonRef = useRef<HTMLButtonElement>(null);
+  const attachmentMenuRef = useRef<HTMLDivElement>(null);
+  const attachButtonRef = useRef<HTMLButtonElement>(null);
   
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const supabase = createClient();
@@ -42,37 +45,37 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const addMessage = useChatStore(s => s.addMessage);
   const updateMessage = useChatStore(s => s.updateMessage);
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 150) + 'px';
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px';
     }
   }, [text]);
 
-  // Click-away listener for emoji picker
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
       if (showEmojiPicker && emojiPickerRef.current && emojiButtonRef.current) {
-        const isOutsidePicker = !emojiPickerRef.current.contains(event.target as Node);
-        const isOutsideButton = !emojiButtonRef.current.contains(event.target as Node);
-        
-        if (isOutsidePicker && isOutsideButton) {
+        if (!emojiPickerRef.current.contains(target) && !emojiButtonRef.current.contains(target)) {
           setShowEmojiPicker(false);
+        }
+      }
+      if (showAttachmentMenu && attachmentMenuRef.current && attachButtonRef.current) {
+        if (!attachmentMenuRef.current.contains(target) && !attachButtonRef.current.contains(target)) {
+          setShowAttachmentMenu(false);
         }
       }
     };
     
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showEmojiPicker]);
+  }, [showEmojiPicker, showAttachmentMenu]);
 
-  const handleEmojiClick = (emojiData: any, event: MouseEvent) => {
+  const handleEmojiClick = (emojiData: any) => {
     const cursor = textareaRef.current?.selectionStart ?? text.length;
     const newText = text.slice(0, cursor) + emojiData.emoji + text.slice(cursor);
     setText(newText);
     
-    // Focus back and move cursor after state update
     setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.focus();
@@ -102,7 +105,6 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     });
   };
 
-  // Cleanup typing timeout
   useEffect(() => {
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -123,6 +125,17 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     }, 2000);
   };
 
+  const handleAttachmentClick = (type: string) => {
+    setShowAttachmentMenu(false);
+    if (fileInputRef.current) {
+      if (type === 'Photos') fileInputRef.current.accept = 'image/*';
+      else if (type === 'Video') fileInputRef.current.accept = 'video/*';
+      else if (type === 'Audio') fileInputRef.current.accept = 'audio/*';
+      else fileInputRef.current.accept = '*/*';
+      fileInputRef.current.click();
+    }
+  };
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
@@ -134,7 +147,10 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       }));
       setAttachments(prev => [...prev, ...newAtts]);
     }
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+      fileInputRef.current.accept = '';
+    }
   };
 
   const removeAttachment = (id: string) => {
@@ -192,14 +208,12 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     }
   };
 
-  
   async function handleSend(e?: React.FormEvent) {
     e?.preventDefault();
     const contentText = text.trim();
     if (!contentText && attachments.length === 0) return;
     if (!profile || isSending || isSubmittingRef.current) return;
 
-    // State machine guard — only 'ready' state allows Send
     if (e2eeState === 'initializing' || e2eeState === 'idle') {
       toast.error('Encryption is still initializing. Please wait a moment and try again.');
       return;
@@ -212,27 +226,22 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       toast.error('Cannot send yet — waiting for your other device to grant access.');
       return;
     }
-    // e2eeState === 'ready' — proceed
 
     isSubmittingRef.current = true;
     setIsSending(true);
     const tempId = uuidv4();
     let optimisticAdded = false;
 
-    // Save state in case we need to restore on failure
     const savedText = text;
     const savedAttachments = [...attachments];
     const savedReply = replyToMessage;
 
     try {
-      // ── STEP 1: Encrypt BEFORE touching UI ───────────────────────────────────
       let finalContent: string | null = contentText || null;
       if (finalContent) {
         finalContent = await encrypt(finalContent);
-        // If encrypt() throws, we never reach the optimistic message creation below.
       }
 
-      // ── STEP 2: NOW create optimistic UI message (encryption already succeeded) ─
       const optimisticMessage = {
         id: tempId,
         conversation_id: conversationId,
@@ -259,7 +268,6 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       addMessage(conversationId, optimisticMessage as any);
       optimisticAdded = true;
 
-      // Clear composer UI
       setText('');
       setReplyToMessage(null);
       setAttachments([]);
@@ -267,7 +275,6 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       setIsTyping(false);
       sendTypingStatus(false);
 
-      // ── STEP 3: Insert into DB ────────────────────────────────────────────────
       const { data: newMessage, error: insertError } = await supabase
         .from('messages')
         .insert({
@@ -284,7 +291,6 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       if (insertError) throw insertError;
 
-      // ── STEP 4: Confirm sent ──────────────────────────────────────────────────
       updateMessage(conversationId, tempId, {
         ...newMessage,
         status: 'sent',
@@ -292,7 +298,6 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         decrypted_content: contentText || null,
       });
 
-      // ── STEP 5: Upload attachments ────────────────────────────────────────────
       for (const att of savedAttachments) {
         const uploadRes = await uploadAttachment(att, tempId);
         if (uploadRes) {
@@ -311,10 +316,8 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     } catch (err: any) {
       console.error('[Composer] Send failed:', err);
       if (optimisticAdded) {
-        // Message was added to store — mark it failed
         updateMessage(conversationId, tempId, { status: 'failed' });
       } else {
-        // Encryption failed before UI was touched — restore input
         setText(savedText);
         setAttachments(savedAttachments);
         setReplyToMessage(savedReply);
@@ -327,10 +330,6 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       setIsSending(false);
     }
   }
-
-
-
-
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -353,170 +352,133 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     }
   };
 
+  const menuItems = [
+    { icon: ImageIcon, label: 'Photos', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10' },
+    { icon: VideoIcon, label: 'Video', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-500/10' },
+    { icon: FileText, label: 'Document', color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-500/10' },
+    { icon: Music, label: 'Audio', color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-500/10' },
+  ];
+
   return (
-    <form onSubmit={handleSend}
-      className="border border-[#EAECF0] dark:border-[#252A34] bg-white dark:bg-[#11141A] shadow-md rounded-[24px] flex-shrink-0 px-3 py-2.5 relative mx-2 md:mx-4 mb-2 md:mb-4 mt-2 transition-all" 
-      style={{ marginBottom: 'calc(max(env(safe-area-inset-bottom), 8px))' }}
-      onDrop={handleDrop}
-      onDragOver={e => e.preventDefault()}
-    >
+    <div className="relative mx-3 mb-4 mt-2">
       {e2eeState === 'error' && (
-        <div className="absolute bottom-[100%] left-0 right-0 mb-3 mx-2 p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-sm flex flex-col gap-2 shadow-lg backdrop-blur-sm z-10 animate-in fade-in slide-in-from-bottom-2">
-          <div>
-            <strong>Security Error:</strong> Your current device cannot decrypt this conversation. Old messages are unrecoverable.
-          </div>
-          <button 
-            type="button"
-            onClick={resetConversationKey}
-            className="self-start text-xs font-semibold bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition-colors"
-          >
-            Reset Secure Session
-          </button>
+        <div className="absolute bottom-[100%] left-0 right-0 mb-3 p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-sm flex flex-col gap-2 shadow-lg backdrop-blur-sm z-10 animate-in fade-in slide-in-from-bottom-2">
+          <div><strong>Security Error:</strong> Your current device cannot decrypt this conversation. Old messages are unrecoverable.</div>
+          <button type="button" onClick={resetConversationKey} className="self-start text-xs font-semibold bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition-colors">Reset Secure Session</button>
         </div>
       )}
       
       {e2eeState === 'waiting_for_device_authorization' && (
-        <div className="absolute bottom-[100%] left-0 right-0 mb-3 mx-2 p-3 bg-blue-500/10 border border-blue-500/20 text-blue-500 rounded-xl text-sm flex flex-col gap-2 shadow-lg backdrop-blur-sm z-10 animate-in fade-in slide-in-from-bottom-2">
-          <div>
-            <strong>Connect this device:</strong> Open this chat on your existing trusted device (e.g. Phone) to grant access to this conversation securely.
-          </div>
-          <button 
-            type="button"
-            onClick={() => {
-              if (confirm('Are you sure? If you lost your original device, resetting will create a new key but all old messages will become permanently unreadable.')) {
-                resetConversationKey();
-              }
-            }}
-            className="self-start text-xs font-semibold bg-blue-500/20 hover:bg-blue-500/30 px-3 py-1.5 rounded-lg transition-colors border border-blue-500/30 mt-2"
-          >
-            Lost your device? Reset Secure Session
-          </button>
+        <div className="absolute bottom-[100%] left-0 right-0 mb-3 p-3 bg-blue-500/10 border border-blue-500/20 text-blue-500 rounded-xl text-sm flex flex-col gap-2 shadow-lg backdrop-blur-sm z-10 animate-in fade-in slide-in-from-bottom-2">
+          <div><strong>Connect this device:</strong> Open this chat on your existing trusted device (e.g. Phone) to grant access to this conversation securely.</div>
+          <button type="button" onClick={() => { if (confirm('Are you sure? If you lost your original device, resetting will create a new key but all old messages will become permanently unreadable.')) resetConversationKey(); }} className="self-start text-xs font-semibold bg-blue-500/20 hover:bg-blue-500/30 px-3 py-1.5 rounded-lg transition-colors border border-blue-500/30 mt-2">Lost your device? Reset Secure Session</button>
         </div>
       )}
+
+      {/* Attachment Menu */}
+      {showAttachmentMenu && (
+        <div ref={attachmentMenuRef} className="absolute bottom-[100%] left-0 mb-3 z-50 w-48 bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[14px] shadow-lg p-2 animate-in fade-in zoom-in-95 duration-150">
+          {menuItems.map((item) => (
+            <button key={item.label} onClick={() => handleAttachmentClick(item.label)} className="w-full flex items-center gap-3 px-2 py-2 hover:bg-gray-50 dark:hover:bg-[#151922] rounded-[10px] transition-colors group text-left">
+              <div className={cn("w-8 h-8 rounded-[8px] flex items-center justify-center transition-colors", item.bg, item.color)}>
+                <item.icon size={16} strokeWidth={2.5} />
+              </div>
+              <span className="text-[13px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Emoji Picker */}
       {showEmojiPicker && (
-        <div ref={emojiPickerRef} className="absolute bottom-[100%] right-0 md:right-4 mb-3 z-[50] w-[calc(100vw-24px)] sm:w-[350px] shadow-[0_12px_35px_rgba(16,24,40,0.12)] dark:shadow-none rounded-[24px] overflow-hidden border border-[#EAECF0] dark:border-[#252A34] emoji-picker-wrapper animate-in fade-in slide-in-from-bottom-2 duration-150">
+        <div ref={emojiPickerRef} className="absolute bottom-[100%] right-0 mb-3 z-50 w-[300px] shadow-lg rounded-[14px] overflow-hidden border border-[#EAECF0] dark:border-[#252A34] animate-in fade-in slide-in-from-bottom-2 duration-150">
           <EmojiPicker 
             onEmojiClick={handleEmojiClick}
             theme={resolvedTheme === 'dark' ? Theme.DARK : Theme.LIGHT}
             lazyLoadEmojis={true}
             previewConfig={{ showPreview: false }}
             skinTonesDisabled={true}
-            searchPlaceHolder="Search emoji..."
             width="100%"
-            height="400px"
-            style={{ 
-              '--epr-bg-color': 'var(--epr-bg-color)',
-              '--epr-text-color': 'var(--epr-text-color)',
-              '--epr-picker-border-color': 'var(--epr-border-color)',
-              '--epr-category-icon-active-color': '#8B5CF6',
-              '--epr-search-border-color': 'var(--epr-border-color)',
-              '--epr-search-input-bg-color': 'transparent',
-              '--epr-hover-bg-color': 'var(--epr-hover-bg)',
-              '--epr-focus-bg-color': 'var(--epr-hover-bg)',
-              '--epr-search-input-height': '38px',
-              '--epr-search-input-border-radius': '10px',
-              '--epr-category-navigation-button-size': '32px',
-              '--epr-emoji-size': '24px',
-              '--epr-emoji-padding': '4px'
-            } as any}
+            height="350px"
           />
         </div>
       )}
-      
-      {/* Reply preview */}
-      {replyToMessage && (
-        <div className="flex items-center gap-3 px-3 py-2 mb-2 bg-[#F8FAFC] dark:bg-[#11141A] rounded-[10px] border border-[#EAECF0] dark:border-[#252A34]">
-          <div className="flex-1 border-l-2 border-[#8B5CF6] pl-2 min-w-0">
-            <p className="text-[12px] font-medium text-[#8B5CF6] truncate">{replyToMessage.sender?.display_name || 'Someone'}</p>
-            <p className="text-[12px] text-[#667085] dark:text-[#98A2B3] truncate">{replyToMessage.decrypted_content || 'Attachment'}</p>
-          </div>
-          <button type="button" onClick={() => setReplyToMessage(null)} className="text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] p-1 rounded-md hover:bg-gray-200 dark:hover:bg-[#252A34] transition-colors" aria-label="Cancel reply">
-            <X size={14} />
-          </button>
-        </div>
-      )}
 
-      {/* Attachment previews */}
-      {attachments.length > 0 && (
-        <div className="flex gap-2 mb-2 overflow-x-auto p-1 no-scrollbar">
-          {attachments.map(att => (
-            <div key={att.id} className="relative group flex-shrink-0 w-16 h-16 rounded-[10px] border border-[#EAECF0] dark:border-[#252A34] bg-[#F8FAFC] dark:bg-[#151922] overflow-hidden">
-              {att.type === 'image' ? (
-                <img src={att.preview} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <FileText size={20} className="text-[#667085] dark:text-[#98A2B3]" />
-                </div>
-              )}
-              <button type="button"
-                onClick={() => removeAttachment(att.id)}
-                className="absolute -top-1 -right-1 bg-[#101828] dark:bg-white text-white dark:text-[#101828] rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                aria-label="Remove attachment"
-              >
-                <X size={12} />
-              </button>
-              {att.uploadProgress !== undefined && att.uploadProgress < 100 && (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                  <span className="text-[10px] font-medium text-white">{Math.round(att.uploadProgress)}%</span>
-                </div>
-              )}
+      <form onSubmit={handleSend} onDrop={handleDrop} onDragOver={e => e.preventDefault()}
+        className="bg-white dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] shadow-sm rounded-[14px] flex-shrink-0 p-2 relative transition-all" 
+      >
+        {replyToMessage && (
+          <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-[#F7F8FC] dark:bg-[#11141A] rounded-[10px] border border-[#EAECF0] dark:border-[#252A34]">
+            <div className="flex-1 border-l-2 border-[#8B5CF6] pl-2 min-w-0">
+              <p className="text-[12px] font-medium text-[#8B5CF6] truncate">{replyToMessage.sender?.display_name || 'Someone'}</p>
+              <p className="text-[12px] text-[#667085] dark:text-[#98A2B3] truncate">{replyToMessage.decrypted_content || 'Attachment'}</p>
             </div>
-          ))}
-        </div>
-      )}
-
-      <div className="flex items-end gap-1 sm:gap-2">
-        <button type="button" onClick={() => fileInputRef.current?.click()}
-          className="w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]"
-          aria-label="Open attachments" title="Open attachments"
-        >
-          <Plus size={20} strokeWidth={2} />
-        </button>
-
-        <div className="flex-1 min-h-[40px] max-h-32 bg-transparent flex items-center px-1 transition-all overflow-hidden relative">
-          <textarea
-            ref={textareaRef}
-            value={text}
-            onChange={handleTextChange}
-            onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
-            placeholder={isRecording ? `Recording... ${recordingDuration}s` : "Write a message..."}
-            disabled={isRecording || isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error'}
-            className="flex-1 max-h-32 bg-transparent text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder:text-[#98A2B3] resize-none py-2.5 sm:py-3 px-2 sm:px-3 focus:outline-none custom-scrollbar leading-tight"
-            rows={1}
-            style={{ minHeight: '40px' }}
-          />
-          
-          <div className="relative flex items-center justify-center mr-1">
-            <button type="button" ref={emojiButtonRef}
-              onClick={() => setShowEmojiPicker(!showEmojiPicker)} title="Open emoji picker" aria-label="Open emoji picker"
-              className={`flex w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex-shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6] ${showEmojiPicker ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] hover:bg-[#F8FAFC] dark:hover:bg-[#151922]"}`}
-            >
-              <Smile size={18} strokeWidth={2} className="sm:w-5 sm:h-5" />
-            </button>
+            <button type="button" onClick={() => setReplyToMessage(null)} className="text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] p-1 rounded-md hover:bg-gray-200 dark:hover:bg-[#252A34] transition-colors"><X size={14} /></button>
           </div>
-          <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" multiple aria-label="Hidden file input" />
-        </div>
-
-        {text.trim() || attachments.length > 0 ? (
-          <button type="submit"
-            disabled={isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error'}
-            className="w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 hover:scale-102 active:scale-95 transition-all shadow-sm disabled:opacity-50 disabled:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#11141A]"
-            style={{ backgroundColor: activeTheme.accentColor === 'purple' ? '#8B5CF6' : activeTheme.accentColor === 'blue' ? '#3B82F6' : activeTheme.accentColor === 'pink' ? '#EC4899' : activeTheme.accentColor === 'green' ? '#10B981' : '#F97316' }}
-            aria-label="Send message" title="Send message"
-          >
-            {(isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error') ? <Loader2 size={16} className="animate-spin opacity-70" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
-          </button>
-        ) : (
-          <button type="button" onClick={isRecording ? stopRecording : startRecording}
-              className={`w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full transition-all hover:opacity-90 hover:scale-102 active:scale-95 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#11141A] ${isRecording ? "bg-[#F04438] text-white animate-pulse" : "text-white"}`}
-            style={{ backgroundColor: activeTheme.accentColor === 'purple' ? '#8B5CF6' : activeTheme.accentColor === 'blue' ? '#3B82F6' : activeTheme.accentColor === 'pink' ? '#EC4899' : activeTheme.accentColor === 'green' ? '#10B981' : '#F97316' }}
-            aria-label={isRecording ? "Stop recording" : "Record voice message"} title={isRecording ? "Stop recording" : "Record voice message"}
-          >
-            {isRecording ? <Square size={16} className="fill-current" /> : <Mic size={18} strokeWidth={2} />}
-          </button>
         )}
-      </div>
-    </form>
+
+        {attachments.length > 0 && (
+          <div className="flex gap-2 mb-2 overflow-x-auto p-1 no-scrollbar">
+            {attachments.map(att => (
+              <div key={att.id} className="relative group flex-shrink-0 w-14 h-14 rounded-[10px] border border-[#EAECF0] dark:border-[#252A34] bg-[#F7F8FC] dark:bg-[#11141A] overflow-hidden">
+                {att.type === 'image' ? (
+                  <img src={att.preview} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center"><FileText size={20} className="text-[#667085] dark:text-[#98A2B3]" /></div>
+                )}
+                <button type="button" onClick={() => removeAttachment(att.id)} className="absolute top-1 right-1 bg-black/50 hover:bg-black/70 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"><X size={12} /></button>
+                {att.uploadProgress !== undefined && att.uploadProgress < 100 && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><span className="text-[10px] font-medium text-white">{Math.round(att.uploadProgress)}%</span></div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-end gap-1.5">
+          <button type="button" ref={attachButtonRef} onClick={() => setShowAttachmentMenu(!showAttachmentMenu)}
+            className={cn("w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-[10px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]", showAttachmentMenu ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "text-[#667085] dark:text-[#98A2B3] hover:bg-[#F7F8FC] dark:hover:bg-[#11141A]")}
+          >
+            <Plus size={20} strokeWidth={2} />
+          </button>
+
+          <div className="flex-1 min-h-[36px] max-h-[120px] bg-transparent flex items-center px-1">
+            <textarea
+              ref={textareaRef}
+              value={text}
+              onChange={handleTextChange}
+              onKeyDown={handleKeyDown}
+              onPaste={handlePaste}
+              placeholder={isRecording ? `Recording... ${recordingDuration}s` : "Type a message..."}
+              disabled={isRecording || isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error'}
+              className="flex-1 max-h-[120px] bg-transparent text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder:text-[#98A2B3] resize-none py-2 px-1 focus:outline-none custom-scrollbar leading-relaxed"
+              rows={1}
+            />
+            
+            <button type="button" ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className={cn("w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-[8px] transition-colors focus-visible:outline-none", showEmojiPicker ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "text-[#667085] dark:text-[#98A2B3] hover:bg-[#F7F8FC] dark:hover:bg-[#11141A]")}
+            >
+              <Smile size={18} strokeWidth={2} />
+            </button>
+            <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" multiple />
+          </div>
+
+          {text.trim() || attachments.length > 0 ? (
+            <button type="submit" disabled={isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error'}
+              className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-[10px] text-white hover:opacity-90 active:scale-95 transition-all shadow-sm disabled:opacity-50 focus-visible:outline-none bg-[#8B5CF6]"
+            >
+              {isSending ? <Loader2 size={16} className="animate-spin opacity-70" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
+            </button>
+          ) : (
+            <button type="button" onClick={isRecording ? stopRecording : startRecording}
+              className={cn("w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-[10px] transition-all hover:opacity-90 active:scale-95 shadow-sm focus-visible:outline-none text-white", isRecording ? "bg-[#F04438] animate-pulse" : "bg-[#8B5CF6]")}
+            >
+              {isRecording ? <Square size={16} className="fill-current" /> : <Mic size={18} strokeWidth={2} />}
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
   );
 }
+

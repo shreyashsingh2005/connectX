@@ -1,13 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-brand-light: #A78BFA;
+  --color-brand: #8B5CF6;
+  --color-brand-dark: #7C3AED;
+  
+  --color-surface-50: #FFFFFF;
+  --color-surface-100: #F7F8FC;
+  --color-surface-200: #FAFAFB;
+  --color-surface-700: #151922;
+  --color-surface-800: #11141A;
+  --color-surface-900: #0B0D12;
+  
+  --color-border-light: #EAECF0;
+  --color-border-dark: #252A34;
+  
+  --color-text-primary-light: #101828;
+  --color-text-primary-dark: #F5F7FA;
+  --color-text-secondary-light: #667085;
+  --color-text-secondary-dark: #98A2B3;
+  --color-text-muted-light: #98A2B3;
+  --color-text-muted-dark: #667085;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 14px;
+}
 
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F8FAFC;
-  --bg-sidebar: #FAFAFB;
-  --bg-card: #FFFFFF;
+  --bg-primary: #F7F8FC;
+  --bg-surface: #FFFFFF;
+  --bg-panel: #FAFAFB;
+  --bg-hover: #F1F3F5;
   
   --border-color: #EAECF0;
   
@@ -16,18 +45,15 @@
   --text-muted: #98A2B3;
   
   --color-brand: #8B5CF6;
-  --color-brand-secondary: #EC4899;
-  
-  --color-success: #12B76A;
-  --color-warning: #F79009;
-  --color-error: #F04438;
+  --color-brand-hover: #7C3AED;
+  --color-brand-subtle: #F3F0FF;
 }
 
 .dark {
   --bg-primary: #0B0D12;
-  --bg-secondary: #11141A;
-  --bg-sidebar: #0E1015;
-  --bg-card: #151922;
+  --bg-surface: #11141A;
+  --bg-panel: #151922;
+  --bg-hover: #1A1F2B;
   
   --border-color: #252A34;
   
@@ -36,17 +62,8 @@
   --text-muted: #667085;
   
   --color-brand: #A78BFA;
-  --color-brand-secondary: #F472B6;
-}
-
-/* Fix Chrome autofill background */
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px var(--bg-card) inset !important;
-  -webkit-text-fill-color: var(--text-primary) !important;
-  transition: background-color 5000s ease-in-out 0s;
+  --color-brand-hover: #C4B5FD;
+  --color-brand-subtle: rgba(139, 92, 246, 0.15);
 }
 
 html, body {
@@ -57,10 +74,9 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar styles - Premium quiet look */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -76,51 +92,11 @@ html, body {
   background: var(--text-muted);
 }
 
-/* Custom focus styles */
 :focus-visible {
   outline: 2px solid var(--color-brand);
   outline-offset: 1px;
 }
 
-/* Subtle Gradient background (Only where explicitly needed) */
-.gradient-bg {
-  background: var(--color-brand);
-}
-
-.gradient-text {
-  color: var(--color-brand);
-}
-
-/* Message animations */
-@keyframes messageSlideIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.message-animate {
-  animation: messageSlideIn 0.15s ease-out;
-}
-
-/* Skeleton loading */
-@keyframes skeletonPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.skeleton {
-  animation: skeletonPulse 1.5s ease-in-out infinite;
-  background-color: var(--border-color);
-  border-radius: 4px;
-}
-
-/* Glass morphism effect - Subdued */
-.glass {
-  background: rgba(11, 13, 18, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
-
-/* Hide scrollbar but keep functionality */
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -130,73 +106,13 @@ html, body {
   display: none;
 }
 
-/* Premium Emoji Picker Overrides */
-.emoji-picker-wrapper {
-  --epr-bg-color: #FFFFFF;
-  --epr-text-color: #101828;
-  --epr-border-color: #EAECF0;
-  --epr-hover-bg: #F8FAFC;
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-.dark .emoji-picker-wrapper {
-  --epr-bg-color: #11141A;
-  --epr-text-color: #F5F7FA;
-  --epr-border-color: #252A34;
-  --epr-hover-bg: #151922;
-}
-
-.emoji-picker-wrapper .EmojiPickerReact {
-  border: none !important;
-  box-shadow: none !important;
-  font-family: 'Inter', system-ui, sans-serif !important;
-}
-
-.emoji-picker-wrapper .epr-category-nav {
-  padding: 8px 12px;
-}
-
-.emoji-picker-wrapper .epr-category-nav > button {
-  width: 32px;
-  height: 32px;
-}
-
-.emoji-picker-wrapper .epr-emoji-category-label {
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  color: var(--epr-text-color) !important;
-  opacity: 0.7;
-  height: auto !important;
-  padding: 12px 16px 8px 16px !important;
-  background-color: var(--epr-bg-color) !important;
-  backdrop-filter: none !important;
-  position: static !important;
-}
-
-.emoji-picker-wrapper .epr-search-container {
-  padding: 12px 16px !important;
-}
-
-.emoji-picker-wrapper .epr-search-container input {
-  padding-left: 36px !important;
-}
-
-.emoji-picker-wrapper .epr-body::-webkit-scrollbar {
-  width: 5px;
-}
-
-.emoji-picker-wrapper .epr-body::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.emoji-picker-wrapper .epr-body::-webkit-scrollbar-thumb {
-  background: var(--epr-border-color);
-  border-radius: 4px;
-}
-
-.emoji-picker-wrapper .epr-emoji {
-  transition: transform 0.1s ease-out, background-color 0.1s ease-out !important;
-}
-
-.emoji-picker-wrapper .epr-emoji:hover {
-  transform: scale(1.05) !important;
+.skeleton {
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  background-color: var(--border-color);
+  border-radius: 6px;
 }

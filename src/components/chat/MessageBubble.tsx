@@ -163,9 +163,13 @@ export const MessageBubble = memo(function MessageBubble({
         <div
           ref={bubbleRef}
           className={cn(
-            'relative rounded-[18px] px-4 py-2.5 message-animate',
-            isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (isOwn ? `text-white shadow-sm ${showAvatar ? 'rounded-[18px] rounded-br-[5px]' : 'rounded-[18px] rounded-r-[5px]'}` : `bg-[#FFFFFF] dark:bg-[#171B23] text-[#101828] dark:text-[#F5F7FA] shadow-[0_1px_2px_rgba(0,0,0,0.02)] border border-[#EAECF0] dark:border-[#252A34] ${showAvatar ? 'rounded-[18px] rounded-bl-[5px]' : 'rounded-[18px] rounded-l-[5px]'}`),
-          )} style={isOwn && !isEmojiOnly ? { backgroundColor: activeTheme.accentColor === 'purple' ? '#8B5CF6' : activeTheme.accentColor === 'blue' ? '#3B82F6' : activeTheme.accentColor === 'pink' ? '#EC4899' : activeTheme.accentColor === 'green' ? '#10B981' : '#F97316' } : {}}
+            'relative px-3.5 py-2.5 message-animate max-w-full shadow-sm',
+            isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (
+              isOwn 
+                ? `bg-[#8B5CF6] text-white ${showAvatar ? 'rounded-[14px] rounded-br-[4px]' : 'rounded-[14px] rounded-r-[4px]'}` 
+                : `bg-white dark:bg-[#151922] text-[#101828] dark:text-[#F5F7FA] border border-[#EAECF0] dark:border-[#252A34] ${showAvatar ? 'rounded-[14px] rounded-bl-[4px]' : 'rounded-[14px] rounded-l-[4px]'}`
+            )
+          )}
         >
           {/* Text content */}
           {message.type === 'text' && message.content && (

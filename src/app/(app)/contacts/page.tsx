@@ -347,12 +347,24 @@ export default function ContactsPage() {
                             </button>
                           )}
                           {status === 'outgoing_request' && (
-                            <button
-                              disabled
-                              className="px-4 py-2 bg-[#F8FAFC] dark:bg-[#151922] text-[#98A2B3] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] text-[13px] font-medium flex items-center justify-center gap-2 cursor-not-allowed min-w-[110px]"
-                            >
-                              <Clock className="w-[16px] h-[16px]" /> Request Sent
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <span className="px-3 py-2 bg-[#F8FAFC] dark:bg-[#151922] text-[#98A2B3] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] text-[13px] font-medium flex items-center justify-center gap-2 min-w-[90px]">
+                                <Clock className="w-[14px] h-[14px]" /> Pending
+                              </span>
+                              <button
+                                onClick={async () => {
+                                  const reqId = requestIds[user.id];
+                                  if (reqId) {
+                                    setRelationshipMap(prev => ({...prev, [user.id]: 'none'}));
+                                    await cancelRequest(reqId);
+                                    fetchFriendsAndRequests();
+                                  }
+                                }}
+                                className="px-3 py-2 bg-[#FEF3F2] dark:bg-[#F04438]/10 text-[#F04438] hover:bg-[#FEE4E2] dark:hover:bg-[#F04438]/20 rounded-[10px] text-[13px] font-medium transition-all flex items-center justify-center"
+                              >
+                                Cancel
+                              </button>
+                            </div>
                           )}
                           {status === 'incoming_request' && (
                             <button
@@ -444,6 +456,43 @@ export default function ContactsPage() {
                           className="px-3 py-2 bg-[#F8FAFC] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#667085] dark:text-[#98A2B3] rounded-[10px] text-[13px] font-medium hover:bg-[#EAECF0] dark:hover:bg-[#252A34] transition-all flex items-center justify-center"
                         >
                           <XIcon className="w-[16px] h-[16px]" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Outgoing Requests */}
+            {outgoingRequests.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] flex items-center gap-2 px-1">
+                  <Clock className="w-[18px] h-[18px] text-[#8B5CF6]" /> 
+                  Sent Requests
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {outgoingRequests.map(req => (
+                    <div key={req.id} className="w-full flex items-center justify-between p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-md transition-all duration-150 gap-4">
+                      <div 
+                        className="flex items-center gap-4 cursor-pointer flex-1 min-w-0"
+                        onClick={() => router.push(`/profile/${req.receiver?.username || req.receiver_id}`)}
+                      >
+                        <UserAvatar src={req.receiver?.avatar_url} name={req.receiver?.display_name || 'User'} size="xl" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[15px] truncate">{req.receiver?.display_name || 'User'}</p>
+                          <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] truncate">@{req.receiver?.username || 'unknown'}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={async () => {
+                            await cancelRequest(req.id);
+                            fetchFriendsAndRequests();
+                          }}
+                          className="px-3 py-2 bg-[#FEF3F2] dark:bg-[#F04438]/10 text-[#F04438] hover:bg-[#FEE4E2] dark:hover:bg-[#F04438]/20 rounded-[10px] text-[13px] font-medium transition-all flex items-center justify-center"
+                        >
+                          Cancel
                         </button>
                       </div>
                     </div>
