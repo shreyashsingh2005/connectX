@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -9,6 +9,7 @@ import { ConversationList } from '@/components/chat/ConversationList';
 import { NewChatModal } from '@/components/modals/NewChatModal';
 import { GroupChatModal } from '@/components/modals/GroupChatModal';
 import { UsernameSetupModal } from '@/components/modals/UsernameSetupModal';
+import { CallOverlay } from '@/components/chat/CallOverlay';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -107,6 +108,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {showNewChatModal && <NewChatModal />}
       {showGroupModal && <GroupChatModal />}
       <UsernameSetupModal />
+      <CallOverlay />
     </div>
   );
 }
