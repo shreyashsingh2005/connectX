@@ -5,33 +5,39 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Notification } from '@/types';
 import { formatDistanceToNow, isToday, isYesterday } from 'date-fns';
-import { Bell, Check, Loader2, MessageSquare, AlertCircle, Phone, Info } from 'lucide-react';
+import { Bell, Check, Loader2, MessageSquare, AlertCircle, Phone, Info, MoreHorizontal, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { UserAvatar } from '@/components/ui/UserAvatar';
+import toast from 'react-hot-toast';
+import { useFriendActions } from '@/hooks/useFriendActions';
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [pendingSenderIds, setPendingSenderIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  
   const supabase = createClient();
   const profile = useAuthStore(s => s.profile);
   const router = useRouter();
+  const { respondToRequest } = useFriendActions();
+
+  useEffect(() => {
+    const handleClick = () => setActiveMenu(null);
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, []);
 
   useEffect(() => {
     if (!profile) return;
     loadNotifications();
 
-    const channel = supabase
-      .channel(`notifications:${profile.id}`)
+    const notifChannel = supabase
+      .channel(`notifications_page:${profile.id}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${profile.id}` }, 
         (payload) => {
-          // Skip friend relationship notifications
-          const isFriendEvent = payload.new && ('type' in payload.new) && 
-            (payload.new.type === 'friend_request' || payload.new.type === 'friend_accept');
-            
-          if (isFriendEvent) return;
-          
           if (payload.eventType === 'INSERT') {
             setNotifications(prev => [payload.new as Notification, ...prev.filter(n => n.id !== payload.new.id)]);
           } else if (payload.eventType === 'UPDATE') {
@@ -43,7 +49,19 @@ export default function NotificationsPage() {
       )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    const reqChannel = supabase
+      .channel(`requests_page:${profile.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'friend_requests', filter: `receiver_id=eq.${profile.id}` }, 
+        () => {
+          loadPendingRequests();
+        }
+      )
+      .subscribe();
+
+    return () => { 
+      supabase.removeChannel(notifChannel); 
+      supabase.removeChannel(reqChannel);
+    };
   }, [profile?.id, supabase]);
 
   // Mark all unread as read immediately upon load
@@ -56,16 +74,28 @@ export default function NotificationsPage() {
     }
   }, [notifications.length, supabase]);
 
+  async function loadPendingRequests() {
+    if (!profile) return;
+    const { data } = await supabase
+      .from('friend_requests')
+      .select('sender_id')
+      .eq('receiver_id', profile.id)
+      .eq('status', 'pending');
+      
+    setPendingSenderIds(new Set(data?.map(r => r.sender_id) || []));
+  }
+
   async function loadNotifications() {
     if (!profile) return;
     setIsLoading(true);
     setError(null);
     try {
+      await loadPendingRequests();
+      
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
         .eq('user_id', profile.id)
-        .not('type', 'in', '("friend_request","friend_accept")')
         .order('created_at', { ascending: false })
         .limit(50);
         
@@ -79,22 +109,61 @@ export default function NotificationsPage() {
     }
   }
 
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveMenu(null);
+    
+    // Optimistic UI update
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    
+    const { error } = await supabase.from('notifications').delete().eq('id', id);
+    if (error) {
+      toast.error('Failed to delete notification');
+      loadNotifications(); // Revert on failure
+    }
+  };
+  
+  const handleRequestAction = async (n: Notification, status: 'accepted' | 'declined', e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Optimistic update of local pending set
+    const senderId = n.data?.sender_id as string;
+    const requestId = n.data?.request_id as string;
+    
+    if (senderId) {
+      setPendingSenderIds(prev => {
+        const next = new Set(prev);
+        next.delete(senderId);
+        return next;
+      });
+    }
+    
+    if (requestId && senderId) {
+      await respondToRequest(requestId, senderId, status);
+      // Optional: Delete the notification after action
+      handleDelete(n.id, e);
+    }
+  };
+
   const getIcon = (type: string) => {
     switch (type) {
       case 'message': return <MessageSquare size={16} className="text-[#EC4899]" />;
       case 'call': return <Phone size={16} className="text-[#8B5CF6]" />;
       case 'system': return <Info size={16} className="text-[#F59E0B]" />;
+      case 'friend_accept': return <Check size={16} className="text-[#10B981]" />;
       default: return <Bell size={16} className="text-[#667085] dark:text-[#98A2B3]" />;
     }
   };
 
-  const today = notifications.filter(n => isToday(new Date(n.created_at)));
-  const yesterday = notifications.filter(n => isYesterday(new Date(n.created_at)));
-  const earlier = notifications.filter(n => !isToday(new Date(n.created_at)) && !isYesterday(new Date(n.created_at)));
-
   const NotificationCard = ({ n }: { n: Notification }) => {
     const isUnread = !n.is_read;
     const hasAvatar = !!n.data?.sender_avatar || !!n.data?.sender_name;
+    const isFriendRequest = n.type === 'friend_request';
+    const senderId = n.data?.sender_id as string | undefined;
+    const isPending = senderId ? pendingSenderIds.has(senderId) : false;
+    
+    // Hide stale friend requests
+    if (isFriendRequest && !isPending) return null;
     
     return (
       <div 
@@ -103,13 +172,13 @@ export default function NotificationsPage() {
           if (targetId && n.type === 'message') router.push(`/chat/${targetId}`);
         }}
         className={cn(
-          "flex items-center gap-3 p-3 h-auto min-h-[64px] rounded-[14px] border transition-all cursor-pointer group",
+          "flex items-start gap-3 p-3 h-auto min-h-[64px] rounded-[14px] border transition-all cursor-pointer group relative",
           isUnread 
             ? "bg-[#FFFFFF] dark:bg-[#151922] border-[#8B5CF6]/30 dark:border-[#8B5CF6]/30 shadow-sm" 
             : "bg-transparent border-transparent hover:bg-[#FFFFFF] dark:hover:bg-[#11141A] hover:border-[#EAECF0] dark:hover:border-[#252A34]"
         )}
       >
-        <div className="flex-shrink-0 relative">
+        <div className="flex-shrink-0 relative mt-1">
           {isUnread && (
             <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#8B5CF6] border-2 border-white dark:border-[#151922] z-10" />
           )}
@@ -128,18 +197,68 @@ export default function NotificationsPage() {
         </div>
         
         <div className="flex-1 min-w-0 flex flex-col justify-center">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className={cn("text-[13px] font-semibold truncate", isUnread ? "text-[#101828] dark:text-[#F5F7FA]" : "text-[#344054] dark:text-[#D0D5DD]")}>
-              {n.title}
-            </h3>
-            <span className="text-[11px] font-medium text-[#98A2B3] flex-shrink-0">
-              {formatDistanceToNow(new Date(n.created_at), { addSuffix: false }).replace('about ', '')}
-            </span>
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <h3 className={cn("text-[13px] font-semibold truncate", isUnread ? "text-[#101828] dark:text-[#F5F7FA]" : "text-[#344054] dark:text-[#D0D5DD]")}>
+                {n.title}
+              </h3>
+              {n.body && (
+                <p className={cn("text-[13px] leading-snug mt-0.5", isUnread ? "text-[#344054] dark:text-[#D0D5DD]" : "text-[#667085] dark:text-[#98A2B3]")}>
+                  {n.body}
+                </p>
+              )}
+            </div>
+            
+            <div className="flex flex-col items-end gap-1 flex-shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-medium text-[#98A2B3]">
+                  {formatDistanceToNow(new Date(n.created_at), { addSuffix: false }).replace('about ', '')}
+                </span>
+                
+                {/* Overflow Menu */}
+                <div className="relative">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveMenu(activeMenu === n.id ? null : n.id);
+                    }}
+                    className="p-1 -mr-1 text-[#98A2B3] hover:text-[#344054] dark:hover:text-[#F5F7FA] hover:bg-[#F1F3F5] dark:hover:bg-[#252A34] rounded-full transition-colors outline-none"
+                  >
+                    <MoreHorizontal size={18} strokeWidth={2} />
+                  </button>
+                  
+                  {activeMenu === n.id && (
+                    <div className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-[#1A1E29] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] shadow-lg overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100">
+                      <button 
+                        onClick={(e) => handleDelete(n.id, e)}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-[#F04438] hover:bg-[#FEF3F2] dark:hover:bg-[#F04438]/10 transition-colors outline-none"
+                      >
+                        <Trash2 size={14} strokeWidth={2} />
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-          {n.body && (
-            <p className={cn("text-[13px] truncate", isUnread ? "text-[#344054] dark:text-[#D0D5DD]" : "text-[#667085] dark:text-[#98A2B3]")}>
-              {n.body}
-            </p>
+          
+          {/* Actionable Friend Request Area */}
+          {isFriendRequest && isPending && (
+            <div className="flex items-center gap-2 mt-3 mb-1">
+              <button 
+                onClick={(e) => handleRequestAction(n, 'accepted', e)}
+                className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-[13px] font-medium py-1.5 px-3 rounded-[8px] transition-colors outline-none shadow-sm"
+              >
+                Accept
+              </button>
+              <button 
+                onClick={(e) => handleRequestAction(n, 'declined', e)}
+                className="flex-1 bg-[#FFFFFF] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] dark:hover:bg-[#252A34] text-[13px] font-medium py-1.5 px-3 rounded-[8px] transition-colors outline-none shadow-sm"
+              >
+                Decline
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -163,6 +282,18 @@ export default function NotificationsPage() {
     </div>
   );
 
+  const visibleNotifications = notifications.filter(n => {
+    if (n.type === 'friend_request') {
+      const senderId = n.data?.sender_id as string | undefined;
+      return senderId ? pendingSenderIds.has(senderId) : false;
+    }
+    return true;
+  });
+
+  const today = visibleNotifications.filter(n => isToday(new Date(n.created_at)));
+  const yesterday = visibleNotifications.filter(n => isYesterday(new Date(n.created_at)));
+  const earlier = visibleNotifications.filter(n => !isToday(new Date(n.created_at)) && !isYesterday(new Date(n.created_at)));
+
   return (
     <div className="flex flex-col flex-1 z-10 overflow-hidden relative bg-[#F8FAFC] dark:bg-[#0B0D12]">
       <div className="flex-1 overflow-y-auto">
@@ -182,7 +313,7 @@ export default function NotificationsPage() {
                 Try again
               </button>
             </div>
-          ) : notifications.length === 0 ? (
+          ) : visibleNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in zoom-in-95 duration-300">
               <div className="w-12 h-12 bg-white dark:bg-[#11141A] rounded-full flex items-center justify-center mb-4 border border-[#EAECF0] dark:border-[#252A34] shadow-sm">
                 <Bell className="w-5 h-5 text-[#98A2B3]" strokeWidth={1.75} />
