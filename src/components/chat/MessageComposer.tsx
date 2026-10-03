@@ -44,6 +44,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const setReplyToMessage = useChatStore(s => s.setReplyToMessage);
   const addMessage = useChatStore(s => s.addMessage);
   const updateMessage = useChatStore(s => s.updateMessage);
+  const removeMessage = useChatStore(s => s.removeMessage);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -70,6 +71,26 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showEmojiPicker, showAttachmentMenu]);
+
+  useEffect(() => {
+    const handleRetry = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const att = customEvent.detail;
+      if (att && att.raw_file) {
+        setAttachments([{
+          id: att.id,
+          file: att.raw_file,
+          preview: URL.createObjectURL(att.raw_file),
+          type: 'image'
+        }]);
+        if (att.message_id) {
+          removeMessage(conversationId, att.message_id);
+        }
+      }
+    };
+    window.addEventListener('retry-message', handleRetry);
+    return () => window.removeEventListener('retry-message', handleRetry);
+  }, [conversationId, removeMessage]);
 
   const handleEmojiClick = (emojiData: any) => {
     const cursor = textareaRef.current?.selectionStart ?? text.length;
@@ -191,20 +212,19 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       const path = `${conversationId}/${messageId}/${uuidv4()}.${ext}.enc`;
       
       const { error: uploadErr } = await supabase.storage
-        .from('chat_attachments')
+        .from('attachments')
         .upload(path, encryptedFile, { contentType: 'application/octet-stream' });
         
       if (uploadErr) throw uploadErr;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('chat_attachments')
+        .from('attachments')
         .getPublicUrl(path);
 
       return { url: publicUrl, path };
     } catch (err) {
       console.error('Attachment upload failed', err);
-      toast.error('Failed to upload attachment securely');
-      return null;
+      throw err;
     }
   };
 
@@ -261,7 +281,23 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         updated_at: new Date().toISOString(),
         sender: profile,
         reply_to: savedReply || undefined,
-        attachments: [],
+        attachments: savedAttachments.map(att => ({
+          id: att.id,
+          message_id: tempId,
+          conversation_id: conversationId,
+          user_id: profile.id,
+          file_name: att.file.name,
+          file_size: att.file.size,
+          mime_type: att.file.type,
+          storage_path: '', // empty to trigger loading state in EncryptedAttachment
+          url: '',
+          raw_file: att.file,
+          created_at: new Date().toISOString(),
+          thumbnail_url: null,
+          width: null,
+          height: null,
+          duration: null,
+        })),
         reactions: [],
       };
 
@@ -275,6 +311,26 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       setIsTyping(false);
       sendTypingStatus(false);
 
+      // 1. Upload attachments FIRST
+      const uploadedAttachments = [];
+      for (const att of savedAttachments) {
+        const uploadRes = await uploadAttachment(att, tempId);
+        if (uploadRes) {
+          uploadedAttachments.push({
+            id: att.id || uuidv4(),
+            message_id: tempId,
+            conversation_id: conversationId,
+            user_id: profile.id,
+            file_name: att.file.name,
+            file_size: att.file.size,
+            mime_type: att.file.type,
+            storage_path: uploadRes.path,
+            url: uploadRes.url,
+          });
+        }
+      }
+
+      // 2. Insert Message to DB
       const { data: newMessage, error: insertError } = await supabase
         .from('messages')
         .insert({
@@ -291,28 +347,20 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       if (insertError) throw insertError;
 
+      // 3. Insert Attachments to DB
+      if (uploadedAttachments.length > 0) {
+        const { error: attError } = await supabase.from('attachments').insert(uploadedAttachments);
+        if (attError) throw attError;
+      }
+
+      // 4. Update local state
       updateMessage(conversationId, tempId, {
         ...newMessage,
         status: 'sent',
         sender: profile,
         decrypted_content: contentText || null,
+        attachments: uploadedAttachments, // Provide the attachments so UI renders them immediately
       });
-
-      for (const att of savedAttachments) {
-        const uploadRes = await uploadAttachment(att, tempId);
-        if (uploadRes) {
-          await supabase.from('attachments').insert({
-            message_id: tempId,
-            conversation_id: conversationId,
-            user_id: profile.id,
-            file_name: att.file.name,
-            file_size: att.file.size,
-            mime_type: att.file.type,
-            storage_path: uploadRes.path,
-            url: uploadRes.url,
-          });
-        }
-      }
     } catch (err: any) {
       console.error('[Composer] Send failed:', err);
       if (optimisticAdded) {
@@ -323,7 +371,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         setReplyToMessage(savedReply);
         toast.error(err?.message?.includes('E2EE')
           ? err.message
-          : 'Failed to send message. Please try again.');
+          : 'Photo couldn\'t be sent');
       }
     } finally {
       isSubmittingRef.current = false;

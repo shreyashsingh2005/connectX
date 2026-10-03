@@ -22,6 +22,7 @@ import {
   Music,
   Video,
   Lock,
+  AlertCircle,
 } from 'lucide-react';
 
 interface MessageBubbleProps {
@@ -44,6 +45,7 @@ function DeliveryIcon({ status, isEmojiOnly }: { status: Message['status'], isEm
   if (status === 'sent') return <Check className={cn("w-[14px] h-[14px]", neutralClass)} />;
   if (status === 'delivered') return <CheckCheck className={cn("w-[14px] h-[14px]", neutralClass)} />;
   if (status === 'read') return <CheckCheck className={cn("w-[15px] h-[15px]", isEmojiOnly ? "text-[#38bdf8]" : "text-[#38bdf8] drop-shadow-md brightness-110")} />;
+  if (status === 'failed') return <AlertCircle className="w-[14px] h-[14px] text-red-300 drop-shadow-sm" />;
   return null;
 }
 
@@ -189,7 +191,7 @@ export const MessageBubble = memo(function MessageBubble({
           )}
 
           {/* Image attachment */}
-          {message.attachments && message.attachments.length > 0 && (<div className="flex flex-col gap-2 mt-2">{message.attachments.map(att => (<EncryptedAttachment key={att.id} attachment={att} isOwn={isOwn} />))}</div>)}
+          {message.attachments && message.attachments.length > 0 && (<div className="flex flex-col gap-2 mt-2">{message.attachments.map(att => (<EncryptedAttachment key={att.id} attachment={att} isOwn={isOwn} messageStatus={message.status} />))}</div>)}
 
           {/* Timestamp + status */}
           <div className={cn(

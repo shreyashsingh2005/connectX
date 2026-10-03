@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Music, FileText, Download, Loader2, X } from 'lucide-react';
 import { cn, formatFileSize } from '@/lib/utils';
 
-export function EncryptedAttachment({ attachment, isOwn }: { attachment: Attachment; isOwn: boolean }) {
+export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { attachment: Attachment; isOwn: boolean; messageStatus?: string }) {
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -45,9 +45,24 @@ export function EncryptedAttachment({ attachment, isOwn }: { attachment: Attachm
   }
 
   if (!objectUrl) {
+    if (messageStatus === 'failed') {
+      return (
+        <div className="flex flex-col items-center gap-2 p-3 border border-red-500/20 rounded-xl bg-red-500/5">
+          <span className="text-xs text-red-400 font-medium">Photo couldn't be sent</span>
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('retry-message', { detail: attachment }))}
+            className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg text-xs font-semibold transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      );
+    }
     return (
-      <div className="flex items-center gap-2 px-3 py-2 text-xs opacity-70">
-        <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white/80 animate-spin" />
+      <div className="flex items-center justify-center min-w-[120px] min-h-[80px] bg-white/5 rounded-xl">
+        <div className="flex items-center gap-2 px-3 py-2 text-xs opacity-70">
+          <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white/80 animate-spin" />
+        </div>
       </div>
     );
   }
