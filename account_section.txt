@@ -1,0 +1,64 @@
+{/* ACCOUNT SETTINGS */}
+        {activeSection === 'account' && (
+          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
+            <BackHeader title="Account" />
+            
+            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[24px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0">
+               <div className="flex flex-col p-2">
+                 <button onClick={() => setIsEditingProfile(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                   <div className="flex flex-col text-left">
+                     <span className="text-[12px] text-[#667085] dark:text-[#98A2B3] mb-0.5">Display name</span>
+                     <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{profile.display_name}</span>
+                   </div>
+                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                 </button>
+                 
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
+                 
+                 <button onClick={() => setIsEditingProfile(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                   <div className="flex flex-col text-left">
+                     <span className="text-[12px] text-[#667085] dark:text-[#98A2B3] mb-0.5">Username</span>
+                     <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">@{profile.username}</span>
+                   </div>
+                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                 </button>
+
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
+                 
+                 <div className="flex items-center justify-between p-3">
+                   <div className="flex flex-col">
+                     <span className="text-[12px] text-[#667085] dark:text-[#98A2B3] mb-0.5">Email</span>
+                     <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{profile.email}</span>
+                   </div>
+                   <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#10B981] dark:text-[#32D583]">
+                      <CheckCircle2 size={14} strokeWidth={1.75} /> Verified
+                   </div>
+                 </div>
+
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
+                 
+                 <button onClick={() => setIsEditingProfile(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                   <div className="flex flex-col text-left">
+                     <span className="text-[12px] text-[#667085] dark:text-[#98A2B3] mb-0.5">About</span>
+                     <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA] truncate max-w-[220px]">{profile.bio || 'No bio provided'}</span>
+                   </div>
+                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                 </button>
+               </div>
+            </div>
+
+            <div className="px-4 md:px-0 mt-8">
+              <button onClick={handleLogout} className="flex items-center justify-center gap-2 w-full h-[48px] bg-[#FFFFFF] dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] text-[#101828] dark:text-[#F5F7FA] rounded-[12px] text-[14px] font-medium hover:bg-[#F9FAFB] dark:hover:bg-[#151922] transition-colors shadow-sm">
+                <LogOut size={16} strokeWidth={1.75} /> Sign out
+              </button>
+            </div>
+            
+            <div className="px-4 md:px-0 mt-6">
+               <button className="flex items-center justify-center gap-2 w-full h-[48px] border border-[#F97066]/20 bg-[#FEF3F2]/50 dark:bg-[#7A271A]/10 text-[#D92D20] rounded-[12px] text-[14px] font-medium hover:bg-[#FEF3F2] dark:hover:bg-[#F97066]/10 transition-colors">
+                  Delete account
+               </button>
+            </div>
+          </div>
+        )}
+
+        {/* APPEARANCE */

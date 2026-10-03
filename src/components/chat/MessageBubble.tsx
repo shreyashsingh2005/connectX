@@ -118,7 +118,7 @@ export const MessageBubble = memo(function MessageBubble({
         
         <div className={cn(
           'max-w-[85%] md:max-w-[75%] rounded-[18px] px-4 py-3 text-[13px] border flex items-center gap-3',
-          isOwn ? 'border-[#8B5CF6]/20 bg-[#8B5CF6]/5 dark:bg-[#8B5CF6]/10 text-[#8B5CF6]' : 'border-[#EAECF0] dark:border-[#252A34] bg-[#F8FAFC] dark:bg-[#151922] text-[#667085] dark:text-[#98A2B3]'
+          isOwn ? 'border-transparent bg-black/5 dark:bg-white/10 text-white'  : 'border-[#EAECF0] dark:border-[#252A34] bg-[#F8FAFC] dark:bg-[#151922] text-[#667085] dark:text-[#98A2B3]'
         )}>
           <Lock size={16} className="opacity-70 flex-shrink-0" /> 
           <span>Unable to decrypt this message</span>
@@ -205,7 +205,7 @@ export const MessageBubble = memo(function MessageBubble({
             'relative px-3.5 py-2.5 message-animate max-w-full shadow-sm',
             isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (
               isOwn 
-                ? `bg-[#8B5CF6] text-white ${showAvatar ? 'rounded-[14px] rounded-br-[4px]' : 'rounded-[14px] rounded-r-[4px]'}` 
+                ? `text-white ${showAvatar ? 'rounded-[14px] rounded-br-[4px]' : 'rounded-[14px] rounded-r-[4px]'}` 
                 : `bg-white dark:bg-[#151922] text-[#101828] dark:text-[#F5F7FA] border border-[#EAECF0] dark:border-[#252A34] ${showAvatar ? 'rounded-[14px] rounded-bl-[4px]' : 'rounded-[14px] rounded-l-[4px]'}`
             )
           )}
