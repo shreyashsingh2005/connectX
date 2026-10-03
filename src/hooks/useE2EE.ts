@@ -100,7 +100,14 @@ export function useE2EE(conversationId?: string) {
     const supabase = supabaseRef.current;
 
     // Listen for key rotation/updates from other devices
-    const channel = supabase.channel(`e2ee_keys_${conversationId}`)
+    const channelName = `e2ee_keys_${conversationId}`;
+    supabase.getChannels().forEach(c => {
+      if (c.topic === `realtime:${channelName}`) {
+        supabase.removeChannel(c);
+      }
+    });
+
+    const channel = supabase.channel(channelName)
       .on('postgres_changes', {
         event: 'UPDATE',
         schema: 'public',
