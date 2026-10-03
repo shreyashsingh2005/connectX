@@ -37,7 +37,7 @@ export default function SettingsPage() {
   const [localSettings, setLocalSettings] = useState<Partial<UserSettings>>(settings || {});
   
   // Edit Profile State
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editingField, setEditingField] = useState<any>(null);
   const [editForm, setEditForm] = useState({
     display_name: '',
     username: '',
@@ -78,7 +78,7 @@ export default function SettingsPage() {
         bio: profile.bio || ''
       });
     }
-  }, [profile, isEditingProfile]);
+  }, [profile, editingField]);
 
   const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -159,7 +159,7 @@ export default function SettingsPage() {
       });
       
       toast.success('Profile updated successfully');
-      setIsEditingProfile(false);
+      setEditingField(null);
       
       
     } catch (error: any) {
@@ -286,9 +286,26 @@ export default function SettingsPage() {
           <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
             <BackHeader title="Account" />
             
+            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[24px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0 mb-4">
+              <div className="flex items-center gap-5 p-5">
+                <div className="relative group cursor-pointer flex-shrink-0" onClick={() => setShowPhotoEditor(true)}>
+                  <UserAvatar src={profile.avatar_url} name={profile.display_name} size="2xl" className="w-[64px] h-[64px]" />
+                  <div className="absolute inset-0 bg-[#090B10]/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Camera size={18} strokeWidth={1.75} className="text-white" />
+                  </div>
+                </div>
+                <div>
+                  <button type="button" onClick={() => setShowPhotoEditor(true)} className="h-[34px] px-3 bg-[#FFFFFF] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] dark:hover:bg-[#252A34] transition-colors rounded-[8px] text-[13px] font-medium shadow-sm mb-1.5 outline-none">
+                    Change photo
+                  </button>
+                  <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">JPG or PNG. Max 5MB.</p>
+                </div>
+              </div>
+            </div>
+
             <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[24px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0">
                <div className="flex flex-col p-2">
-                 <button onClick={() => setIsEditingProfile(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                 <button onClick={() => setEditingField("display_name")} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
                    <div className="flex flex-col text-left">
                      <span className="text-[12px] text-[#667085] dark:text-[#98A2B3] mb-0.5">Display name</span>
                      <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{profile.display_name}</span>
@@ -298,7 +315,7 @@ export default function SettingsPage() {
                  
                  <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
                  
-                 <button onClick={() => setIsEditingProfile(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                 <button onClick={() => setEditingField("username")} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
                    <div className="flex flex-col text-left">
                      <span className="text-[12px] text-[#667085] dark:text-[#98A2B3] mb-0.5">Username</span>
                      <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">@{profile.username}</span>
@@ -320,7 +337,7 @@ export default function SettingsPage() {
 
                  <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
                  
-                 <button onClick={() => setIsEditingProfile(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                 <button onClick={() => setEditingField("bio")} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
                    <div className="flex flex-col text-left">
                      <span className="text-[12px] text-[#667085] dark:text-[#98A2B3] mb-0.5">About</span>
                      <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA] truncate max-w-[220px]">{profile.bio || 'No bio provided'}</span>
@@ -544,82 +561,74 @@ export default function SettingsPage() {
       </div>
 
       {/* Edit Profile Modal */}
-      {isEditingProfile && (
+      {editingField && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#000000]/35 backdrop-blur-[2px] animate-in fade-in duration-200">
           <div className="bg-[#FFFFFF] dark:bg-[#11141A] w-full sm:max-w-[440px] rounded-t-[24px] sm:rounded-[24px] shadow-2xl border border-transparent dark:border-[#252A34] overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300">
             <div className="flex items-center justify-between p-5 border-b border-[#EAECF0] dark:border-[#252A34]">
-              <h2 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA]">Edit profile</h2>
-              <button onClick={() => setIsEditingProfile(false)} className="text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] transition-colors p-1 rounded-full hover:bg-[#F8FAFC] dark:hover:bg-[#151922] outline-none">
+              <h2 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA]">
+                {editingField === 'display_name' ? 'Edit Display Name' : editingField === 'username' ? 'Edit Username' : 'Edit About'}
+              </h2>
+              <button onClick={() => setEditingField(null)} className="text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] transition-colors p-1 rounded-full hover:bg-[#F8FAFC] dark:hover:bg-[#151922] outline-none">
                 <X size={18} strokeWidth={1.75} />
               </button>
             </div>
             
             <form onSubmit={handleUpdateProfile} className="flex-1 overflow-y-auto p-5 space-y-5">
-              <div className="flex items-center gap-5">
-                <div className="relative group cursor-pointer flex-shrink-0" onClick={() => setShowPhotoEditor(true)}>
-                  <UserAvatar src={profile.avatar_url} name={profile.display_name} size="2xl" className="w-[64px] h-[64px]" />
-                  <div className="absolute inset-0 bg-[#090B10]/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Camera size={18} strokeWidth={1.75} className="text-white" />
+              {editingField === 'display_name' && (
+                <div className="space-y-1.5">
+                  <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Display Name</label>
+                  <div className="relative">
+                    <UserRound size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#98A2B3]" />
+                    <input
+                      type="text" required value={editForm.display_name} onChange={e => setEditForm({ ...editForm, display_name: e.target.value })}
+                      className="w-full bg-[#FFFFFF] dark:bg-[#090B10] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] h-[44px] pl-9 pr-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm"
+                    />
                   </div>
                 </div>
-                <div>
-                  <button type="button" onClick={() => setShowPhotoEditor(true)} className="h-[34px] px-3 bg-[#FFFFFF] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] dark:hover:bg-[#252A34] transition-colors rounded-[8px] text-[13px] font-medium shadow-sm mb-1.5 outline-none">
-                    Change photo
-                  </button>
-                  <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">JPG or PNG. Max 5MB.</p>
-                </div>
-                
-              </div>
+              )}
 
-              <div className="space-y-1.5">
-                <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Display Name</label>
-                <div className="relative">
-                  <UserRound size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#98A2B3]" />
-                  <input
-                    type="text" required value={editForm.display_name} onChange={e => setEditForm({ ...editForm, display_name: e.target.value })}
-                    className="w-full bg-[#FFFFFF] dark:bg-[#090B10] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] h-[44px] pl-9 pr-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Username</label>
-                <div className="relative">
-                  <AtSign size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#98A2B3]" />
-                  <input
-                    type="text" required value={editForm.username} onChange={handleUsernameChange}
-                    className={cn(
-                      "w-full bg-[#FFFFFF] dark:bg-[#090B10] border rounded-[10px] h-[44px] pl-9 pr-20 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:ring-1 transition-all shadow-sm",
-                      isUsernameAvailable === false 
-                        ? "border-[#F97066] focus:border-[#F97066] focus:ring-[#F97066]" 
-                        : "border-[#EAECF0] dark:border-[#252A34] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]"
-                    )}
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    {isCheckingUsername ? (
-                      <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#667085] dark:text-[#98A2B3]">
-                        <Loader2 size={14} strokeWidth={2} className="animate-spin" />
-                      </div>
-                    ) : isUsernameAvailable === false ? (
-                      <span className="text-[12px] font-medium text-[#D92D20] dark:text-[#F97066]">Taken</span>
-                    ) : isUsernameAvailable === true && editForm.username.length >= 3 && editForm.username !== profile.username ? (
-                      <span className="text-[12px] font-medium text-[#10B981] dark:text-[#32D583]">Available</span>
-                    ) : null}
+              {editingField === 'username' && (
+                <div className="space-y-1.5">
+                  <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Username</label>
+                  <div className="relative">
+                    <AtSign size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#98A2B3]" />
+                    <input
+                      type="text" required value={editForm.username} onChange={handleUsernameChange}
+                      className={cn(
+                        "w-full bg-[#FFFFFF] dark:bg-[#090B10] border rounded-[10px] h-[44px] pl-9 pr-20 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:ring-1 transition-all shadow-sm",
+                        isUsernameAvailable === false 
+                          ? "border-[#F97066] focus:border-[#F97066] focus:ring-[#F97066]" 
+                          : "border-[#EAECF0] dark:border-[#252A34] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]"
+                      )}
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {isCheckingUsername ? (
+                        <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#667085] dark:text-[#98A2B3]">
+                          <Loader2 size={14} strokeWidth={2} className="animate-spin" />
+                        </div>
+                      ) : isUsernameAvailable === false ? (
+                        <span className="text-[12px] font-medium text-[#D92D20] dark:text-[#F97066]">Taken</span>
+                      ) : isUsernameAvailable === true && editForm.username.length >= 3 && editForm.username !== profile.username ? (
+                        <span className="text-[12px] font-medium text-[#10B981] dark:text-[#32D583]">Available</span>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div className="space-y-1.5">
-                <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">About</label>
-                <textarea
-                  value={editForm.bio} onChange={e => setEditForm({ ...editForm, bio: e.target.value })}
-                  className="w-full bg-[#FFFFFF] dark:bg-[#090B10] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm resize-none"
-                  rows={2}
-                />
-              </div>
+              {editingField === 'bio' && (
+                <div className="space-y-1.5">
+                  <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">About</label>
+                  <textarea
+                    value={editForm.bio} onChange={e => setEditForm({ ...editForm, bio: e.target.value })}
+                    className="w-full bg-[#FFFFFF] dark:bg-[#090B10] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm resize-none"
+                    rows={2}
+                  />
+                </div>
+              )}
               
               <div className="pt-2 flex gap-3 mt-6">
-                <button type="button" onClick={() => setIsEditingProfile(false)} className="flex-1 h-[40px] bg-[#FFFFFF] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] rounded-[10px] text-[13px] font-medium hover:bg-[#F9FAFB] dark:hover:bg-[#252A34] transition-colors shadow-sm outline-none">
+                <button type="button" onClick={() => setEditingField(null)} className="flex-1 h-[40px] bg-[#FFFFFF] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] rounded-[10px] text-[13px] font-medium hover:bg-[#F9FAFB] dark:hover:bg-[#252A34] transition-colors shadow-sm outline-none">
                   Cancel
                 </button>
                 <button type="submit" disabled={isSaving || isUsernameAvailable === false} className="flex-1 h-[40px] bg-[#8B5CF6] text-white rounded-[10px] text-[13px] font-medium hover:bg-[#7C3AED] transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 outline-none">
@@ -628,10 +637,10 @@ export default function SettingsPage() {
                 </button>
               </div>
             </form>
-              
           </div>
         </div>
       )}
+
     
       {showPhotoEditor && <ProfilePhotoEditor onClose={() => setShowPhotoEditor(false)} />}
     
