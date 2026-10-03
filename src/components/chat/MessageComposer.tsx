@@ -208,6 +208,10 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       toast.error(e2eeError ?? 'Encryption failed. Cannot send messages in this conversation.');
       return;
     }
+    if (e2eeState === 'waiting_for_device_authorization') {
+      toast.error('Cannot send yet — waiting for your other device to grant access.');
+      return;
+    }
     // e2eeState === 'ready' — proceed
 
     isSubmittingRef.current = true;
@@ -376,6 +380,17 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
           <div>
             <strong>Connect this device:</strong> Open this chat on your existing trusted device (e.g. Phone) to grant access to this conversation securely.
           </div>
+          <button 
+            type="button"
+            onClick={() => {
+              if (confirm('Are you sure? If you lost your original device, resetting will create a new key but all old messages will become permanently unreadable.')) {
+                resetConversationKey();
+              }
+            }}
+            className="self-start text-xs font-semibold bg-blue-500/20 hover:bg-blue-500/30 px-3 py-1.5 rounded-lg transition-colors border border-blue-500/30 mt-2"
+          >
+            Lost your device? Reset Secure Session
+          </button>
         </div>
       )}
       {showEmojiPicker && (
@@ -485,12 +500,12 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
         {text.trim() || attachments.length > 0 ? (
           <button type="submit"
-            disabled={isSending || e2eeState === 'initializing' || e2eeState === 'idle'}
+            disabled={isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error'}
             className="w-[38px] h-[38px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 hover:scale-102 active:scale-95 transition-all shadow-sm disabled:opacity-50 disabled:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#11141A]"
             style={{ backgroundColor: activeTheme.accentColor === 'purple' ? '#8B5CF6' : activeTheme.accentColor === 'blue' ? '#3B82F6' : activeTheme.accentColor === 'pink' ? '#EC4899' : activeTheme.accentColor === 'green' ? '#10B981' : '#F97316' }}
             aria-label="Send message" title="Send message"
           >
-            {(isSending || e2eeState === 'initializing' || e2eeState === 'idle') ? <Loader2 size={16} className="animate-spin opacity-70" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
+            {(isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error') ? <Loader2 size={16} className="animate-spin opacity-70" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
           </button>
         ) : (
           <button type="button" onClick={isRecording ? stopRecording : startRecording}
