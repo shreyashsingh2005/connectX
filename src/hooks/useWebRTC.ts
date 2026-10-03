@@ -204,7 +204,7 @@ export function useWebRTC() {
 
           // Process ICE candidates
           const remoteCandidates = isCaller ? newCall.receiver_candidates : newCall.caller_candidates;
-          if (remoteCandidates && remoteCandidates.length > 0) {
+          if (remoteCandidates && remoteCandidates.length > 0 && pc.remoteDescription) {
             remoteCandidates.forEach(async (c: any) => {
               try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch(e) {}
             });
