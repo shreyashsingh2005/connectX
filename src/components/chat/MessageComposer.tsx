@@ -481,7 +481,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
             placeholder={isRecording ? `Recording... ${recordingDuration}s` : "Write a message..."}
-            disabled={isRecording || isSending}
+            disabled={isRecording || isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error'}
             className="flex-1 max-h-32 bg-transparent text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder:text-[#98A2B3] resize-none py-2.5 sm:py-3 px-2 sm:px-3 focus:outline-none custom-scrollbar leading-tight"
             rows={1}
             style={{ minHeight: '40px' }}

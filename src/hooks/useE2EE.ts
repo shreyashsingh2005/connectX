@@ -302,9 +302,12 @@ export function useE2EE(conversationId?: string) {
     decryptAttachment,
     resetConversationKey: async () => {
       if (!conversationId) return;
-      await supabaseRef.current.from('conversation_members')
-        .update({ encrypted_key: null, encrypted_keys: {} })
-        .eq('conversation_id', conversationId);
+      const { error } = await supabaseRef.current.rpc('reset_conversation_keys', { p_conversation_id: conversationId });
+      if (error) {
+        console.error('[E2EE] Reset failed:', error);
+        alert('Failed to reset session: ' + error.message);
+        return;
+      }
       window.location.reload();
     },
   };
