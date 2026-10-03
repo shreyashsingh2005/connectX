@@ -142,7 +142,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
             }} 
           />
         )}
-        <div className="flex flex-col flex-1 z-10 overflow-hidden relative">
+        <div className="flex flex-col flex-1 z-10 overflow-hidden relative chat-open-enter">
           <ChatHeader conversation={conversation!} />
           <MessageList conversationId={conversationId} />
           <MessageComposer conversationId={conversationId} />

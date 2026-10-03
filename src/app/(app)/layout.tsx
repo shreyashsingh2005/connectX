@@ -95,12 +95,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <AppSidebar />
 
       {/* Conversation list - hidden on mobile when chat is open */}
-      <div className="hidden md:flex">
+      <div className="hidden md:flex page-transition-enter" style={{ animationDelay: "50ms" }}>
         <ConversationList />
       </div>
 
       {/* Main content */}
-      <main className={cn("flex-1 flex flex-col min-w-0 overflow-hidden md:pb-0", hideOnMobile ? "pb-0" : "pb-[80px]")}>
+      <main key={pathname} className={cn("flex-1 flex flex-col min-w-0 overflow-hidden md:pb-0 page-transition-enter", hideOnMobile ? "pb-0" : "pb-[80px]")}>
         {children}
       </main>
 

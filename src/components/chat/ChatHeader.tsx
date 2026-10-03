@@ -79,7 +79,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.push('/chat')}
-          className="md:hidden w-8 h-8 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors"
+          className="md:hidden w-10 h-10 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors"
           aria-label="Back to conversations"
         >
           <ArrowLeft className="w-5 h-5" />
