@@ -81,16 +81,16 @@ export function AppSidebar() {
         
         {/* Profile avatar (Mobile) */}
         <Link
-          href="/profile"
-          aria-label="My Profile"
-          title="My Profile"
+          href="/settings"
+          aria-label="Settings"
+          title="Settings"
           className="md:hidden relative group transition-transform duration-150 active:scale-95"
         >
           <UserAvatar
             src={profile?.avatar_url}
             name={profile?.display_name || 'User'}
             size="sm"
-            className={cn("rounded-full border-2", pathname.startsWith('/profile') ? "border-[#8B5CF6]" : "border-transparent")}
+            className={cn("rounded-full border-2", pathname.startsWith('/settings') ? "border-[#8B5CF6]" : "border-transparent")}
           />
         </Link>
       </nav>
@@ -128,9 +128,9 @@ export function AppSidebar() {
 
         {/* Profile avatar (Desktop) */}
         <Link
-          href="/profile"
-          aria-label="My Profile"
-          title="My Profile"
+          href="/settings"
+          aria-label="Settings"
+          title="Settings"
           className="mt-2 relative group transition-opacity duration-150 hover:opacity-80"
         >
           <UserAvatar
