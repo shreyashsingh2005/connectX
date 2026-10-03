@@ -58,7 +58,7 @@ export default function SettingsPage() {
       const params = new URLSearchParams(window.location.search);
       const section = params.get("section");
       if (section && ["main", "account", "appearance", "privacy", "notifications", "security", "help", "about"].includes(section)) {
-        setActiveSection(section);
+        setActiveSection(section as SettingsSection);
       }
     }
   }, []);
