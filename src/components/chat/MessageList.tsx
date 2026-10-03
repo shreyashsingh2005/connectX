@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useChatStore } from '@/store/useChatStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { MessageBubble } from './MessageBubble';
+import { ForwardModal } from '@/components/modals/ForwardModal';
 import { useE2EE } from '@/hooks/useE2EE';
 import { TypingIndicator } from '@/components/ui/TypingIndicator';
 import { MessageSkeleton } from '@/components/ui/SkeletonLoader';
@@ -58,6 +59,7 @@ export function MessageList({ conversationId }: MessageListProps) {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [deleteModalMsg, setDeleteModalMsg] = useState<Message | null>(null);
+  const [forwardMessage, setForwardMessage] = useState<Message | null>(null);
   const [deletedLocalIds, setDeletedLocalIds] = useState<string[]>([]);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [hasNewMessages, setHasNewMessages] = useState(false);
@@ -487,13 +489,14 @@ export function MessageList({ conversationId }: MessageListProps) {
         return (
           <MessageBubble key={message.id} message={message}
               isOwn={isOwn} showAvatar={showAvatar} showSender={showSender}
-            currentUserId={profile?.id || ''} onReply={setReplyToMessage} onEdit={handleEdit}
+            currentUserId={profile?.id || ''} onReply={setReplyToMessage} onForward={setForwardMessage} onEdit={handleEdit}
             onDelete={handleDeleteClick} onReact={handleReact}
           />
         );
       })}
       <TypingIndicator names={typingUsers.map(u => u.username)} />
       <div ref={messagesEndRef} />
+      {forwardMessage && <ForwardModal message={forwardMessage} onClose={() => setForwardMessage(null)} />}
     </div>
   );
 }

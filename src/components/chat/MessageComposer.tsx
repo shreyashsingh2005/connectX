@@ -34,6 +34,9 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const emojiButtonRef = useRef<HTMLButtonElement>(null);
   const attachmentMenuRef = useRef<HTMLDivElement>(null);
   const attachButtonRef = useRef<HTMLButtonElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const supabase = createClient();
@@ -106,15 +109,64 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     }, 0);
   };
 
-  const startRecording = () => {
-    setIsRecording(true);
-    setRecordingDuration(0);
-    toast.error('Voice messaging coming soon!');
-    setTimeout(() => setIsRecording(false), 1500);
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const audioFile = new File([audioBlob], `Voice_Note_${Date.now()}.webm`, { type: 'audio/webm' });
+        
+        setAttachments([{
+          id: uuidv4(),
+          file: audioFile,
+          preview: URL.createObjectURL(audioFile),
+          type: 'audio'
+        }]);
+        
+        stream.getTracks().forEach(track => track.stop());
+        if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+        setIsRecording(false);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingDuration(0);
+      
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingDuration(prev => prev + 1);
+      }, 1000);
+    } catch (error) {
+      console.error('Microphone access denied:', error);
+      toast.error('Microphone access denied or unsupported.');
+      setIsRecording(false);
+    }
   };
 
   const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
+  };
+
+  const cancelRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.onstop = null; // Prevent the onstop handler from adding the file
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+    }
+    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
     setIsRecording(false);
+    setRecordingDuration(0);
   };
 
   const sendTypingStatus = async (typing: boolean) => {
@@ -164,7 +216,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       const newAtts = files.map(file => ({
         id: uuidv4(),
         file,
-        preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
+        preview: URL.createObjectURL(file),
         type: getFileType(file.type) as 'image' | 'video' | 'audio' | 'document'
       }));
       setAttachments(prev => [...prev, ...newAtts]);
@@ -394,7 +446,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       const newAtts = files.map(file => ({
         id: uuidv4(),
         file,
-        preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
+        preview: URL.createObjectURL(file),
         type: getFileType(file.type) as 'image' | 'video' | 'audio' | 'document'
       }));
       setAttachments(prev => [...prev, ...newAtts]);
@@ -469,15 +521,21 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         {attachments.length > 0 && (
           <div className="flex gap-2 mb-2 overflow-x-auto p-1 no-scrollbar">
             {attachments.map(att => (
-              <div key={att.id} className="relative group flex-shrink-0 w-14 h-14 rounded-[10px] border border-[#EAECF0] dark:border-[#252A34] bg-[#F7F8FC] dark:bg-[#11141A] overflow-hidden">
+              <div key={att.id} className={cn("relative group flex-shrink-0 rounded-[10px] border border-[#EAECF0] dark:border-[#252A34] bg-[#F7F8FC] dark:bg-[#11141A] overflow-hidden", att.type === 'audio' ? 'w-48 h-14' : 'w-14 h-14')}>
                 {att.type === 'image' ? (
                   <img src={att.preview} alt="" className="w-full h-full object-cover" />
+                ) : att.type === 'video' ? (
+                  <video src={att.preview} className="w-full h-full object-cover" />
+                ) : att.type === 'audio' ? (
+                  <div className="w-full h-full flex items-center px-2">
+                    <audio src={att.preview} controls className="w-full h-8" />
+                  </div>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center"><FileText size={20} className="text-[#667085] dark:text-[#98A2B3]" /></div>
                 )}
-                <button type="button" onClick={() => removeAttachment(att.id)} className="absolute top-1 right-1 bg-black/50 hover:bg-black/70 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"><X size={12} /></button>
+                <button type="button" onClick={() => removeAttachment(att.id)} className="absolute top-1 right-1 bg-black/50 hover:bg-black/70 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10"><X size={12} /></button>
                 {att.uploadProgress !== undefined && att.uploadProgress < 100 && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><span className="text-[10px] font-medium text-white">{Math.round(att.uploadProgress)}%</span></div>
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10"><span className="text-[10px] font-medium text-white">{Math.round(att.uploadProgress)}%</span></div>
                 )}
               </div>
             ))}
