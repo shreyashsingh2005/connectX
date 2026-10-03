@@ -81,20 +81,22 @@ export function useE2EE(conversationId?: string) {
       initIdentity();
     }
     return () => { cancelled = true; };
-  }, [profile?.id]);
+  }, [profile?.id, profile]);
 
   useEffect(() => {
     if (!profile?.id || !conversationId) {
-      setE2eeState('idle');
+      Promise.resolve().then(() => setE2eeState('idle'));
       return;
     }
     if (!identityReady) {
-      setE2eeState('initializing');
+      Promise.resolve().then(() => setE2eeState('initializing'));
       return;
     }
 
-    setE2eeState('initializing');
-    setError(null);
+    Promise.resolve().then(() => {
+      setE2eeState('initializing');
+      setError(null);
+    });
 
     const rKey = regKey(profile.id, conversationId);
     const supabase = supabaseRef.current;
@@ -122,12 +124,12 @@ export function useE2EE(conversationId?: string) {
       })
       .subscribe();
 
-    const autoProvisionMissingDevices = async (convId: string, aesKey: CryptoKey) => {
+    const autoProvisionMissingDevices = async (aesKey: CryptoKey) => {
       try {
         const { data: members } = await supabase
           .from('conversation_members')
           .select('id, user_id, encrypted_keys')
-          .eq('conversation_id', convId);
+          .eq('conversation_id', conversationId);
         if (!members) return;
 
         const { data: allDevices } = await supabase
@@ -162,8 +164,8 @@ export function useE2EE(conversationId?: string) {
 
     if (keyRegistry.has(rKey)) {
       convKeyRef.current = keyRegistry.get(rKey)!;
-      setE2eeState('ready');
-      autoProvisionMissingDevices(conversationId, convKeyRef.current);
+      Promise.resolve().then(() => setE2eeState('ready'));
+      autoProvisionMissingDevices(convKeyRef.current);
       return;
     }
 
@@ -190,7 +192,7 @@ export function useE2EE(conversationId?: string) {
           try {
             const rawAesBase64 = await E2EE.decryptConversationKey(keysObj[myDeviceId], identityKeys.privateKey);
             return await E2EE.importConversationKey(rawAesBase64);
-          } catch (e) {
+          } catch {
             throw new Error('[E2EE] Failed to decrypt conversation key with this device key.');
           }
         }
@@ -203,7 +205,7 @@ export function useE2EE(conversationId?: string) {
             keysObj[myDeviceId] = member.encrypted_key;
             await supabase.rpc('update_member_keys', { p_member_id: member.id, p_encrypted_keys: keysObj });
             return aesKey;
-          } catch (e) {
+          } catch {
             // Unrecoverable local key mismatch for legacy
           }
         }
@@ -270,9 +272,9 @@ export function useE2EE(conversationId?: string) {
         convKeyRef.current = aesKey;
         setE2eeState('ready');
         setError(null);
-        autoProvisionMissingDevices(conversationId, aesKey);
+        autoProvisionMissingDevices(aesKey);
       })
-      .catch((err: any) => {
+      .catch((err: Error) => {
         if (cancelled) return;
         const msg = err instanceof Error ? err.message : String(err);
         convKeyRef.current = null;
@@ -289,7 +291,7 @@ export function useE2EE(conversationId?: string) {
       cancelled = true; 
       supabase.removeChannel(channel);
     };
-  }, [profile?.id, conversationId, identityReady, refreshTrigger]);
+  }, [profile, conversationId, identityReady, refreshTrigger]);
 
   const isReady = e2eeState === 'ready';
 

@@ -78,7 +78,7 @@ export function MessageList({ conversationId }: MessageListProps) {
     if (isReady && messages.length > 0) {
       const updates = messages
         .filter(m => m.decryption_error)
-        .map(m => ({ id: m.id, changes: { decrypted_content: undefined, decryption_error: undefined } as any }));
+        .map(m => ({ id: m.id, changes: { decrypted_content: undefined, decryption_error: undefined } as Partial<Message> }));
       if (updates.length > 0) {
         bulkUpdateMessages(conversationId, updates);
       }
@@ -134,7 +134,7 @@ export function MessageList({ conversationId }: MessageListProps) {
               throw innerErr;
             }
           return { id: msg.id, changes: { decrypted_content: decrypted } };
-        } catch (e: any) {
+        } catch (e) {
           return { id: msg.id, changes: { decrypted_content: null, decryption_error: true } };
         }
       }));
@@ -198,7 +198,7 @@ export function MessageList({ conversationId }: MessageListProps) {
         if (current.length === 0) {
           setMessages(conversationId, ordered);
         } else {
-          ordered.forEach(msg => useChatStore.getState().addMessage(conversationId, msg as any));
+          ordered.forEach(msg => useChatStore.getState().addMessage(conversationId, msg as Message));
         }
         
         // ALWAYS update oldestMessageIdRef to the oldest fetched message (even if filtered out)
@@ -226,7 +226,7 @@ export function MessageList({ conversationId }: MessageListProps) {
           await supabase.from('conversation_members').update({ last_read_at: new Date().toISOString() }).eq('conversation_id', conversationId).eq('user_id', profile.id);
         }
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setFetchError("Failed to load messages.");
     } finally {
@@ -237,10 +237,12 @@ export function MessageList({ conversationId }: MessageListProps) {
 
   useEffect(() => {
     setMessages(conversationId, []);
-    setHasMore(true);
+    Promise.resolve().then(() => setHasMore(true));
     isFirstLoad.current = true;
-    loadMessages();
-  }, [conversationId]);
+    Promise.resolve().then(() => {
+      loadMessages();
+    });
+  }, [conversationId, loadMessages, setMessages]);
 
   useEffect(() => {
     if (isFirstLoad.current && messages.length > 0) {
@@ -250,7 +252,7 @@ export function MessageList({ conversationId }: MessageListProps) {
       const last = messages[messages.length - 1]; // We don't need to change this for scroll logic
       if (last.sender_id === profile?.id) scrollToBottom();
     }
-  }, [messages.length]);
+  }, [messages.length, messages, profile?.id, scrollToBottom]);
 
   useEffect(() => {
     if (!conversationId || !profile) return;
@@ -280,7 +282,7 @@ export function MessageList({ conversationId }: MessageListProps) {
           const currentMessages = useChatStore.getState().messages[conversationId] || [];
           const updates = currentMessages
             .filter(m => m.sender_id === profile.id && m.status !== 'read')
-            .map(m => ({ id: m.id, changes: { status: 'read' as any } }));
+            .map(m => ({ id: m.id, changes: { status: 'read' as const } }));
           if (updates.length > 0) {
             useChatStore.getState().bulkUpdateMessages(conversationId, updates);
           }
@@ -326,7 +328,7 @@ export function MessageList({ conversationId }: MessageListProps) {
     const msg = messages.find(m => m.id === messageId);
     if (!msg) return;
 
-    let newReactions = [...(msg.reactions || [])];
+    const newReactions = [...(msg.reactions || [])];
     const existingIdx = newReactions.findIndex(r => r.emoji === emoji && r.user_id === profile.id);
     
     if (existingIdx !== -1) {
@@ -334,7 +336,7 @@ export function MessageList({ conversationId }: MessageListProps) {
       useChatStore.getState().updateMessage(conversationId, messageId, { reactions: newReactions });
       await supabase.from('message_reactions').delete().eq('message_id', messageId).eq('user_id', profile.id).eq('emoji', emoji);
     } else {
-      const newReaction = { id: Math.random().toString(), message_id: messageId, user_id: profile.id, emoji, created_at: new Date().toISOString(), profile: profile as any };
+      const newReaction = { id: Math.random().toString(), message_id: messageId, user_id: profile.id, emoji, created_at: new Date().toISOString(), profile: profile /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ as any };
       newReactions.push(newReaction);
       useChatStore.getState().updateMessage(conversationId, messageId, { reactions: newReactions });
       await supabase.from('message_reactions').insert({ message_id: messageId, user_id: profile.id, emoji });

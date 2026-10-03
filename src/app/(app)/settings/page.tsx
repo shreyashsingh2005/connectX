@@ -124,7 +124,7 @@ export default function SettingsPage() {
     
     setIsSaving(true);
     try {
-      let avatarUrl = profile.avatar_url;
+      const avatarUrl = profile.avatar_url;
       
       const { error } = await supabase
         .from('profiles')
