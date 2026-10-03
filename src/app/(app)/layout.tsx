@@ -10,6 +10,7 @@ import { NewChatModal } from '@/components/modals/NewChatModal';
 import { GroupChatModal } from '@/components/modals/GroupChatModal';
 import { UsernameSetupModal } from '@/components/modals/UsernameSetupModal';
 import { CallOverlay } from '@/components/chat/CallOverlay';
+import { AppBootScreen } from '@/components/ui/AppBootScreen';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

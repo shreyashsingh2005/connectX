@@ -117,3 +117,14 @@ html, body {
 }
 
 .page-transition-enter { animation: pageEnter 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards; } @keyframes pageEnter { from { opacity: 0; transform: translateY(6px) scale(0.995); } to { opacity: 1; transform: translateY(0) scale(1); } } .chat-open-enter { animation: chatEnter 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards; } @keyframes chatEnter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } } @media (prefers-reduced-motion: reduce) { .page-transition-enter, .chat-open-enter, .animate-in { animation: none !important; transform: none !important; } }
+@keyframes pulseOpacity {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[pulseOpacity_900ms_ease-in-out_infinite\] {
+    animation: none !important;
+    opacity: 0.8 !important;
+  }
+}
