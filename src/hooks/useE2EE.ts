@@ -7,6 +7,7 @@ import * as E2EE from '@/lib/e2ee';
 
 const keyRegistry = new Map<string, CryptoKey>();
 const initPromises = new Map<string, Promise<CryptoKey>>();
+let globalIdentityPromise: Promise<void> | null = null;
 
 function regKey(userId: string, conversationId: string) {
   return `${userId}:${conversationId}`;
@@ -31,55 +32,52 @@ export function useE2EE(conversationId?: string) {
     let cancelled = false;
     const supabase = supabaseRef.current;
 
-    async function initIdentity() {
-      try {
-        let deviceId = localStorage.getItem('connectx_device_id');
-        if (!deviceId) {
-          deviceId = 'dev_' + crypto.randomUUID().replace(/-/g, '');
-          localStorage.setItem('connectx_device_id', deviceId);
-        }
+    async function executeInitIdentity() {
+      let deviceId = localStorage.getItem('connectx_device_id');
+      if (!deviceId) {
+        deviceId = 'dev_' + crypto.randomUUID().replace(/-/g, '');
+        localStorage.setItem('connectx_device_id', deviceId);
+      }
 
-        let keys = await E2EE.loadKeyPair(profile!.id);
-        if (!keys) {
-          keys = await E2EE.generateRSAKeyPair();
-          await E2EE.storeKeyPair(profile!.id, keys.publicKey, keys.privateKey);
-        }
-        
-        const pubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
+      let keys = await E2EE.loadKeyPair(profile!.id);
+      if (!keys) {
+        keys = await E2EE.generateRSAKeyPair();
+        await E2EE.storeKeyPair(profile!.id, keys.publicKey, keys.privateKey);
+      }
+      
+      const pubKeyB64 = await E2EE.exportPublicKey(keys.publicKey);
 
-        const { data: existingDevice } = await supabase
-          .from('user_devices')
-          .select('id, public_key')
-          .eq('device_id', deviceId)
-          .eq('user_id', profile!.id)
-          .single();
+      const { data: existingDevice } = await supabase
+        .from('user_devices')
+        .select('id, public_key')
+        .eq('device_id', deviceId)
+        .eq('user_id', profile!.id)
+        .single();
 
-        if (!existingDevice) {
-          if (!cancelled) {
-            await supabase.from('user_devices').insert({
-              user_id: profile!.id,
-              device_id: deviceId,
-              public_key: pubKeyB64
-            });
-          }
-        } else if (existingDevice.public_key !== pubKeyB64) {
-          if (!cancelled) {
-            await supabase.from('user_devices').update({ public_key: pubKeyB64 }).eq('id', existingDevice.id);
-          }
-        }
-
-        if (!cancelled) {
-          identityReadyRef.current = true;
-          setIdentityReady(true);
-        }
-      } catch (err) {
-        console.error('[E2EE] Identity init failed:', err);
+      if (!existingDevice) {
+        await supabase.from('user_devices').insert({
+          user_id: profile!.id,
+          device_id: deviceId,
+          public_key: pubKeyB64
+        });
+      } else if (existingDevice.public_key !== pubKeyB64) {
+        await supabase.from('user_devices').update({ public_key: pubKeyB64 }).eq('id', existingDevice.id);
       }
     }
 
-    if (!identityReadyRef.current) {
-      initIdentity();
+    if (!globalIdentityPromise) {
+      globalIdentityPromise = executeInitIdentity().catch(err => {
+        console.error('[E2EE] Global identity init failed:', err);
+        globalIdentityPromise = null;
+      });
     }
+
+    globalIdentityPromise.then(() => {
+      if (!cancelled) {
+        identityReadyRef.current = true;
+        setIdentityReady(true);
+      }
+    });
     return () => { cancelled = true; };
   }, [profile?.id, profile]);
 
@@ -120,6 +118,11 @@ export function useE2EE(conversationId?: string) {
           initPromises.delete(rKey);
           keyRegistry.delete(rKey);
           setRefreshTrigger(prev => prev + 1);
+        }
+      })
+      .on('broadcast', { event: 'REQUEST_PROVISION' }, () => {
+        if (convKeyRef.current) {
+          autoProvisionMissingDevices(convKeyRef.current);
         }
       })
       .subscribe();
@@ -244,6 +247,7 @@ export function useE2EE(conversationId?: string) {
         if (allErr) throw new Error(`Fetch members error: ${allErr.message}`);
 
         const othersHaveKeys = allMembers?.some(m => {
+          if (m.user_id === profile!.id) return false;
           if (m.encrypted_key) return true;
           if (m.encrypted_keys && Object.keys(m.encrypted_keys).length > 0) return true;
           return false;
@@ -306,6 +310,12 @@ export function useE2EE(conversationId?: string) {
         if (err.name === 'WAITING_FOR_DEVICE_AUTHORIZATION' || msg.includes('WAITING_FOR_DEVICE_AUTHORIZATION')) {
           setE2eeState('waiting_for_device_authorization');
           setError('This device needs access to the conversation key. Open this chat on your original device to automatically securely sync the keys.');
+          
+          supabase.channel(channelName).send({
+            type: 'broadcast',
+            event: 'REQUEST_PROVISION',
+            payload: {}
+          });
         } else {
           setE2eeState('error');
           setError(msg);
