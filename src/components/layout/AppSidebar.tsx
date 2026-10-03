@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -34,6 +35,35 @@ export function AppSidebar() {
   const router = useRouter();
   const profile = useAuthStore(s => s.profile);
   const supabase = createClient();
+
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!profile) return;
+    
+    supabase
+      .from('notifications')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', profile.id)
+      .eq('is_read', false)
+      .then(({ count }) => setUnreadCount(count || 0));
+
+    const channel = supabase
+      .channel(`sidebar_notifications:${profile.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${profile.id}` }, 
+        () => {
+           supabase
+            .from('notifications')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', profile.id)
+            .eq('is_read', false)
+            .then(({ count }) => setUnreadCount(count || 0));
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [profile?.id, supabase]);
 
   async function handleLogout() {
     try {
@@ -70,6 +100,12 @@ export function AppSidebar() {
               )}
             >
               <Icon size={18} strokeWidth={isActive ? 2.25 : 1.75} />
+              
+              {label === 'Notifications' && unreadCount > 0 && (
+                <div className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#8B5CF6] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#FFFFFF] dark:border-[#090B10] shadow-sm">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </div>
+              )}
               
               {/* Tooltip */}
               <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-gray-900 dark:bg-[#F5F7FA] text-white dark:text-gray-900 text-xs font-medium rounded-md px-2.5 py-1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50 shadow-sm translate-x-[-4px] group-hover:translate-x-0">
@@ -144,4 +180,3 @@ export function AppSidebar() {
     </aside>
   );
 }
-
