@@ -261,13 +261,11 @@ export function MessageList({ conversationId }: MessageListProps) {
       .on('broadcast', { event: 'typing' }, ({ payload }) => {
         if (payload.userId !== profile.id) {
           addTypingUser({ userId: payload.userId, username: payload.username, conversationId });
-            const key = `${payload.userId}-${conversationId}`;
-            if (typingTimeouts.current[key]) clearTimeout(typingTimeouts.current[key]);
-            typingTimeouts.current[key] = setTimeout(() => {
-              removeTypingUser(payload.userId, conversationId);
           const key = `${payload.userId}-${conversationId}`;
           if (typingTimeouts.current[key]) clearTimeout(typingTimeouts.current[key]);
-            }, 3000);
+          typingTimeouts.current[key] = setTimeout(() => {
+            removeTypingUser(payload.userId, conversationId);
+          }, 3000);
         }
       })
       .on('broadcast', { event: 'stop_typing' }, ({ payload }) => {
