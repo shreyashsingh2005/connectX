@@ -131,3 +131,50 @@ body {
     transform: none !important;
   }
 }
+
+/* ==============================================================
+   PREMIUM AUTHENTICATION RESPONSIVE ANIMATIONS
+   ============================================================== */
+
+@keyframes connectxAuthEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes connectxMessageFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes connectxAmbient {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(12px, -8px, 0); }
+}
+
+@utility animate-auth-stagger {
+  animation: connectxAuthEnter 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-auth-float {
+  animation: connectxMessageFloat 4.5s ease-in-out infinite alternate;
+}
+
+@utility animate-auth-ambient {
+  animation: connectxAmbient 8s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-auth-stagger, 
+  .animate-auth-float, 
+  .animate-auth-ambient {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
