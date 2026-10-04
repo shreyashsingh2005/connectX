@@ -175,9 +175,9 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
               mediaAttachments.length > 0 ? (
                 <div className="grid grid-cols-3 gap-1">
                   {mediaAttachments.map(att => (
-                    <a key={att.id} href={att.url} target="_blank" rel="noopener noreferrer" className="aspect-square rounded-lg overflow-hidden block">
-                      <img src={att.url} alt={att.file_name} width={80} height={80} className="w-full h-full object-cover hover:scale-105 transition-transform" />
-                    </a>
+                    <div key={att.id} className="aspect-square rounded-lg overflow-hidden block">
+                      <DecryptedMediaThumbnail attachment={att} />
+                    </div>
                   ))}
                 </div>
               ) : (

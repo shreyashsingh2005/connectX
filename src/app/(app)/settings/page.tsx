@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { UserSettings } from '@/types';
@@ -27,8 +28,11 @@ function ChangePasswordModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => setMounted(true), []);
+
+  if (!isOpen || !mounted) return null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -75,6 +79,8 @@ function ChangePasswordModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
 
 function ManageSessionsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [devices, setDevices] = useState<any[]>([]);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
@@ -112,7 +118,7 @@ function ManageSessionsModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
     }
   }
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4">
