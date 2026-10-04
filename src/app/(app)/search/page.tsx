@@ -42,8 +42,18 @@ export default function SearchPage() {
 
   async function handleStartChat(targetProfile: Profile) {
     if (!profile) return;
-    const { data, error } = await supabase.rpc('get_or_create_direct_conversation', { p_user1_id: profile.id, p_user2_id: targetProfile.id });
-    if (!error) router.push(`/chat/${data}`);
+    try {
+      const { data: convId, error } = await supabase.rpc('start_direct_conversation', { 
+        other_user_id: targetProfile.id 
+      });
+      if (error) {
+        console.error('RPC Error:', error);
+        throw error;
+      }
+      if (convId) router.push(`/chat/${convId}`);
+    } catch (error: any) {
+      console.error('Error starting chat:', error);
+    }
   }
 
   return (
