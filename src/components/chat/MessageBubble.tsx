@@ -238,7 +238,7 @@ export const MessageBubble = memo(function MessageBubble({
             {message.is_edited && (
               <span className="text-[10px] opacity-50">edited</span>
             )}
-            <span className={`text-[11px] font-medium tracking-wide ${isOwn ? 'text-[var(--chat-outgoing-muted)] drop-shadow-sm' : 'text-[var(--chat-incoming-muted)]'}`}>
+            <span className={`text-[11px] font-medium tracking-wide ${isEmojiOnly ? 'text-gray-500 dark:text-gray-400' : (isOwn ? 'text-[var(--chat-outgoing-muted)] drop-shadow-sm' : 'text-[var(--chat-incoming-muted)]')}`}>
               {formatMessageTime(message.created_at)}
             </span>
             {isOwn && <DeliveryIcon status={message.status} isEmojiOnly={isEmojiOnly} />}

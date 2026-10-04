@@ -36,6 +36,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   const [showThemePicker, setShowThemePicker] = useState(false);
   const { setChatOverride, chatOverrides } = useThemeStore();
   const [showClearModal, setShowClearModal] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
@@ -48,26 +49,30 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   }, []);
 
   async function handleClearChat() {
+    if (isClearing) return;
+    setIsClearing(true);
     if (!profile) return;
     try {
       const { error } = await supabase.rpc('clear_conversation_for_current_user', {
-        p_conversation_id: conversation.id
+        conversation_id: conversation.id
       });
       if (error) throw error;
       
-      // Keep local storage as fallback for instant feedback before reload
       const clearedChats = JSON.parse(localStorage.getItem('cleared_chats') || '{}');
       clearedChats[conversation.id] = new Date().toISOString();
       localStorage.setItem('cleared_chats', JSON.stringify(clearedChats));
       
       useChatStore.getState().setMessages(conversation.id, []);
-      useChatStore.getState().updateConversation(conversation.id, { unread_count: 0 });
+      useChatStore.getState().updateConversation(conversation.id, { unread_count: 0, cleared_at: new Date().toISOString() });
       
       toast.success('Chat cleared');
       setShowClearModal(false);
+      setShowMenu(false);
     } catch (error) {
       console.error(error);
       toast.error("Couldn't clear chat. Please try again.");
+    } finally {
+      setIsClearing(false);
     }
   }
 

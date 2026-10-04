@@ -255,25 +255,28 @@ export function MessageList({ conversationId }: MessageListProps) {
     });
   }, [conversationId, loadMessages, setMessages]);
 
+  const previousLengthRef = useRef(messages.length);
   useEffect(() => {
     if (isFirstLoad.current && messages.length > 0) {
       scrollToBottom('instant');
       isFirstLoad.current = false;
-    } else if (messages.length > 0) {
+    } else if (messages.length > 0 && messages.length > previousLengthRef.current) {
+      // Only auto-scroll for entirely new messages
       const last = messages[messages.length - 1];
       const el = scrollContainerRef.current;
       if (last.sender_id === profile?.id) {
-        scrollToBottom();
+        scrollToBottom('smooth');
       } else if (el) {
         const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 150;
         if (isNearBottom) {
-          scrollToBottom();
+          scrollToBottom('smooth');
         } else {
           setHasNewMessages(true);
         }
       }
     }
-  }, [messages.length, messages, profile?.id, scrollToBottom]);
+    previousLengthRef.current = messages.length;
+  }, [messages.length, profile?.id, scrollToBottom]);
 
   useEffect(() => {
     if (!conversationId || !profile) return;
