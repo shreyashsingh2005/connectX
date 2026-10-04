@@ -80,12 +80,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // Mobile: 1 column grid -> Main Content (remaining). AppNav floats fixed at bottom.
 
   return (
-    <div className="h-[100dvh] w-full overflow-hidden bg-bg-surface md:grid md:grid-cols-[72px_340px_minmax(0,1fr)]">
+    <div className="h-[100dvh] w-full overflow-hidden bg-bg-surface md:grid md:grid-cols-[72px_340px_minmax(0,1fr)] box-border">
       {/* COLUMN 1: App Navigation */}
-      <div className="md:col-start-1 md:col-end-2 w-full md:h-[100dvh]"><AppSidebar /></div>
+      <div className="md:col-start-1 md:col-end-2 w-full md:h-[100dvh] min-w-0 min-h-0 relative"><AppSidebar /></div>
 
       {/* COLUMN 2: Conversation Sidebar (Hidden on mobile) */}
-      <div className="hidden md:flex flex-col h-[100dvh] overflow-hidden min-w-0 border-r border-border-subtle bg-bg-surface md:col-start-2 md:col-end-3">
+      <div className="hidden md:flex flex-col h-[100dvh] overflow-hidden min-w-0 min-h-0 border-r border-border-subtle bg-bg-surface md:col-start-2 md:col-end-3 relative">
         <ConversationList />
       </div>
 
