@@ -4,8 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
-import { Mail, Loader2, ArrowLeft } from 'lucide-react';
-import { ConnectXLogo } from '@/components/ui/ConnectXLogo';
+import { Loader2, ArrowLeft, Mail } from 'lucide-react';
+import { AuthLayout } from '@/components/auth/AuthLayout';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -30,51 +30,55 @@ export default function ForgotPasswordPage() {
     }
   }
 
-  const inputClass = "w-full bg-bg-primary border border-border-subtle rounded-[10px] h-[40px] pl-[36px] pr-[12px] text-text-main text-[13px] placeholder-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all";
+  const inputClass = "w-full bg-[#FAFAFC] dark:bg-[#11131A] border border-[#E6E4EC] dark:border-[#2A2E3B] rounded-[10px] h-[44px] px-[14px] text-text-main text-[14px] placeholder-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand/30 transition-all";
 
   return (
-    <div className="min-h-[100dvh] w-full bg-bg-primary flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-[440px] bg-bg-surface rounded-[24px] p-[32px] md:p-[40px] shadow-[0_12px_40px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-300">
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-[56px] h-[56px] bg-brand text-white rounded-[16px] flex items-center justify-center mb-6 shadow-md">
-            <ConnectXLogo size={32} />
-          </div>
-          <h1 className="text-[28px] font-[700] text-text-main leading-[34px] tracking-tight mb-2 text-center">
-            Reset Password
-          </h1>
-          <p className="text-[14px] text-text-sec text-center">
-            Enter your email to receive a reset link.
-          </p>
-        </div>
+    <AuthLayout>
+      <div className="w-full flex flex-col">
+        <Link href="/login" className="w-10 h-10 rounded-full bg-bg-secondary flex items-center justify-center text-text-sec hover:text-text-main transition-colors mb-6">
+          <ArrowLeft size={18} strokeWidth={2} />
+        </Link>
+        
+        <h2 className="text-[30px] md:text-[32px] font-[700] text-text-main leading-tight tracking-tight mb-2">
+          Reset your password
+        </h2>
+        <p className="text-[14px] text-text-sec mb-8">
+          Enter your email and we'll send you a reset link.
+        </p>
 
-        {!sent ? (
+        {sent ? (
+          <div className="bg-brand-soft border border-brand/20 p-6 rounded-[12px] text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-brand/10 text-brand flex items-center justify-center mx-auto mb-2">
+              <Mail size={24} strokeWidth={2} />
+            </div>
+            <h3 className="text-[15px] font-[600] text-text-main">Check your email</h3>
+            <p className="text-[14px] text-text-sec leading-relaxed">
+              We've sent a password reset link to <strong>{email}</strong>. Please check your inbox.
+            </p>
+            <button onClick={() => setSent(false)} className="text-[13px] font-[600] text-brand hover:text-brand-dark transition-colors pt-2">
+              Use a different email
+            </button>
+          </div>
+        ) : (
           <form onSubmit={handleSubmit} className="w-full space-y-4">
             <div className="space-y-1.5">
-              <label className="text-[13px] font-[500] text-text-main">Email address</label>
-              <div className="relative">
-                <Mail className="absolute left-[12px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-text-muted" />
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@example.com" className={inputClass} />
-              </div>
+              <label className="text-[13px] font-[600] text-text-main block">Email</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@example.com" className={inputClass} />
             </div>
 
-            <button type="submit" disabled={loading} className="w-full h-[40px] bg-brand text-white text-[13px] font-[600] rounded-[10px] hover:bg-brand-dark transition-colors flex items-center justify-center gap-2 mt-4 shadow-sm disabled:opacity-50">
-              {loading ? <Loader2 className="w-[16px] h-[16px] animate-spin" /> : null}
-              {loading ? 'Sending...' : 'Send reset link'}
+            <button type="submit" disabled={loading} className="w-full h-[44px] bg-[#8B5CF6] text-white text-[14px] font-[600] rounded-[10px] hover:bg-[#7C3AED] transition-colors flex items-center justify-center gap-2 mt-4 disabled:opacity-50">
+              {loading ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : null}
+              {loading ? 'Sending link...' : 'Send reset link'}
             </button>
           </form>
-        ) : (
-          <div className="text-center p-6 bg-brand-soft rounded-[12px] mb-4">
-            <h3 className="text-[14px] font-[600] text-brand mb-2">Check your email</h3>
-            <p className="text-[13px] text-brand/80">We sent a password reset link to <br/><span className="font-semibold">{email}</span></p>
-          </div>
         )}
 
-        <div className="mt-8 flex justify-center">
-          <Link href="/login" className="flex items-center gap-2 text-[13px] font-[500] text-text-sec hover:text-text-main transition-colors">
-            <ArrowLeft className="w-[16px] h-[16px]" /> Back to login
+        <div className="mt-8 text-center">
+          <Link href="/login" className="text-[13px] font-[600] text-text-sec hover:text-text-main transition-colors">
+            Back to sign in
           </Link>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

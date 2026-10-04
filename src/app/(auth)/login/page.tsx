@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
-import { ConnectXLogo } from '@/components/ui/ConnectXLogo';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { AuthLayout } from '@/components/auth/AuthLayout';
 
 function LoginContent() {
   const [email, setEmail] = useState('');
@@ -60,60 +60,52 @@ function LoginContent() {
     }
   }
 
-  const inputClass = "w-full bg-bg-primary border border-border-subtle rounded-[10px] h-[40px] pl-[36px] pr-[12px] text-text-main text-[13px] placeholder-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all";
+  const inputClass = "w-full bg-[#FAFAFC] dark:bg-[#11131A] border border-[#E6E4EC] dark:border-[#2A2E3B] rounded-[10px] h-[44px] px-[14px] text-text-main text-[14px] placeholder-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand/30 transition-all";
 
   return (
-    <div className="w-full max-w-[360px] mx-auto flex flex-col items-center">
-      <div className="w-[56px] h-[56px] bg-brand text-white rounded-[16px] flex items-center justify-center mb-6 shadow-md">
-        <ConnectXLogo size={32} />
-      </div>
-      
-      <h1 className="text-[28px] font-[700] text-text-main leading-[34px] tracking-tight mb-2 text-center">
+    <div className="w-full flex flex-col">
+      <h2 className="text-[30px] md:text-[32px] font-[700] text-text-main leading-tight tracking-tight mb-2">
         Welcome back
-      </h1>
-      <p className="text-[14px] text-text-sec text-center mb-8">
+      </h2>
+      <p className="text-[14px] text-text-sec mb-8">
         Please enter your details to sign in.
       </p>
 
       <form onSubmit={handleLogin} className="w-full space-y-4">
         <div className="space-y-1.5">
-          <label className="text-[13px] font-[500] text-text-main">Email</label>
-          <div className="relative">
-            <Mail className="absolute left-[12px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-text-muted" />
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              placeholder="Enter your email"
-              className={inputClass}
-            />
-          </div>
+          <label className="text-[13px] font-[600] text-text-main block">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+            placeholder="you@example.com"
+            className={inputClass}
+          />
         </div>
 
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-[13px] font-[500] text-text-main">Password</label>
-            <Link href="/forgot-password" className="text-[12px] font-[500] text-brand hover:text-brand-dark transition-colors">
+            <label className="text-[13px] font-[600] text-text-main">Password</label>
+            <Link href="/forgot-password" className="text-[13px] font-[600] text-brand hover:text-brand-dark transition-colors">
               Forgot password?
             </Link>
           </div>
           <div className="relative">
-            <Lock className="absolute left-[12px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-text-muted" />
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className={`${inputClass} pr-[40px]`}
+              className={`${inputClass} pr-[44px]`}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-[8px] top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-sec transition-colors"
+              className="absolute right-[4px] top-1/2 -translate-y-1/2 p-2 text-text-muted hover:text-text-sec transition-colors outline-none"
             >
-              {showPassword ? <EyeOff className="w-[16px] h-[16px]" /> : <Eye className="w-[16px] h-[16px]" />}
+              {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
             </button>
           </div>
         </div>
@@ -121,9 +113,9 @@ function LoginContent() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-[40px] bg-brand text-white text-[13px] font-[600] rounded-[10px] hover:bg-brand-dark transition-colors flex items-center justify-center gap-2 mt-2 shadow-sm disabled:opacity-50"
+          className="w-full h-[44px] bg-[#8B5CF6] text-white text-[14px] font-[600] rounded-[10px] hover:bg-[#7C3AED] transition-colors flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
         >
-          {loading ? <Loader2 className="w-[16px] h-[16px] animate-spin" /> : null}
+          {loading ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : null}
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
@@ -140,7 +132,7 @@ function LoginContent() {
       <button
         onClick={handleGoogleLogin}
         disabled={loading || googleLoading}
-        className="w-full h-[40px] bg-bg-surface border border-border-subtle text-[13px] font-[600] text-text-main rounded-[10px] hover:bg-bg-secondary transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+        className="w-full h-[44px] bg-white dark:bg-[#1A1D27] border border-[#E6E4EC] dark:border-[#2A2E3B] text-[14px] font-[500] text-text-main rounded-[10px] hover:bg-[#F9FAFB] dark:hover:bg-[#202430] transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
       >
         <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -151,7 +143,7 @@ function LoginContent() {
         Sign in with Google
       </button>
 
-      <p className="text-center text-[13px] text-text-sec mt-6">
+      <p className="text-center text-[13px] text-text-sec mt-8">
         Don't have an account?{' '}
         <Link href="/register" className="text-brand hover:text-brand-dark font-[600] transition-colors">
           Create account
@@ -163,21 +155,10 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-[100dvh] w-full bg-bg-primary flex flex-col items-center justify-center p-4">
-      {/* Soft lavender background blob for light mode */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none hidden dark:block">
-         {/* We can leave dark mode blank or with subtle glow */}
-      </div>
-      <div className="fixed inset-0 overflow-hidden pointer-events-none dark:hidden">
-        <div className="absolute top-[-20%] right-[-10%] w-[70%] h-[70%] bg-brand-soft rounded-full blur-[100px] opacity-70" />
-        <div className="absolute bottom-[-20%] left-[-10%] w-[70%] h-[70%] bg-[#F3F0FF] rounded-full blur-[100px] opacity-70" />
-      </div>
-
-      <div className="w-full max-w-[440px] bg-bg-surface rounded-[24px] p-[32px] md:p-[40px] shadow-[0_12px_40px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-300">
-        <Suspense fallback={<div className="h-[400px] flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-brand"/></div>}>
-          <LoginContent />
-        </Suspense>
-      </div>
-    </div>
+    <AuthLayout>
+      <Suspense fallback={<div className="h-[400px] flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-brand"/></div>}>
+        <LoginContent />
+      </Suspense>
+    </AuthLayout>
   );
 }
