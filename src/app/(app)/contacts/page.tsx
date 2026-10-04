@@ -8,7 +8,7 @@ import { UserAvatar } from '@/components/ui/UserAvatar';
 import { Profile, Friendship } from '@/types';
 import { cn, debounce } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import { Search, Loader2, MessageSquare, Check, X as XIcon, Clock, UserPlus, Users } from 'lucide-react';
+import { Search, Loader2, MessageSquare, Check, X as XIcon, Clock, UserPlus, Users , MoreHorizontal } from 'lucide-react';
 import { useFriendActions } from '@/hooks/useFriendActions';
 
 type TabType = 'requests' | 'friends';
@@ -215,7 +215,7 @@ export default function ContactsPage() {
     reqId?: string;
   }) => {
     return (
-      <div className="flex items-center gap-[10px] w-full min-h-[60px] h-[60px] px-[10px] py-[8px] border-b border-border-subtle bg-bg-surface dark:bg-transparent last:border-b-0 hover:bg-bg-secondary transition-colors duration-150">
+      <div className="flex items-center gap-[10px] w-full h-[64px] px-4 border-b border-border-subtle bg-transparent last:border-b-0 hover:bg-bg-secondary transition-colors duration-150">
         
         {/* Identity Section */}
         <div 
@@ -239,16 +239,21 @@ export default function ContactsPage() {
         </div>
 
         {/* Action Button Section (Right side, fits in row) */}
-        <div className="flex-shrink-0 flex items-center gap-1.5 ml-2">
+        <div className="flex-shrink-0 flex items-center gap-2 ml-2">
           {context === 'friend' && (
-            <button
-              onClick={() => handleStartChat(user)}
-              disabled={isStartingChat === user.id}
-              className="flex items-center gap-1.5 h-[32px] px-[12px] bg-brand/10 hover:bg-brand/20 text-brand rounded-[8px] text-[12px] font-[600] transition-colors"
-            >
-              {isStartingChat === user.id ? <Loader2 className="w-[15px] h-[15px] animate-spin" /> : <MessageSquare className="w-[15px] h-[15px]" />}
-              Message
-            </button>
+            <>
+              <button
+                onClick={() => handleStartChat(user)}
+                disabled={isStartingChat === user.id}
+                className="flex items-center gap-1.5 h-[32px] px-3 bg-brand/10 hover:bg-brand/20 text-brand rounded-[8px] text-[12px] font-[600] transition-colors"
+              >
+                {isStartingChat === user.id ? <Loader2 className="w-[15px] h-[15px] animate-spin" /> : <MessageSquare className="w-[15px] h-[15px]" />}
+                Message
+              </button>
+              <button className="flex items-center justify-center w-[32px] h-[32px] bg-transparent hover:bg-bg-secondary text-text-sec rounded-[8px] transition-colors">
+                <MoreHorizontal size={16} strokeWidth={1.75} />
+              </button>
+            </>
           )}
 
           {context === 'incoming' && (
@@ -259,7 +264,7 @@ export default function ContactsPage() {
                   fetchAllData();
                   if (query) performSearch(query);
                 }}
-                className="h-[32px] px-[12px] bg-brand text-white rounded-[8px] text-[12px] font-[600] hover:bg-brand-dark transition-colors shadow-sm dark:shadow-none"
+                className="h-[32px] px-4 bg-brand text-white rounded-[8px] text-[12px] font-[600] hover:bg-brand-dark transition-colors"
               >
                 Accept
               </button>
@@ -269,8 +274,7 @@ export default function ContactsPage() {
                   fetchAllData();
                   if (query) performSearch(query);
                 }}
-                className="h-[32px] px-[12px] bg-bg-surface text-text-sec hover:bg-bg-secondary rounded-[8px] text-[12px] font-[600] transition-colors border border-border-subtle border-border-subtle shadow-sm dark:shadow-none"
-              >
+                className="h-[32px] px-4 bg-bg-surface text-text-main hover:bg-bg-secondary rounded-[8px] text-[12px] font-[600] transition-colors border border-border-subtle">
                 Decline
               </button>
             </>
@@ -283,8 +287,7 @@ export default function ContactsPage() {
                 fetchAllData();
                 if (query) performSearch(query);
               }}
-              className="h-[32px] px-[12px] bg-[#FEF3F2] dark:bg-[rgba(240,68,56,0.1)] text-[#F04438] hover:bg-[#FEE4E2] dark:hover:bg-[rgba(240,68,56,0.2)] rounded-[8px] text-[12px] font-[600] transition-colors"
-            >
+              className="h-[32px] px-4 bg-bg-surface text-text-main hover:bg-bg-secondary rounded-[8px] text-[12px] font-[600] transition-colors border border-border-subtle">
               Cancel
             </button>
           )}
@@ -297,7 +300,7 @@ export default function ContactsPage() {
                 if (query) performSearch(query);
                 else setRelationshipMap(prev => ({...prev, [user.id]: 'outgoing_request'}));
               }}
-              className="h-[32px] px-[12px] bg-brand text-white rounded-[8px] text-[12px] font-[600] hover:bg-brand-dark transition-colors shadow-sm dark:shadow-none"
+              className="h-[32px] px-4 bg-brand text-white rounded-[8px] text-[12px] font-[600] hover:bg-brand-dark transition-colors"
             >
               Add
             </button>
@@ -311,10 +314,10 @@ export default function ContactsPage() {
     <div className="flex flex-col flex-1 z-10 overflow-hidden relative bg-bg-primary">
       <div className="flex-1 overflow-y-auto no-scrollbar">
         {/* 1. MAIN CONTAINER (max-width 680px, compact padding) */}
-        <div className="w-full max-w-[680px] mx-auto px-[20px] py-[24px]">
+        <div className="w-full max-w-[720px] mx-auto px-4 md:px-6 py-4 md:py-6">
           
           {/* 2. HEADER */}
-          <h1 className="text-[22px] leading-[28px] font-[650] text-text-main tracking-tight mb-[16px]">
+          <h1 className="text-[22px] font-[700] text-text-main mb-6">
             Friends
           </h1>
 
@@ -326,7 +329,7 @@ export default function ContactsPage() {
               placeholder="Search people..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full bg-bg-secondary border border-border-subtle rounded-[10px] h-[40px] pl-[36px] pr-[12px] text-[13px] text-text-main placeholder-[#667085] dark:placeholder-[#A7AFB8] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all"
+              className="w-full bg-bg-secondary border border-border-subtle rounded-[10px] h-[42px] pl-[36px] pr-[12px] text-[13px] text-text-main placeholder-[#667085] dark:placeholder-[#A7AFB8] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all"
             />
             {isSearching && (
               <div className="absolute right-[12px] top-1/2 -translate-y-1/2">
@@ -337,13 +340,13 @@ export default function ContactsPage() {
 
           {query.trim() ? (
             <div className="mb-[24px]">
-              <h2 className="text-[13px] font-[600] text-text-main mt-[16px] mb-[8px] px-1">Search Results</h2>
+              <h2 className="text-[13px] font-[600] text-text-main mt-4 mb-2 px-1">Search Results</h2>
               {searchResults.length === 0 && !isSearching ? (
                 <div className="text-center py-6">
                   <p className="text-[13px] text-text-sec">No users found for "{query}"</p>
                 </div>
               ) : (
-                <div className="flex flex-col bg-bg-surface border border-border-subtle rounded-[12px] overflow-hidden">
+                <div className="flex flex-col bg-bg-surface border border-border-subtle rounded-[10px] overflow-hidden">
                   {searchResults.map(p => {
                     let ctx: any = 'none';
                     const st = relationshipMap[p.id];
@@ -358,13 +361,13 @@ export default function ContactsPage() {
           ) : (
             <>
               {/* 4. TABS */}
-              <div className="flex p-[3px] bg-bg-secondary rounded-[10px] h-[38px] mb-[16px] border border-[#E2E8F0] border-border-subtle">
+              <div className="flex p-1 bg-bg-secondary rounded-[10px] h-[40px] mb-6 border border-border-subtle">
                 <button 
                   onClick={() => setActiveTab('requests')}
                   className={cn(
                     "flex-1 h-[32px] text-[13px] font-[600] rounded-[8px] transition-all duration-150 flex items-center justify-center gap-2",
                     activeTab === 'requests' 
-                      ? "bg-bg-surface text-text-main border border-border-subtle shadow-[0_1px_2px_rgba(0,0,0,0.05)]" 
+                      ? "bg-brand/10 text-brand shadow-none" 
                       : "bg-transparent text-text-sec dark:text-[#98A2B3]"
                   )}
                 >
@@ -380,7 +383,7 @@ export default function ContactsPage() {
                   className={cn(
                     "flex-1 h-[32px] text-[13px] font-[600] rounded-[8px] transition-all duration-150 flex items-center justify-center gap-2",
                     activeTab === 'friends' 
-                      ? "bg-bg-surface text-text-main border border-border-subtle shadow-[0_1px_2px_rgba(0,0,0,0.05)]" 
+                      ? "bg-brand/10 text-brand shadow-none" 
                       : "bg-transparent text-text-sec dark:text-[#98A2B3]"
                   )}
                 >
@@ -394,14 +397,14 @@ export default function ContactsPage() {
               </div>
 
               {activeTab === 'requests' ? (
-                <div className="animate-in fade-in duration-200">
+                <div className="animate-in fade-in duration-150">
                   {/* Incoming */}
                   {incomingRequests.length > 0 && (
                     <div className="mb-[16px]">
-                      <h2 className="text-[13px] font-[600] text-text-main mt-[16px] mb-[8px] px-1 flex items-center gap-2">
+                      <h2 className="text-[13px] font-[600] text-text-main mt-4 mb-2 px-1 flex items-center gap-2">
                         Friend requests
                       </h2>
-                      <div className="flex flex-col bg-bg-surface border border-border-subtle rounded-[12px] overflow-hidden">
+                      <div className="flex flex-col bg-bg-surface border border-border-subtle rounded-[10px] overflow-hidden">
                         {incomingRequests.map(req => (
                           <CompactUserRow key={req.id} user={req.sender!} context="incoming" reqId={req.id} />
                         ))}
@@ -412,10 +415,10 @@ export default function ContactsPage() {
                   {/* Outgoing */}
                   {outgoingRequests.length > 0 && (
                     <div className="mb-[16px]">
-                      <h2 className="text-[13px] font-[600] text-text-main mt-[16px] mb-[8px] px-1 flex items-center gap-2">
+                      <h2 className="text-[13px] font-[600] text-text-main mt-4 mb-2 px-1 flex items-center gap-2">
                         Sent requests
                       </h2>
-                      <div className="flex flex-col bg-bg-surface border border-border-subtle rounded-[12px] overflow-hidden">
+                      <div className="flex flex-col bg-bg-surface border border-border-subtle rounded-[10px] overflow-hidden">
                         {outgoingRequests.map(req => (
                           <CompactUserRow key={req.id} user={req.receiver!} context="outgoing" reqId={req.id} />
                         ))}
@@ -426,10 +429,10 @@ export default function ContactsPage() {
                   {/* Suggestions */}
                   {suggestions.length > 0 && (
                     <div className="mb-[16px]">
-                      <h2 className="text-[13px] font-[600] text-text-main mt-[16px] mb-[8px] px-1">
+                      <h2 className="text-[13px] font-[600] text-text-main mt-4 mb-2 px-1">
                         Suggested for you
                       </h2>
-                      <div className="flex flex-col bg-bg-surface border border-border-subtle rounded-[12px] overflow-hidden">
+                      <div className="flex flex-col bg-bg-surface border border-border-subtle rounded-[10px] overflow-hidden">
                         {suggestions.map(p => (
                           <CompactUserRow key={p.id} user={p} context="none" />
                         ))}
@@ -438,7 +441,7 @@ export default function ContactsPage() {
                   )}
                   
                   {incomingRequests.length === 0 && outgoingRequests.length === 0 && suggestions.length === 0 && (
-                    <div className="text-center py-12">
+                    <div className="text-center py-8">
                       <UserPlus className="w-[32px] h-[32px] text-text-sec mx-auto mb-3" />
                       <h3 className="text-[14px] font-[600] text-text-main mb-1">No pending requests</h3>
                       <p className="text-[12px] text-text-sec">When someone sends you a friend request, it will appear here.</p>
@@ -446,15 +449,15 @@ export default function ContactsPage() {
                   )}
                 </div>
               ) : (
-                <div className="animate-in fade-in duration-200">
+                <div className="animate-in fade-in duration-150">
                   {friendships.length === 0 ? (
-                    <div className="text-center py-12">
+                    <div className="text-center py-8">
                       <Users className="w-[32px] h-[32px] text-text-sec mx-auto mb-3" />
                       <h3 className="text-[14px] font-[600] text-text-main mb-1">No friends yet</h3>
                       <p className="text-[12px] text-text-sec">Search for people by their unique @username.</p>
                     </div>
                   ) : (
-                    <div className="flex flex-col bg-bg-surface border border-border-subtle rounded-[12px] overflow-hidden">
+                    <div className="flex flex-col bg-bg-surface border border-border-subtle rounded-[10px] overflow-hidden">
                       {friendships.map(f => {
                         if (!f.friend) return null;
                         return <CompactUserRow key={f.id} user={f.friend} context="friend" />;
