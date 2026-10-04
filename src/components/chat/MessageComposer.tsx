@@ -23,6 +23,11 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const [isSending, setIsSending] = useState(false);
   const isSubmittingRef = useRef(false);
   const [isTyping, setIsTyping] = useState(false);
+  const isTypingRef = useRef(false);
+  
+  useEffect(() => {
+    isTypingRef.current = isTyping;
+  }, [isTyping]);
   const [isRecording, setIsRecording] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
@@ -182,7 +187,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   useEffect(() => {
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-      if (isTyping) sendTypingStatus(false);
+      if (isTypingRef.current) sendTypingStatus(false);
     };
   }, [profile, conversationId, supabase]);
 
