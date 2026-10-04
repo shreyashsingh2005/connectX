@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import { type NextRequest } from 'next/server';
@@ -41,21 +42,35 @@ export async function GET(request: NextRequest) {
         .eq('id', session.user.id)
         .single();
         
-      
       if (!profile) {
-        // Generate a random compliant username (user_ + 9 random alphanumeric chars)
-        const tempUsername = `user_${Math.random().toString(36).substring(2, 11)}`;
-        const newProfile = {
-          id: session.user.id,
-          username: tempUsername,
-          username_normalized: tempUsername,
-          display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'New User',
-          email: session.user.email || '',
-          avatar_url: session.user.user_metadata?.avatar_url || null,
-        };
-        await supabase.from('profiles').insert(newProfile);
-
-        await supabase.from('user_settings').insert({ user_id: session.user.id });
+        // Securely generate a temporary username and rely on DB unique constraints
+        let profileCreated = false;
+        let retries = 3;
+        
+        while (!profileCreated && retries > 0) {
+          const tempUsername = `user_${crypto.randomBytes(4).toString('hex')}`;
+          const newProfile = {
+            id: session.user.id,
+            username: tempUsername,
+            username_normalized: tempUsername,
+            display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'New User',
+            email: session.user.email || '',
+            avatar_url: session.user.user_metadata?.avatar_url || null,
+          };
+          
+          const { error: insertError } = await supabase.from('profiles').insert(newProfile);
+          
+          if (!insertError) {
+            profileCreated = true;
+            await supabase.from('user_settings').insert({ user_id: session.user.id });
+          } else if (insertError.code === '23505') { 
+            // 23505 is PostgreSQL unique constraint violation
+            retries--;
+          } else {
+            // Unhandled error
+            break;
+          }
+        }
       }
 
       return NextResponse.redirect(`${origin}${next}`);

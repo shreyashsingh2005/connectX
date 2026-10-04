@@ -22,22 +22,64 @@ export function useAuth() {
     if (profileRes.error || !profileRes.data) {
       const { data: userData } = await supabase.auth.getUser();
       
+        
         if (userData?.user) {
           const user = userData.user;
-          const tempUsername = `user_${Math.random().toString(36).substring(2, 11)}`;
+          
+          // Secure client-side generation
+          let hex = '';
+          if (typeof window !== 'undefined' && window.crypto) {
+            const array = new Uint8Array(4);
+            window.crypto.getRandomValues(array);
+            hex = Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
+          } else {
+            hex = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
+          }
+          const tempUsername = `user_${hex}`;
+          
           const newProfile = {
             id: user.id,
             username: user.user_metadata?.username || tempUsername,
             username_normalized: user.user_metadata?.username?.toLowerCase() || tempUsername,
             display_name: user.user_metadata?.display_name || user.user_metadata?.full_name || user.user_metadata?.name || 'New User',
 
+
           email: user.email || '',
             avatar_url: user.user_metadata?.avatar_url || null,
         };
-        // Insert profile
-        const insertRes = await supabase.from('profiles').insert(newProfile).select().single();
-        if (insertRes.data) {
-          profileRes = insertRes;
+        
+          // Insert profile with retry
+          let profileCreated = false;
+          let retries = 3;
+          let profileInsertRes = null;
+          
+          while (!profileCreated && retries > 0) {
+            const insertRes = await supabase.from('profiles').insert(newProfile).select().single();
+            if (!insertRes.error) {
+              profileCreated = true;
+              profileInsertRes = insertRes;
+            } else if (insertRes.error.code === '23505') {
+              // Generate new username and retry
+              let newHex = '';
+              if (typeof window !== 'undefined' && window.crypto) {
+                const array = new Uint8Array(4);
+                window.crypto.getRandomValues(array);
+                newHex = Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
+              } else {
+                newHex = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
+              }
+              const newTemp = `user_${newHex}`;
+              newProfile.username = newTemp;
+              newProfile.username_normalized = newTemp;
+              retries--;
+            } else {
+              break;
+            }
+          }
+          
+          if (profileCreated && profileInsertRes) {
+            profileRes = profileInsertRes;
+
           // Insert settings
           const insertSettings = await supabase.from('user_settings').insert({ user_id: user.id }).select().single();
           if (insertSettings.data) settingsRes = insertSettings;
