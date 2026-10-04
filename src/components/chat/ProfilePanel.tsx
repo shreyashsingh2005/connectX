@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -12,7 +12,7 @@ import { ProfilePhotoEditor } from '@/components/profile/ProfilePhotoEditor';
 import { OnlineIndicator } from '@/components/ui/OnlineIndicator';
 import { cn, formatLastSeen } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import { X, Bell, BellOff, Archive, Flag, Shield, Image as ImageIcon, FileText, Users } from 'lucide-react';
+import { X, Bell, BellOff, Archive, Flag, Shield, Image as ImageIcon, FileText, Users, Download } from 'lucide-react';
 
 interface ProfilePanelProps {
   conversation: Conversation;
@@ -20,6 +20,7 @@ interface ProfilePanelProps {
 
 function DecryptedMediaThumbnail({ attachment }: { attachment: Attachment }) {
   const [url, setUrl] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const { isReady, decryptAttachment } = useE2EE(attachment.conversation_id);
   const supabase = createClient();
 
@@ -44,10 +45,41 @@ function DecryptedMediaThumbnail({ attachment }: { attachment: Attachment }) {
 
   if (!url) return <div className="w-full h-full bg-gray-200 dark:bg-gray-800 animate-pulse" />;
   
-  if (attachment.mime_type.startsWith('video/')) {
-    return <video src={url} className="w-full h-full object-cover" />;
-  }
-  return <img src={url} alt={attachment.file_name} className="w-full h-full object-cover hover:scale-105 transition-transform" />;
+  return (
+    <>
+      <img 
+        src={url} 
+        alt={attachment.file_name} 
+        onClick={() => setIsFullscreen(true)}
+        className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer" 
+      />
+      {isFullscreen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 md:p-8" onClick={() => setIsFullscreen(false)}>
+          <div className="absolute top-4 right-4 md:top-8 md:right-8 flex gap-3">
+            <a 
+              href={url}
+              download={attachment.file_name}
+              onClick={(e) => e.stopPropagation()}
+              className="w-[40px] h-[40px] min-w-[40px] flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 border border-white/10 text-white backdrop-blur-md transition-all outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+              aria-label="Download photo"
+              title="Download photo"
+            >
+              <Download size={18} strokeWidth={2} />
+            </a>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setIsFullscreen(false); }}
+              className="w-[40px] h-[40px] min-w-[40px] flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 border border-white/10 text-white backdrop-blur-md transition-all outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+              aria-label="Close viewer"
+              title="Close"
+            >
+              <X size={18} strokeWidth={2} />
+            </button>
+          </div>
+          <img src={url} alt={attachment.file_name} className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" onClick={(e) => e.stopPropagation()} />
+        </div>
+      )}
+    </>
+  );
 }
 
 export function ProfilePanel({ conversation }: ProfilePanelProps) {
@@ -197,7 +229,38 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
                 <div className="text-center py-6"><p className="text-xs text-gray-600">No files shared yet</p></div>
               )
             )}
-            {!isDirect && conversation.members && (
+            {activeTab === 'pinned' && (
+                pinnedMessages.length > 0 ? (
+                  <div className="space-y-3">
+                    {pinnedMessages.map(pm => (
+                      <div key={pm.id} className="p-3 bg-[#F9FAFB] dark:bg-[#11141A] rounded-xl relative group">
+                        <p className="text-xs text-gray-700 dark:text-gray-300 line-clamp-3 mb-2">{pm.messages?.content || 'Message'}</p>
+                        <div className="flex justify-between items-center text-[10px] text-gray-500">
+                          <span>{new Date(pm.created_at).toLocaleDateString()}</span>
+                          <button 
+                            onClick={async () => {
+                              try {
+                                const { error } = await supabase.from('pinned_messages').delete().eq('id', pm.id);
+                                if (error) throw error;
+                                setPinnedMessages(prev => prev.filter(p => p.id !== pm.id));
+                                toast.success('Unpinned message');
+                              } catch(e: any) {
+                                toast.error('Failed to unpin');
+                              }
+                            }}
+                            className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            Unpin
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6"><p className="text-xs text-gray-600">No pinned messages</p></div>
+                )
+              )}
+              {!isDirect && conversation.members && (
               <div className="mt-4">
                 <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Members ({memberCount})</h4>
                 <div className="space-y-2">

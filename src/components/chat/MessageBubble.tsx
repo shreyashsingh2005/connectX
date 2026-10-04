@@ -30,11 +30,12 @@ import {
 } from 'lucide-react';
 
 interface MessageBubbleProps {
-  message: Message;
-  isOwn: boolean;
-  showAvatar?: boolean;
-  showSender?: boolean;
-  currentUserId: string;
+    message: Message;
+    isOwn: boolean;
+    showAvatar?: boolean;
+    showSender?: boolean;
+    currentUserId: string;
+    isPinned?: boolean;
   onReply?: (message: Message) => void;
   onForward?: (message: Message) => void;
   onEdit?: (message: Message) => void;
@@ -60,8 +61,9 @@ export const MessageBubble = memo(function MessageBubble({
   message,
   isOwn,
   showAvatar = true,
-  showSender = false,
-  currentUserId,
+    showSender = false,
+    currentUserId,
+    isPinned = false,
   onReply,
   onForward,
   onEdit,
@@ -366,7 +368,8 @@ export const MessageBubble = memo(function MessageBubble({
     prev.isOwn === next.isOwn &&
     prev.showAvatar === next.showAvatar &&
     prev.showSender === next.showSender &&
-    prev.currentUserId === next.currentUserId
+    prev.currentUserId === next.currentUserId &&
+    prev.isPinned === next.isPinned
   );
 });
 

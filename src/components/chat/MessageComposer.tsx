@@ -22,6 +22,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const [attachments, setAttachments] = useState<AttachmentPreviewType[]>([]);
   const [isSending, setIsSending] = useState(false);
   const isSubmittingRef = useRef(false);
+  
   const [isTyping, setIsTyping] = useState(false);
   const isTypingRef = useRef(false);
   
@@ -47,6 +48,26 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const supabase = createClient();
   const { resolvedTheme } = useTheme();
   const profile = useAuthStore(s => s.profile);
+
+  const [isBlocked, setIsBlocked] = useState(false);
+  useEffect(() => {
+    const checkBlock = async () => {
+      if (!profile) return;
+      const { data: convMembers } = await supabase.from('conversation_members').select('user_id').eq('conversation_id', conversationId);
+      if (!convMembers) return;
+      const otherMemberId = convMembers.find(m => m.user_id !== profile.id)?.user_id;
+      if (!otherMemberId) return;
+
+      const { data: block } = await supabase.from('blocked_users')
+        .select('id')
+        .or(`and(blocker_id.eq.${profile.id},blocked_id.eq.${otherMemberId}),and(blocker_id.eq.${otherMemberId},blocked_id.eq.${profile.id})`)
+        .maybeSingle();
+
+      setIsBlocked(!!block);
+    };
+    checkBlock();
+  }, [conversationId, profile]);
+
   const activeTheme = useThemeStore(s => s.getEffectiveTheme(conversationId));
   const { isReady: e2eeReady, error: e2eeError, e2eeState, encrypt, encryptAttachment, resetConversationKey } = useE2EE(conversationId);
   const replyToMessage = useChatStore(s => s.replyToMessage);
@@ -506,8 +527,18 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     { icon: Music, label: 'Audio', color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-500/10' },
   ];
 
+  
+  if (isBlocked) {
+    return (
+      <div className="mx-3 mb-2 mt-2 p-3 bg-gray-100 dark:bg-[#1A1F2B] border border-gray-200 dark:border-[#252A34] rounded-xl text-center text-gray-500 text-sm backdrop-blur-sm">
+        You cannot send messages to this conversation.
+      </div>
+    );
+  }
+
   return (
     <div className="relative mx-3 mb-2 mt-2" style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}>
+
       {e2eeState === 'error' && (
         <div className="absolute bottom-[100%] left-0 right-0 mb-3 p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-sm flex flex-col gap-2 shadow-lg backdrop-blur-sm z-10 animate-in fade-in slide-in-from-bottom-2">
           <div><strong>Security Error:</strong> Your current device cannot decrypt this conversation. Old messages are unrecoverable.</div>
