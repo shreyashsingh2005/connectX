@@ -79,7 +79,7 @@ export function ForwardModal({ message, onClose }: ForwardModalProps) {
       if (error) throw error;
       
       // Realtime channel
-      const channel = supabase.channel(`room:${conversationId}`);
+      const channel = supabase.getChannels().find(c => c.topic === `realtime:room:${conversationId}`) || supabase.channel(`room:${conversationId}`);
       channel.send({
         type: 'broadcast',
         event: 'new_message',

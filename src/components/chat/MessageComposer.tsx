@@ -176,7 +176,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
   const sendTypingStatus = async (isTypingStatus: boolean) => {
     if (!profile) return;
-    const channel = supabase.channel(`room:${conversationId}`);
+    const channel = supabase.getChannels().find(c => c.topic === `realtime:room:${conversationId}`) || supabase.channel(`room:${conversationId}`);
     await channel.send({
       type: 'broadcast',
       event: isTypingStatus ? 'typing' : 'stop_typing',
