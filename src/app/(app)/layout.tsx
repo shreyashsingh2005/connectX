@@ -93,7 +93,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main key={pathname} className={cn(
         "md:col-start-3 md:col-end-4",
         "flex flex-col min-w-0 min-h-0 h-[100dvh] overflow-hidden relative",
-        hideOnMobile ? "pb-0" : "pb-[calc(70px+env(safe-area-inset-bottom))] md:pb-0"
+        hideOnMobile ? "pb-0" : "pb-[calc(58px+env(safe-area-inset-bottom))] md:pb-0"
       )}>
         {children}
       </main>

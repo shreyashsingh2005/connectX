@@ -545,7 +545,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   }
 
   return (
-    <div className="relative mx-3 mb-2 mt-2" style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}>
+    <div className="relative mx-3 mt-2" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
 
       {e2eeState === 'error' && (
         <div className="absolute bottom-[100%] left-0 right-0 mb-3 p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-[12px] text-[13px] flex flex-col gap-2 shadow-lg backdrop-blur-sm z-10 animate-in fade-in slide-in-from-bottom-2">

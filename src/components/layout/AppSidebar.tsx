@@ -96,7 +96,7 @@ export function AppSidebar() {
         // Desktop: static flex child of the grid column
         "md:static md:w-full md:h-full md:flex md:flex-col md:items-center md:pt-5 md:pb-6 md:bg-bg-surface md:border-r md:border-border-subtle md:rounded-none md:shadow-none md:translate-y-0 md:inset-auto",
         // Mobile: fixed bottom nav
-        "fixed bottom-[calc(12px+env(safe-area-inset-bottom))] left-[12px] right-[12px] h-[58px] flex flex-row items-center justify-between px-4 rounded-[20px] bg-bg-surface/90 dark:bg-[rgba(20,25,30,0.82)] backdrop-blur-[18px] border border-border-subtle shadow-lg",
+        "fixed bottom-0 left-0 right-0 h-[calc(58px+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] flex flex-row items-center justify-between px-6 bg-bg-surface/90 dark:bg-[rgba(20,25,30,0.82)] backdrop-blur-[18px] border-t border-border-subtle shadow-[0_-4px_24px_rgba(0,0,0,0.04)] dark:shadow-none z-[100]",
         hideOnMobile ? "translate-y-[150%] hidden md:flex" : "translate-y-0 flex"
       )}>
       {/* Logo */}
