@@ -223,16 +223,16 @@ export default function ContactsPage() {
           onClick={() => router.push(`/profile/${user.username || user.id}`)}
         >
           <div className="relative flex-shrink-0">
-            <UserAvatar src={user.avatar_url} name={user.display_name} className="w-[36px] h-[36px] text-[13px]" />
+            <UserAvatar src={user.avatar_url} name={user.display_name} className="w-[40px] h-[40px] text-[13px]" />
             {user.is_online && (
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#12B76A] border-[1.5px] border-[#0B0F12] rounded-full" />
             )}
           </div>
           <div className="flex-1 min-w-0 flex flex-col justify-center leading-tight">
-            <span className="font-[600] text-text-main text-[13px] truncate leading-[18px]">
+            <span className="font-[600] text-text-main text-[14px] truncate leading-[18px]">
               {user.display_name}
             </span>
-            <span className="text-[11px] text-text-sec truncate leading-[16px]">
+            <span className="text-[12px] text-text-sec truncate leading-[16px]">
               @{user.username}
             </span>
           </div>
@@ -244,7 +244,7 @@ export default function ContactsPage() {
             <button
               onClick={() => handleStartChat(user)}
               disabled={isStartingChat === user.id}
-              className="flex items-center gap-1.5 h-[30px] px-[11px] bg-brand/10 hover:bg-brand/20 text-brand rounded-[8px] text-[12px] font-medium transition-colors"
+              className="flex items-center gap-1.5 h-[32px] px-[12px] bg-brand/10 hover:bg-brand/20 text-brand rounded-[8px] text-[12px] font-[600] transition-colors"
             >
               {isStartingChat === user.id ? <Loader2 className="w-[15px] h-[15px] animate-spin" /> : <MessageSquare className="w-[15px] h-[15px]" />}
               Message
@@ -259,7 +259,7 @@ export default function ContactsPage() {
                   fetchAllData();
                   if (query) performSearch(query);
                 }}
-                className="h-[30px] px-3 bg-brand text-white rounded-[8px] text-[12px] font-medium hover:bg-brand-dark transition-colors shadow-sm dark:shadow-none"
+                className="h-[32px] px-[12px] bg-brand text-white rounded-[8px] text-[12px] font-[600] hover:bg-brand-dark transition-colors shadow-sm dark:shadow-none"
               >
                 Accept
               </button>
@@ -269,7 +269,7 @@ export default function ContactsPage() {
                   fetchAllData();
                   if (query) performSearch(query);
                 }}
-                className="h-[30px] px-3 bg-bg-surface text-text-sec hover:bg-bg-secondary rounded-[8px] text-[12px] font-medium transition-colors border border-border-subtle border-border-subtle shadow-sm dark:shadow-none"
+                className="h-[32px] px-[12px] bg-bg-surface text-text-sec hover:bg-bg-secondary rounded-[8px] text-[12px] font-[600] transition-colors border border-border-subtle border-border-subtle shadow-sm dark:shadow-none"
               >
                 Decline
               </button>
@@ -283,7 +283,7 @@ export default function ContactsPage() {
                 fetchAllData();
                 if (query) performSearch(query);
               }}
-              className="h-[30px] px-3 bg-[#FEF3F2] dark:bg-[rgba(240,68,56,0.1)] text-[#F04438] hover:bg-[#FEE4E2] dark:hover:bg-[rgba(240,68,56,0.2)] rounded-[8px] text-[12px] font-medium transition-colors"
+              className="h-[32px] px-[12px] bg-[#FEF3F2] dark:bg-[rgba(240,68,56,0.1)] text-[#F04438] hover:bg-[#FEE4E2] dark:hover:bg-[rgba(240,68,56,0.2)] rounded-[8px] text-[12px] font-[600] transition-colors"
             >
               Cancel
             </button>
@@ -297,7 +297,7 @@ export default function ContactsPage() {
                 if (query) performSearch(query);
                 else setRelationshipMap(prev => ({...prev, [user.id]: 'outgoing_request'}));
               }}
-              className="h-[30px] px-3 bg-brand text-white rounded-[8px] text-[12px] font-medium hover:bg-brand-dark transition-colors shadow-sm dark:shadow-none"
+              className="h-[32px] px-[12px] bg-brand text-white rounded-[8px] text-[12px] font-[600] hover:bg-brand-dark transition-colors shadow-sm dark:shadow-none"
             >
               Add
             </button>
@@ -358,11 +358,11 @@ export default function ContactsPage() {
           ) : (
             <>
               {/* 4. TABS */}
-              <div className="flex p-[3px] bg-bg-secondary rounded-[10px] h-[40px] mb-[16px] border border-[#E2E8F0] border-border-subtle">
+              <div className="flex p-[3px] bg-bg-secondary rounded-[10px] h-[38px] mb-[16px] border border-[#E2E8F0] border-border-subtle">
                 <button 
                   onClick={() => setActiveTab('requests')}
                   className={cn(
-                    "flex-1 h-[34px] text-[13px] font-[600] rounded-[8px] transition-all duration-150 flex items-center justify-center gap-2",
+                    "flex-1 h-[32px] text-[13px] font-[600] rounded-[8px] transition-all duration-150 flex items-center justify-center gap-2",
                     activeTab === 'requests' 
                       ? "bg-bg-surface text-text-main border border-border-subtle shadow-[0_1px_2px_rgba(0,0,0,0.05)]" 
                       : "bg-transparent text-text-sec dark:text-[#98A2B3]"
@@ -378,7 +378,7 @@ export default function ContactsPage() {
                 <button 
                   onClick={() => setActiveTab('friends')}
                   className={cn(
-                    "flex-1 h-[34px] text-[13px] font-[600] rounded-[8px] transition-all duration-150 flex items-center justify-center gap-2",
+                    "flex-1 h-[32px] text-[13px] font-[600] rounded-[8px] transition-all duration-150 flex items-center justify-center gap-2",
                     activeTab === 'friends' 
                       ? "bg-bg-surface text-text-main border border-border-subtle shadow-[0_1px_2px_rgba(0,0,0,0.05)]" 
                       : "bg-transparent text-text-sec dark:text-[#98A2B3]"

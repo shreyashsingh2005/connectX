@@ -538,7 +538,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   
   if (isBlocked) {
     return (
-      <div className="mx-3 mb-2 mt-2 p-3 bg-gray-100 dark:bg-[#1A1F2B] border border-border-subtle border-border-subtle rounded-[12px] text-center text-text-muted text-[13px] backdrop-blur-sm">
+      <div className="mx-3 mb-2 mt-2 p-3 bg-gray-100 dark:bg-[#1A1F2B] border border-border-subtle rounded-[12px] text-center text-text-muted text-[13px] backdrop-blur-sm">
         You cannot send messages to this conversation.
       </div>
     );
@@ -563,7 +563,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       {/* Attachment Menu */}
       {showAttachmentMenu && (
-        <div ref={attachmentMenuRef} className="absolute bottom-[100%] left-0 mb-3 z-50 w-48 bg-bg-surface border border-border-subtle border-border-subtle rounded-[14px] shadow-lg p-2 animate-in fade-in zoom-in-95 duration-150">
+        <div ref={attachmentMenuRef} className="absolute bottom-[100%] left-0 mb-3 z-50 w-48 bg-bg-surface border border-border-subtle rounded-[14px] shadow-lg p-2 animate-in fade-in zoom-in-95 duration-150">
           {menuItems.map((item) => (
             <button key={item.label} onClick={() => handleAttachmentClick(item.label)} className="w-full flex items-center gap-3 px-2 py-2 hover:bg-bg-secondary rounded-[10px] transition-colors group text-left">
               <div className={cn("w-8 h-8 rounded-[8px] flex items-center justify-center transition-colors", item.bg, item.color)}>
@@ -577,7 +577,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       {/* Emoji Picker */}
       {showEmojiPicker && (
-        <div ref={emojiPickerRef} className="absolute bottom-[100%] right-0 mb-3 z-50 w-[300px] shadow-lg rounded-[14px] overflow-hidden border border-border-subtle border-border-subtle animate-in fade-in slide-in-from-bottom-2 duration-150">
+        <div ref={emojiPickerRef} className="absolute bottom-[100%] right-0 mb-3 z-50 w-[300px] shadow-lg rounded-[14px] overflow-hidden border border-border-subtle animate-in fade-in slide-in-from-bottom-2 duration-150">
           <EmojiPicker 
             onEmojiClick={handleEmojiClick}
             theme={resolvedTheme === 'dark' ? Theme.DARK : Theme.LIGHT}
@@ -591,10 +591,10 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       )}
 
       <form onSubmit={handleSend} onDrop={handleDrop} onDragOver={e => e.preventDefault()}
-        className="bg-bg-surface/80 dark:bg-bg-surface/80 backdrop-blur-[18px] border border-border-subtle border-border-subtle shadow-sm dark:shadow-none rounded-[26px] flex-shrink-0 p-1.5 relative transition-all duration-200 focus-within:border-[#8B5CF6]/40 focus-within:ring-[3px] focus-within:ring-[#8B5CF6]/15 group" 
+        className="bg-bg-surface/80 dark:bg-bg-surface/80 backdrop-blur-[18px] border border-border-subtle shadow-sm dark:shadow-none rounded-[26px] flex-shrink-0 p-1.5 relative transition-all duration-200 focus-within:border-[#8B5CF6]/40 focus-within:ring-[3px] focus-within:ring-[#8B5CF6]/15 group" 
       >
         {replyToMessage && (
-          <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-bg-primary rounded-[10px] border border-border-subtle border-border-subtle">
+          <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-bg-primary rounded-[10px] border border-border-subtle">
             <div className="flex-1 border-l-2 border-[#8B5CF6] pl-2 min-w-0">
               <p className="text-[12px] font-medium text-brand truncate">{replyToMessage.sender?.display_name || 'Someone'}</p>
               <p className="text-[12px] text-text-sec truncate">{replyToMessage.decrypted_content || 'Attachment'}</p>
@@ -606,7 +606,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         {attachments.length > 0 && (
           <div className="flex gap-2 mb-2 overflow-x-auto p-1 no-scrollbar">
             {attachments.map(att => (
-              <div key={att.id} className={cn("relative group flex-shrink-0 rounded-[10px] border border-border-subtle border-border-subtle bg-bg-primary overflow-hidden", att.type === 'audio' ? 'w-48 h-14' : 'w-14 h-14')}>
+              <div key={att.id} className={cn("relative group flex-shrink-0 rounded-[10px] border border-border-subtle bg-bg-primary overflow-hidden", att.type === 'audio' ? 'w-48 h-14' : 'w-14 h-14')}>
                 {att.type === 'image' ? (
                   <img src={att.preview} alt="" className="w-full h-full object-cover" />
                 ) : att.type === 'video' ? (
@@ -629,9 +629,9 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
         <div className="flex items-end gap-1.5">
           <button type="button" ref={attachButtonRef} onClick={() => setShowAttachmentMenu(!showAttachmentMenu)}
-            className={cn("w-[42px] h-[42px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showAttachmentMenu ? "bg-brand/10 text-brand" : "text-text-sec dark:text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F7F8FC] dark:hover:bg-[rgba(255,255,255,0.04)]")}
+            className={cn("w-[40px] h-[40px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showAttachmentMenu ? "bg-brand/10 text-brand" : "text-text-sec dark:text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F7F8FC] dark:hover:bg-[rgba(255,255,255,0.04)]")}
           >
-            <Plus size={20} strokeWidth={2} />
+            <Plus size={18} strokeWidth={2} />
           </button>
 
           <div className="flex-1 min-h-[36px] max-h-[120px] bg-transparent flex items-center px-1">
@@ -648,7 +648,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
             />
             
             <button type="button" ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              className={cn("w-[36px] h-[36px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showEmojiPicker ? "bg-brand/10 text-brand" : "text-text-sec dark:text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F7F8FC] dark:hover:bg-[rgba(255,255,255,0.04)]")}
+              className={cn("w-[34px] h-[34px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showEmojiPicker ? "bg-brand/10 text-brand" : "text-text-sec dark:text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F7F8FC] dark:hover:bg-[rgba(255,255,255,0.04)]")}
             >
               <Smile size={18} strokeWidth={2} />
             </button>
@@ -657,15 +657,15 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
           {text.trim() || attachments.length > 0 ? (
             <button type="submit" disabled={isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error'}
-              className="w-[42px] h-[42px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 active:scale-95 transition-all shadow-md disabled:opacity-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 bg-brand"
+              className="w-[40px] h-[40px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 active:scale-95 transition-all shadow-md disabled:opacity-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 bg-brand"
             >
               {isSending ? <Loader2 size={16} className="animate-spin opacity-70" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
             </button>
           ) : (
             <button type="button" onClick={isRecording ? stopRecording : startRecording}
-              className={cn("w-[42px] h-[42px] flex-shrink-0 flex items-center justify-center rounded-full transition-all hover:opacity-90 active:scale-95 shadow-md focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 text-white", isRecording ? "bg-[#F04438] animate-pulse" : "bg-brand")}
+              className={cn("w-[40px] h-[40px] flex-shrink-0 flex items-center justify-center rounded-full transition-all hover:opacity-90 active:scale-95 shadow-md focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 text-white", isRecording ? "bg-[#F04438] animate-pulse" : "bg-brand")}
             >
-              {isRecording ? <Square size={16} className="fill-current" /> : <Mic size={18} strokeWidth={2} />}
+              {isRecording ? <Square size={14} className="fill-current" /> : <Mic size={18} strokeWidth={2} />}
             </button>
           )}
         </div>

@@ -101,7 +101,7 @@ export const MessageBubble = memo(function MessageBubble({
       
       return (
         <div className="flex justify-center my-4 w-full">
-          <div className="px-4 py-1.5 rounded-full bg-bg-secondary/50 text-text-muted text-[11px] font-medium inline-flex items-center gap-1.5 shadow-sm border border-border-subtle/50 dark:border-gray-700/50">
+          <div className="px-4 py-1.5 rounded-full bg-bg-secondary/50 text-text-muted text-[11px] font-medium inline-flex items-center gap-1.5 shadow-sm border-border-subtle/50 dark:border-gray-700/50">
             <Icon className="w-3.5 h-3.5" />
             <span>{text}</span>
           </div>
@@ -110,7 +110,7 @@ export const MessageBubble = memo(function MessageBubble({
     }
     return (
       <div className="flex justify-center my-4 w-full">
-        <div className="px-4 py-1.5 rounded-full bg-bg-secondary/50 text-text-muted text-[11px] font-medium shadow-sm border border-border-subtle/50 dark:border-gray-700/50">
+        <div className="px-4 py-1.5 rounded-full bg-bg-secondary/50 text-text-muted text-[11px] font-medium shadow-sm border-border-subtle/50 dark:border-gray-700/50">
           {displayContent}
         </div>
       </div>
@@ -125,7 +125,7 @@ export const MessageBubble = memo(function MessageBubble({
         ) : (!isOwn && <div className="w-[28px] flex-shrink-0" />)}
         
         <div className={cn(
-          'max-w-[80%] md:max-w-[70%] rounded-[16px] px-4 py-3 text-[13px] border flex items-center gap-3',
+          'max-w-[80%] md:max-w-[70%] rounded-[14px] px-4 py-3 text-[13px] border flex items-center gap-3',
           isOwn ? 'border-[var(--chat-outgoing-border)] bg-black/10 dark:bg-bg-surface/10 text-[var(--chat-outgoing-text)]' : 'border-[var(--chat-incoming-border)] bg-black/5 dark:bg-bg-surface/5 text-[var(--chat-incoming-text)]'
         )}>
           <Lock size={16} className="opacity-70 flex-shrink-0" /> 
@@ -142,7 +142,7 @@ export const MessageBubble = memo(function MessageBubble({
           <div className="w-8 flex-shrink-0" />
         )}
         <div className={cn(
-          'max-w-[80%] md:max-w-[70%] rounded-[16px] px-4 py-2.5 italic text-text-muted text-[13px] border',
+          'max-w-[80%] md:max-w-[70%] rounded-[14px] px-4 py-2.5 italic text-text-muted text-[13px] border',
           isOwn ? 'border-[#2A2F45]' : 'border-border-subtle border-border-subtle',
           'bg-gray-100 dark:bg-bg-surface'
         )}>
@@ -210,11 +210,11 @@ export const MessageBubble = memo(function MessageBubble({
         <div
           ref={bubbleRef}
           className={cn(
-            'relative px-3.5 py-2 message-animate max-w-full shadow-sm shadow-black/5 dark:shadow-none',
+            'relative px-[12px] py-[8px] message-animate max-w-full shadow-sm shadow-black/5 dark:shadow-none',
             isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (
               isOwn 
-                ? `bg-[var(--chat-outgoing-bg)] text-[var(--chat-outgoing-text)] ${showAvatar ? 'rounded-[16px] rounded-br-[4px]' : 'rounded-[16px] rounded-r-[4px]'}` 
-                : `bg-[var(--chat-incoming-bg)] text-[var(--chat-incoming-text)] border border-[var(--chat-incoming-border)] ${showAvatar ? 'rounded-[16px] rounded-bl-[4px]' : 'rounded-[16px] rounded-l-[4px]'}`
+                ? `bg-[var(--chat-outgoing-bg)] text-[var(--chat-outgoing-text)] ${showAvatar ? 'rounded-[14px] rounded-br-[4px]' : 'rounded-[14px] rounded-r-[4px]'}` 
+                : `bg-[var(--chat-incoming-bg)] text-[var(--chat-incoming-text)] border border-[var(--chat-incoming-border)] ${showAvatar ? 'rounded-[14px] rounded-bl-[4px]' : 'rounded-[14px] rounded-l-[4px]'}`
             )
           )}
         >
@@ -227,7 +227,7 @@ export const MessageBubble = memo(function MessageBubble({
               </div>
             ) : (
               <p className={cn(
-                isEmojiOnly ? 'text-[44px] leading-tight' : 'text-[14px] leading-relaxed whitespace-pre-wrap break-words',
+                isEmojiOnly ? 'text-[44px] leading-tight' : 'text-[14px] leading-[1.4] whitespace-pre-wrap break-words',
                 displayContent?.startsWith('[Unable') && "italic opacity-80 text-[13px]"
               )}>
                 {displayContent}
@@ -260,7 +260,7 @@ export const MessageBubble = memo(function MessageBubble({
               <button
                 key={emoji}
                 onClick={() => onReact?.(message.id, emoji)}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-bg-surface border border-border-subtle border-border-subtle hover:bg-bg-secondary transition-colors text-[10px] font-medium shadow-sm text-text-sec"
+                className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-bg-surface border-border-subtle border-border-subtle hover:bg-bg-secondary transition-colors text-[10px] font-medium shadow-sm text-text-sec"
               >
                 <span>{emoji}</span>
                 {count > 1 && <span className="text-text-sec text-[10px]">{count}</span>}
@@ -273,7 +273,7 @@ export const MessageBubble = memo(function MessageBubble({
       {/* Actions (hover) */}
       {showActions && (
         <div className={cn(
-          'flex items-center gap-0.5 self-center transition-opacity bg-bg-surface border border-border-subtle border-border-subtle rounded-[10px] shadow-sm p-0.5 z-10',
+          'flex items-center gap-0.5 self-center transition-opacity bg-bg-surface border-border-subtle border-border-subtle rounded-[10px] shadow-sm p-0.5 z-10',
           isOwn ? 'mr-2 flex-row-reverse' : 'ml-2'
         )}>
           {/* Quick emoji */}
@@ -286,7 +286,7 @@ export const MessageBubble = memo(function MessageBubble({
               </button>
             {showEmojiPicker && (
               <div className={cn(
-                'absolute bottom-full mb-1 flex gap-1 p-2 bg-bg-surface/95 dark:bg-bg-surface/95 backdrop-blur-[24px] border border-border-subtle border-border-subtle rounded-[16px] shadow-xl z-10',
+                'absolute bottom-full mb-1 flex gap-1 p-2 bg-bg-surface/95 dark:bg-bg-surface/95 backdrop-blur-[24px] border-border-subtle border-border-subtle rounded-[14px] shadow-xl z-10',
                 isOwn ? 'right-0' : 'left-0'
               )}>
                 {QUICK_EMOJIS.map(emoji => (

@@ -125,28 +125,28 @@ export function ConversationList() {
       {/* Header */}
       <div className="px-4 pt-5 pb-3">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[20px] font-bold text-text-main">Chats</h2>
+          <h2 className="text-[18px] font-[650] text-text-main tracking-tight">Chats</h2>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowGroupModal(true)}
               title="New Group"
-              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-text-muted hover:text-text-main dark:text-gray-200 hover:bg-bg-secondary transition-all"
+              className="w-[32px] h-[32px] rounded-[10px] flex items-center justify-center text-text-muted hover:text-text-main dark:text-gray-200 hover:bg-bg-secondary transition-all"
             >
-              <Users className="w-5 h-5" />
+              <Users className="w-[18px] h-[18px]" strokeWidth={2} />
             </button>
             <button
               onClick={() => setShowNewChatModal(true)}
               title="New Chat"
-              className="w-[36px] h-[36px] rounded-full flex items-center justify-center bg-brand text-white hover:bg-brand-dark shadow-sm transition-colors"
+              className="w-[32px] h-[32px] rounded-[10px] flex items-center justify-center bg-brand text-white hover:bg-brand-dark shadow-sm transition-colors"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-[18px] h-[18px]" strokeWidth={2.5} />
             </button>
           </div>
         </div>
 
         {/* Search */}
         <div className="relative mt-2">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-sec" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-sec" />
           <input
             type="text"
             autoComplete="off"
@@ -154,7 +154,7 @@ export function ConversationList() {
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-[#F9FAFB] dark:bg-bg-surface border border-border-subtle border-border-subtle rounded-full py-2 h-[40px] pl-10 pr-4 text-[13px] text-text-main placeholder-[#737C86] focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/20 transition-all shadow-sm dark:shadow-none"
+            className="w-full bg-bg-secondary dark:bg-[#1A1D24] border border-border-subtle rounded-[10px] h-[36px] pl-[34px] pr-3 text-[13px] text-text-main placeholder-[#737C86] focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/20 transition-all shadow-sm dark:shadow-none"
           />
         </div>
 
@@ -165,7 +165,7 @@ export function ConversationList() {
               key={f}
               onClick={() => setFilter(f)}
               className={cn(
-                'px-4 py-1.5 text-[13px] rounded-full font-medium transition-all duration-150 capitalize flex items-center justify-center gap-1.5',
+                'px-3 py-1 text-[12px] rounded-[10px] font-medium transition-all duration-150 capitalize flex items-center justify-center gap-1.5',
                 filter === f
                   ? 'bg-brand text-white'
                   : 'bg-transparent text-text-sec hover:bg-bg-secondary'
@@ -211,16 +211,16 @@ export function ConversationList() {
               <button
                 key={conv.id}
                 onClick={() => handleSelectConversation(conv)}
-                className={cn('w-full flex items-center gap-3 px-4 py-3 transition-all duration-150 text-left group relative border-b border-border-subtle border-border-subtle last:border-0',
-                  isActive ? 'bg-[#F1F3F5] dark:bg-[rgba(255,255,255,0.04)]' : 'hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.02)] bg-transparent'
+                className={cn('w-full flex items-center gap-3 px-3 py-[10px] rounded-[10px] mx-1 border-none transition-all duration-150 text-left group relative mb-0.5',
+                  isActive ? 'bg-bg-secondary dark:bg-[rgba(255,255,255,0.04)]' : 'hover:bg-bg-secondary dark:hover:bg-[rgba(255,255,255,0.02)] bg-transparent'
                 )}
               >
                 {/* Avatar */}
-                <div className="w-[44px] h-[44px] flex-shrink-0">
+                <div className="w-[40px] h-[40px] flex-shrink-0">
                   <UserAvatar
                     src={avatarUrl}
                     name={name}
-                    size="md"
+                    size="sm"
                     isOnline={isOnline}
                   />
                 </div>
@@ -229,12 +229,12 @@ export function ConversationList() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <span className={cn(
-                      'font-bold text-[14px] truncate',
+                      'font-[600] text-[13px] md:text-[14px] truncate tracking-tight',
                       isActive ? 'text-text-main' : 'text-text-main'
                     )}>
                       {name}
                     </span>
-                    <span className={cn("text-[11px] flex-shrink-0", unreadCount > 0 ? "text-brand" : "text-text-sec")}>{lastMsgTime}</span>
+                    <span className={cn("text-[10px] md:text-[11px] font-[500] flex-shrink-0", unreadCount > 0 ? "text-brand" : "text-text-sec")}>{lastMsgTime}</span>
                   </div>
                   <div className="flex items-center justify-between gap-2 mt-0.5">
                     <span className={cn(
@@ -244,7 +244,7 @@ export function ConversationList() {
                       {getLastMessagePreview(conv)}
                     </span>
                     {unreadCount > 0 && (
-                      <span className="flex-shrink-0 min-w-[18px] h-[18px] rounded-full bg-brand text-white text-[10px] font-bold flex items-center justify-center px-1">
+                      <span className="flex-shrink-0 min-w-[18px] h-[18px] rounded-[10px] bg-brand text-white text-[10px] font-bold flex items-center justify-center px-1">
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}

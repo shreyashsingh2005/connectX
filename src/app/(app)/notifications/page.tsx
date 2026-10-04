@@ -172,7 +172,7 @@ export default function NotificationsPage() {
           if (targetId && n.type === 'message') router.push(`/chat/${targetId}`);
         }}
         className={cn(
-          "flex items-start gap-3 p-3 h-auto min-h-[64px] rounded-[14px] border transition-all cursor-pointer group relative",
+          "flex items-start gap-3 px-[14px] py-[12px] h-auto min-h-[60px] rounded-[14px] border transition-all cursor-pointer group relative",
           isUnread 
             ? "bg-bg-surface border-[#8B5CF6]/30 dark:border-[#8B5CF6]/30 shadow-sm" 
             : "bg-transparent border-transparent hover:bg-bg-secondary hover:border-border-subtle dark:hover:border-white/5"
@@ -186,11 +186,11 @@ export default function NotificationsPage() {
             <UserAvatar 
               src={(n.data?.sender_avatar as string) || undefined} 
               name={(n.data?.sender_name as string) || 'User'} 
-              size="sm" 
-              className="w-[36px] h-[36px]" 
+              size="md" 
+              className="w-[40px] h-[40px]" 
             />
           ) : (
-            <div className="w-[36px] h-[36px] bg-bg-primary rounded-full border border-border-subtle border-border-subtle flex items-center justify-center">
+            <div className="w-[40px] h-[40px] bg-bg-primary rounded-full border border-border-subtle flex items-center justify-center">
               {getIcon(n.type)}
             </div>
           )}
@@ -228,7 +228,7 @@ export default function NotificationsPage() {
                   </button>
                   
                   {activeMenu === n.id && (
-                    <div className="absolute right-0 top-full mt-1 w-36 bg-bg-surface border border-border-subtle border-border-subtle rounded-[10px] shadow-lg overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100">
+                    <div className="absolute right-0 top-full mt-1 w-36 bg-bg-surface border border-border-subtle rounded-[10px] shadow-lg overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100">
                       <button 
                         onClick={(e) => handleDelete(n.id, e)}
                         className="w-full flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-[#F04438] hover:bg-[#FEF3F2] dark:hover:bg-[#F04438]/10 transition-colors outline-none"
@@ -254,7 +254,7 @@ export default function NotificationsPage() {
               </button>
               <button 
                 onClick={(e) => handleRequestAction(n, 'declined', e)}
-                className="flex-1 bg-bg-surface border border-border-subtle border-border-subtle text-text-main hover:bg-bg-secondary text-[13px] font-medium py-1.5 px-3 rounded-[8px] transition-colors outline-none shadow-sm"
+                className="flex-1 bg-bg-surface border border-border-subtle text-text-main hover:bg-bg-secondary text-[13px] font-medium py-1.5 px-3 rounded-[8px] transition-colors outline-none shadow-sm"
               >
                 Decline
               </button>
@@ -269,7 +269,7 @@ export default function NotificationsPage() {
     <div className="space-y-1">
       {[1, 2, 3].map(i => (
         <div key={i} className="flex items-center gap-3 p-3 min-h-[64px] rounded-[14px] bg-transparent">
-          <div className="w-[36px] h-[36px] rounded-full bg-gray-200 dark:bg-[rgba(255,255,255,0.06)] animate-pulse flex-shrink-0" />
+          <div className="w-[40px] h-[40px] rounded-full bg-gray-200 dark:bg-[rgba(255,255,255,0.06)] animate-pulse flex-shrink-0" />
           <div className="flex-1 space-y-2 py-1">
             <div className="flex justify-between items-center">
               <div className="w-24 h-3 bg-gray-200 dark:bg-[rgba(255,255,255,0.06)] rounded animate-pulse" />
@@ -315,7 +315,7 @@ export default function NotificationsPage() {
             </div>
           ) : visibleNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in zoom-in-95 duration-300">
-              <div className="w-12 h-12 bg-bg-surface rounded-full flex items-center justify-center mb-4 border border-border-subtle border-border-subtle shadow-sm">
+              <div className="w-12 h-12 bg-bg-surface rounded-full flex items-center justify-center mb-4 border border-border-subtle shadow-sm">
                 <Bell className="w-5 h-5 text-text-sec" strokeWidth={1.75} />
               </div>
               <h3 className="text-[16px] font-semibold text-text-main mb-1">You're all caught up</h3>

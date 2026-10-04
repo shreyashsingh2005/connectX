@@ -127,13 +127,13 @@ export default function ProfilePage() {
         </div>
 
         <div className="px-4 md:px-0">
-          <div className="bg-[#FFFFFF] dark:bg-bg-surface rounded-[20px] border border-border-subtle border-border-subtle p-6 shadow-sm">
+          <div className="bg-[#FFFFFF] dark:bg-bg-surface rounded-[20px] border border-border-subtle p-6 shadow-sm">
             <form onSubmit={handleUpdateProfile} className="space-y-6">
               
               {/* Avatar Section */}
               <div className="flex items-center gap-5">
                 <div className="relative group cursor-pointer flex-shrink-0" onClick={() => setShowPhotoEditor(true)}>
-                  <UserAvatar src={profile.avatar_url} name={profile.display_name} size="2xl" className="w-[80px] h-[80px]" />
+                  <UserAvatar src={profile.avatar_url} name={profile.display_name} size="2xl" className="w-[72px] h-[72px]" />
                   <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Camera size={20} strokeWidth={1.75} className="text-white" />
                   </div>
@@ -152,7 +152,7 @@ export default function ProfilePage() {
                   <UserRound size={16} strokeWidth={1.75} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-sec" />
                   <input
                     type="text" required value={editForm.display_name} onChange={e => setEditForm({ ...editForm, display_name: e.target.value })}
-                    className="w-full bg-[#FFFFFF] dark:bg-bg-surface border border-border-subtle border-border-subtle rounded-[12px] h-[44px] pl-10 pr-3 text-[14px] text-text-main focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm"
+                    className="w-full bg-[#FFFFFF] dark:bg-bg-surface border border-border-subtle rounded-[12px] h-[44px] pl-10 pr-3 text-[14px] text-text-main focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm"
                   />
                 </div>
               </div>
@@ -167,7 +167,7 @@ export default function ProfilePage() {
                       "w-full bg-[#FFFFFF] dark:bg-bg-surface border rounded-[12px] h-[44px] pl-10 pr-20 text-[14px] text-text-main focus:outline-none focus:ring-1 transition-all shadow-sm",
                       isUsernameAvailable === false 
                         ? "border-[#F97066] focus:border-[#F97066] focus:ring-[#F97066]" 
-                        : "border-border-subtle border-border-subtle focus:border-[#8B5CF6] focus:ring-[#8B5CF6]"
+                        : "border-border-subtle focus:border-[#8B5CF6] focus:ring-[#8B5CF6]"
                     )}
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -186,7 +186,7 @@ export default function ProfilePage() {
                 <label className="text-[13px] font-medium text-text-main">Bio</label>
                 <textarea
                   value={editForm.bio} onChange={e => setEditForm({ ...editForm, bio: e.target.value })}
-                  className="w-full bg-[#FFFFFF] dark:bg-bg-surface border border-border-subtle border-border-subtle rounded-[12px] py-3 px-3 text-[14px] text-text-main focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm resize-none"
+                  className="w-full bg-[#FFFFFF] dark:bg-bg-surface border border-border-subtle rounded-[12px] py-3 px-3 text-[14px] text-text-main focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm resize-none"
                   rows={3}
                 />
               </div>

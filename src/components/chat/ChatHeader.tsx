@@ -95,7 +95,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
 
   return (
     <>
-    <header className="flex items-center justify-between px-5 py-3 border-b border-border-subtle border-border-subtle bg-bg-surface/80 dark:bg-bg-primary/80 backdrop-blur-[18px] flex-shrink-0 min-h-[56px] md:min-h-[64px] relative z-50 shadow-sm dark:shadow-none">
+    <header className="flex items-center justify-between px-5 py-2 border-b border-border-subtle bg-bg-surface/80 dark:bg-bg-primary/80 backdrop-blur-[18px] flex-shrink-0 h-[56px] md:h-[60px] min-h-[56px] md:min-h-[60px] relative z-50 shadow-sm dark:shadow-none">
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.push('/chat')}
@@ -109,7 +109,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
           onClick={toggleProfilePanel}
           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
-          <div className="w-[36px] h-[36px] md:w-[42px] md:h-[42px] relative flex-shrink-0">
+          <div className="w-[38px] h-[38px] md:w-[40px] md:h-[40px] relative flex-shrink-0">
             <UserAvatar
               src={avatarUrl}
               name={name}
@@ -118,7 +118,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
             />
           </div>
           <div className="text-left flex flex-col justify-center">
-            <h3 className="font-semibold text-text-main text-[15px] leading-tight">{name}</h3>
+            <h3 className="font-[650] text-text-main text-[14px] md:text-[15px] leading-tight">{name}</h3>
             {isDirect ? (
               <div className="flex items-center gap-1.5 mt-[2px]">
                 <span className={cn("w-2 h-2 rounded-full", isOnline ? "bg-green-500" : "bg-gray-400 dark:bg-gray-600")} />
@@ -167,11 +167,11 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
             onClick={() => setShowMenu(!showMenu)}
             className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-text-sec hover:bg-bg-secondary transition-colors relative"
           >
-            <MoreVertical className="w-5 h-5" />
+            <MoreVertical className="w-[18px] h-[18px]" strokeWidth={2} />
           </button>
           
           {showMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-bg-surface border border-border-subtle border-border-subtle rounded-[16px] shadow-lg z-50 overflow-hidden">
+            <div className="absolute right-0 mt-2 w-48 bg-bg-surface border border-border-subtle rounded-[16px] shadow-lg z-50 overflow-hidden">
               <button 
                 onClick={() => { setShowMenu(false); toggleProfilePanel(); }}
                 className="w-full text-left px-4 py-3 text-[13px] font-medium text-text-sec dark:text-text-main hover:bg-bg-secondary transition-colors"
@@ -193,7 +193,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
         
         {showClearModal && typeof document !== 'undefined' && createPortal(
           <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-            <div className="bg-bg-surface w-full max-w-sm rounded-[16px] p-6 shadow-xl border border-border-subtle border-border-subtle">
+            <div className="bg-bg-surface w-full max-w-sm rounded-[16px] p-6 shadow-xl border border-border-subtle">
               <h3 className="text-[16px] font-semibold text-text-main mb-2">Clear chat?</h3>
               <p className="text-[13px] text-text-muted mb-6">Are you sure you want to clear all messages in this conversation? This will only clear them for you.</p>
               <div className="flex flex-col gap-2">
