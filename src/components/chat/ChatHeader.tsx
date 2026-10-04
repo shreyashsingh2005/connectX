@@ -50,7 +50,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   }, [showClearModal]);
 
   const handleOpenClearChat = () => {
-    console.log("CLEAR_CHAT_BUTTON_FIRED");
+    console.log("CLEAR_CHAT_CLICK_WORKS");
     setShowMenu(false);
     setShowClearModal(true);
   };
@@ -95,7 +95,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
 
   return (
     <>
-    <header className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-[#252A34] bg-white/80 dark:bg-[#0B0D12]/80 backdrop-blur-xl flex-shrink-0 min-h-[64px]">
+    <header className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-[#252A34] bg-white/80 dark:bg-[#0B0D12]/80 backdrop-blur-xl flex-shrink-0 min-h-[64px] relative z-50">
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.push('/chat')}
