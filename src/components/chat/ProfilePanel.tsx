@@ -18,6 +18,53 @@ interface ProfilePanelProps {
   conversation: Conversation;
 }
 
+
+function PinnedMessageItem({ pm, conversationId, removePin }: { pm: any, conversationId: string, removePin: (id: string) => void }) {
+  const { isReady, decrypt } = useE2EE(conversationId);
+  const [decryptedText, setDecryptedText] = useState('Decrypting...');
+  const supabase = createClient();
+
+  useEffect(() => {
+    if (!isReady || !pm.messages?.content) {
+      if (!pm.messages?.content) setDecryptedText(pm.messages?.type === 'image' ? 'Photo' : 'Attachment');
+      return;
+    }
+    async function doDecrypt() {
+      try {
+        const text = await decrypt(pm.messages.content);
+        setDecryptedText(text);
+      } catch (e) {
+        setDecryptedText('Encrypted Message');
+      }
+    }
+    doDecrypt();
+  }, [isReady, pm.messages]);
+
+  return (
+    <div className="p-3 bg-[#F9FAFB] dark:bg-[#11141A] rounded-xl relative group">
+      <p className="text-xs text-gray-700 dark:text-gray-300 line-clamp-3 mb-2">{decryptedText}</p>
+      <div className="flex justify-between items-center text-[10px] text-gray-500">
+        <span>{new Date(pm.created_at).toLocaleDateString()}</span>
+        <button 
+          onClick={async () => {
+            try {
+              const { error } = await supabase.from('pinned_messages').delete().eq('id', pm.id);
+              if (error) throw error;
+              removePin(pm.id);
+              toast.success('Unpinned message');
+            } catch(e: any) {
+              toast.error('Failed to unpin');
+            }
+          }}
+          className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          Unpin
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function DecryptedMediaThumbnail({ attachment }: { attachment: Attachment }) {
   const [url, setUrl] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -25,22 +72,53 @@ function DecryptedMediaThumbnail({ attachment }: { attachment: Attachment }) {
   const supabase = createClient();
 
   useEffect(() => {
-    if (!isReady || !attachment.storage_path) return;
+    console.log('[MediaDiagnostics] MEDIA TAB OPEN -> attachment query START for:', attachment.id);
+    if (!isReady) {
+      console.log('[MediaDiagnostics] E2EE not ready yet for conversation:', attachment.conversation_id);
+      return;
+    }
+    if (!attachment.storage_path) {
+      console.log('[MediaDiagnostics] No storage_path found in attachment object', attachment);
+      return;
+    }
+    
     let objectUrl: string | null = null;
     
     async function load() {
       try {
+        console.log('[MediaDiagnostics] download START for path:', attachment.storage_path);
         const { data, error } = await supabase.storage.from('attachments').download(attachment.storage_path);
-        if (error || !data) return;
+        
+        if (error) {
+          console.error('[MediaDiagnostics] download FAIL:', error);
+          return;
+        }
+        if (!data) {
+          console.error('[MediaDiagnostics] download FAIL: No data returned');
+          return;
+        }
+        
+        console.log('[MediaDiagnostics] download SUCCESS, encrypted byte size:', data.size);
+        console.log('[MediaDiagnostics] decrypt START with mime_type:', attachment.mime_type);
+        
         const decrypted = await decryptAttachment(data, attachment.mime_type);
+        
+        console.log('[MediaDiagnostics] decrypt SUCCESS, decrypted byte size:', decrypted.size, 'MIME:', decrypted.type);
+        
         objectUrl = URL.createObjectURL(decrypted);
+        console.log('[MediaDiagnostics] objectURL created:', objectUrl);
         setUrl(objectUrl);
       } catch (e) {
-        console.error('Thumbnail decrypt failed', e);
+        console.error('[MediaDiagnostics] decrypt FAIL / pipeline error:', e);
       }
     }
     load();
-    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
+    return () => { 
+      if (objectUrl) {
+        console.log('[MediaDiagnostics] revoking objectURL:', objectUrl);
+        URL.revokeObjectURL(objectUrl); 
+      }
+    };
   }, [isReady, attachment.storage_path]);
 
   if (!url) return <div className="w-full h-full bg-gray-200 dark:bg-gray-800 animate-pulse" />;
@@ -51,6 +129,8 @@ function DecryptedMediaThumbnail({ attachment }: { attachment: Attachment }) {
         src={url} 
         alt={attachment.file_name} 
         onClick={() => setIsFullscreen(true)}
+        onLoad={() => console.log('[MediaDiagnostics] image onLoad SUCCESS:', attachment.id)}
+        onError={(e) => console.error('[MediaDiagnostics] image onError FAIL:', attachment.id, e)}
         className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer" 
       />
       {isFullscreen && (
@@ -233,27 +313,7 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
                 pinnedMessages.length > 0 ? (
                   <div className="space-y-3">
                     {pinnedMessages.map(pm => (
-                      <div key={pm.id} className="p-3 bg-[#F9FAFB] dark:bg-[#11141A] rounded-xl relative group">
-                        <p className="text-xs text-gray-700 dark:text-gray-300 line-clamp-3 mb-2">{pm.messages?.content || 'Message'}</p>
-                        <div className="flex justify-between items-center text-[10px] text-gray-500">
-                          <span>{new Date(pm.created_at).toLocaleDateString()}</span>
-                          <button 
-                            onClick={async () => {
-                              try {
-                                const { error } = await supabase.from('pinned_messages').delete().eq('id', pm.id);
-                                if (error) throw error;
-                                setPinnedMessages(prev => prev.filter(p => p.id !== pm.id));
-                                toast.success('Unpinned message');
-                              } catch(e: any) {
-                                toast.error('Failed to unpin');
-                              }
-                            }}
-                            className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            Unpin
-                          </button>
-                        </div>
-                      </div>
+                      <PinnedMessageItem key={pm.id} pm={pm} conversationId={conversation.id} removePin={(id) => setPinnedMessages(prev => prev.filter(p => p.id !== id))} />
                     ))}
                   </div>
                 ) : (

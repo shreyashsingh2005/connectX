@@ -344,13 +344,19 @@ export const MessageBubble = memo(function MessageBubble({
 
             <button
               onClick={async () => {
-                const supabase = require('@/lib/supabase/client').createClient();
-                await supabase.from('pinned_messages').insert({
-                  message_id: message.id,
-                  conversation_id: message.conversation_id,
-                  pinned_by: currentUserId
-                });
-                require('react-hot-toast').default.success('Message pinned');
+                try {
+                  const supabase = require('@/lib/supabase/client').createClient();
+                  const { error } = await supabase.from('pinned_messages').insert({
+                    message_id: message.id,
+                    conversation_id: message.conversation_id,
+                    pinned_by: currentUserId
+                  });
+                  if (error) throw error;
+                  require('react-hot-toast').default.success('Message pinned');
+                } catch (e: any) {
+                  console.error('Failed to pin:', e);
+                  require('react-hot-toast').default.error(e.message || 'Failed to pin message');
+                }
               }}
               className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
               title="Pin Message"

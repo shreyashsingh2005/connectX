@@ -66,6 +66,14 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       setIsBlocked(!!block);
     };
     checkBlock();
+
+    const channel = supabase.channel(`blocks:${conversationId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'blocked_users' }, () => {
+        checkBlock();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [conversationId, profile]);
 
   const activeTheme = useThemeStore(s => s.getEffectiveTheme(conversationId));
