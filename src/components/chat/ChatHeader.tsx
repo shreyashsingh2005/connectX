@@ -66,6 +66,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
       useChatStore.getState().setMessages(conversation.id, []);
       useChatStore.getState().updateConversation(conversation.id, { unread_count: 0, cleared_at: new Date().toISOString() });
       
+      console.log('[CLEAR_CHAT] RPC_SUCCESS');
       toast.success('Chat cleared');
       setShowClearModal(false);
       setShowMenu(false);
@@ -173,7 +174,22 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
               </button>
               <div className="h-[1px] w-full bg-gray-100 dark:bg-gray-700" />
               <button 
-                onClick={() => { setShowMenu(false); setShowClearModal(true); }}
+                onClick={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('[CLEAR_CHAT] CLICK', e.type); 
+                  setShowMenu(false); 
+                  console.log('[CLEAR_CHAT] OPEN_CONFIRM');
+                  setShowClearModal(true); 
+                }}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('[CLEAR_CHAT] POINTER_DOWN', e.type); 
+                  setShowMenu(false); 
+                  console.log('[CLEAR_CHAT] OPEN_CONFIRM');
+                  setShowClearModal(true); 
+                }}
                 className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
               >
                 Clear Chat
@@ -189,7 +205,10 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Are you sure you want to clear all messages in this conversation? This will only clear them for you.</p>
               <div className="flex flex-col gap-2">
                 <button 
-                  onClick={handleClearChat}
+                  onClick={(e) => {
+                    console.log('[CLEAR_CHAT] CONFIRM');
+                    handleClearChat();
+                  }}
                   disabled={isClearing}
                   className="w-full py-2.5 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white rounded-xl font-medium transition-colors"
                 >
