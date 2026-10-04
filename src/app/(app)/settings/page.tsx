@@ -745,15 +745,15 @@ export default function SettingsPage() {
 
                  <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
                  
-                 <button className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
-                   <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Change password</span>
+                 <button onClick={() => setShowPasswordModal(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                     <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Change password</span>
                    <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
                  </button>
 
                  <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
                  
-                 <button className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
-                   <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Manage sessions</span>
+                 <button onClick={() => setShowSessionsModal(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                     <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Manage sessions</span>
                    <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
                  </button>
                </div>

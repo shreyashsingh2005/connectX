@@ -30,40 +30,6 @@ export function useWebRTC() {
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
 
-  const setupPeerConnection = useCallback((callId: string, isCaller: boolean) => {
-    if (pcRef.current) pcRef.current.close();
-    
-    const pc = new RTCPeerConnection(cachedIceServers || { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-    pcRef.current = pc;
-
-    pc.onicecandidate = async (event) => {
-      if (event.candidate) {
-        try {
-          await supabase.rpc('append_call_ice_candidate', {
-            p_call_id: callId,
-            p_side: isCaller ? 'caller' : 'receiver',
-            p_candidate: event.candidate.toJSON()
-          });
-        } catch (e) {
-          console.error('ICE RPC error', e);
-        }
-      }
-    };
-
-    pc.ontrack = (event) => {
-      if (event.streams && event.streams[0]) {
-        setRemoteStream(event.streams[0]);
-      }
-    };
-
-    pc.onconnectionstatechange = () => {
-      if (pc.connectionState === 'connected') setCallStatus('connected');
-      else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') endCall('failed');
-    };
-
-    return pc;
-  }, [supabase, setCallStatus, setRemoteStream]);
-
   const endCall = useCallback(async (reason: string = 'ended') => {
     if (pcRef.current) {
       pcRef.current.close();
@@ -101,6 +67,42 @@ export function useWebRTC() {
     }
     reset();
   }, [profile, supabase, reset]);
+
+  const setupPeerConnection = useCallback((callId: string, isCaller: boolean) => {
+    if (pcRef.current) pcRef.current.close();
+    
+    const pc = new RTCPeerConnection(cachedIceServers || { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+    pcRef.current = pc;
+
+    pc.onicecandidate = async (event) => {
+      if (event.candidate) {
+        try {
+          await supabase.rpc('append_call_ice_candidate', {
+            p_call_id: callId,
+            p_side: isCaller ? 'caller' : 'receiver',
+            p_candidate: event.candidate.toJSON()
+          });
+        } catch (e) {
+          console.error('ICE RPC error', e);
+        }
+      }
+    };
+
+    pc.ontrack = (event) => {
+      if (event.streams && event.streams[0]) {
+        setRemoteStream(event.streams[0]);
+      }
+    };
+
+    pc.onconnectionstatechange = () => {
+      if (pc.connectionState === 'connected') setCallStatus('connected');
+      else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') endCall('failed');
+    };
+
+    return pc;
+  }, [supabase, setCallStatus, setRemoteStream]);
+
+  
 
   const startCall = useCallback(async (receiverId: string, conversationId: string, type: 'audio' | 'video') => {
     if (!profile) return;
