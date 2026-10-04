@@ -108,6 +108,8 @@ export const useChatStore = create<ChatState>()(set => ({
   addMessage: (conversationId, message) =>
     set(state => {
       const current = state.messages[conversationId] || [];
+      const newTypingUsers = state.typingUsers.filter(u => !(u.userId === message.sender_id && u.conversationId === conversationId));
+      
       if (current.some(m => m.id === message.id)) {
         // Merge instead of duplicate
         return {
@@ -115,6 +117,7 @@ export const useChatStore = create<ChatState>()(set => ({
             ...state.messages,
             [conversationId]: current.map(m => m.id === message.id ? mergeMessage(m, message) : m),
           },
+          typingUsers: newTypingUsers,
         };
       }
       return {
@@ -122,6 +125,7 @@ export const useChatStore = create<ChatState>()(set => ({
           ...state.messages,
           [conversationId]: [...current, message],
         },
+        typingUsers: newTypingUsers,
       };
     }),
   bulkUpdateMessages: (conversationId, updatesList) => set((state) => {

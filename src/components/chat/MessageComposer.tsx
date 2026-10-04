@@ -174,13 +174,13 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
     setRecordingDuration(0);
   };
 
-  const sendTypingStatus = async (typing: boolean) => {
+  const sendTypingStatus = async (isTypingStatus: boolean) => {
     if (!profile) return;
     const channel = supabase.channel(`room:${conversationId}`);
     await channel.send({
       type: 'broadcast',
-      event: 'typing',
-      payload: { userId: profile.id, username: profile.username, typing },
+      event: isTypingStatus ? 'typing' : 'stop_typing',
+      payload: { userId: profile.id, username: profile.username },
     });
   };
 
