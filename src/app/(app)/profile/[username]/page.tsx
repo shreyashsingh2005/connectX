@@ -98,7 +98,7 @@ export default function PublicProfilePage(props: Props) {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#F8FAFC] dark:bg-[#0B0D12]">
+      <div className="flex-1 flex items-center justify-center bg-white dark:bg-[#0B0F12]">
         <Loader2 className="w-8 h-8 text-[#8B5CF6] animate-spin" />
       </div>
     );
@@ -106,13 +106,13 @@ export default function PublicProfilePage(props: Props) {
 
   if (!targetProfile) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-[#F8FAFC] dark:bg-[#0B0D12] p-4 text-center">
-        <div className="w-16 h-16 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] flex items-center justify-center mb-4 shadow-sm">
-          <Search className="w-6 h-6 text-[#98A2B3]" />
+      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-[#0B0F12] p-4 text-center">
+        <div className="w-16 h-16 bg-white dark:bg-[#11161B] rounded-[16px] border border-[#EAECF0] dark:border-white/5 flex items-center justify-center mb-4 shadow-sm">
+          <Search className="w-6 h-6 text-[#A7AFB8]" />
         </div>
         <h2 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA] mb-2">User Not Found</h2>
-        <p className="text-[14px] text-[#667085] dark:text-[#98A2B3] mb-6">The profile {username ? '@' + username : 'you requested'} does not exist.</p>
-        <button onClick={() => router.push('/search')} className="px-5 py-2 bg-white dark:bg-[#151922] text-[#344054] dark:text-[#D0D5DD] font-medium text-[13px] rounded-[8px] border border-[#EAECF0] dark:border-[#252A34] hover:bg-[#F8FAFC] dark:hover:bg-[#252A34] transition-colors shadow-sm">
+        <p className="text-[14px] text-[#667085] dark:text-[#A7AFB8] mb-6">The profile {username ? '@' + username : 'you requested'} does not exist.</p>
+        <button onClick={() => router.push('/search')} className="px-5 py-2 bg-white dark:bg-[rgba(255,255,255,0.04)] text-[#344054] dark:text-[#F5F7FA] font-medium text-[13px] rounded-[8px] border border-[#EAECF0] dark:border-white/5 hover:bg-[#F8FAFC] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors shadow-sm">
           Back to Search
         </button>
       </div>
@@ -143,18 +143,18 @@ export default function PublicProfilePage(props: Props) {
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#F8FAFC] dark:bg-[#0B0D12] overflow-y-auto custom-scrollbar">
+    <div className="flex-1 flex flex-col h-full bg-white dark:bg-[#0B0F12] overflow-y-auto custom-scrollbar">
       <div className="max-w-3xl mx-auto w-full px-4 py-8 flex-1 flex flex-col">
-        <button onClick={() => router.back()} className="group flex items-center gap-2 text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-[#F5F7FA] transition-colors mb-6 w-fit">
-          <div className="p-1.5 bg-white dark:bg-[#11141A] rounded-[8px] border border-[#EAECF0] dark:border-[#252A34] shadow-sm">
+        <button onClick={() => router.back()} className="group flex items-center gap-2 text-[#667085] hover:text-[#101828] dark:text-[#A7AFB8] dark:hover:text-[#F5F7FA] transition-colors mb-6 w-fit">
+          <div className="p-1.5 bg-white dark:bg-[#11161B] rounded-[8px] border border-[#EAECF0] dark:border-white/5 shadow-sm">
              <ArrowLeft className="w-4 h-4" />
           </div>
           <span className="font-medium text-[13px]">Back</span>
         </button>
 
-        <div className="bg-white dark:bg-[#11141A] rounded-[24px] border border-[#EAECF0] dark:border-[#252A34] shadow-sm overflow-hidden animate-in fade-in duration-300 relative z-10">
+        <div className="bg-white dark:bg-[#11161B] rounded-[24px] border border-[#EAECF0] dark:border-white/5 shadow-sm dark:shadow-none overflow-hidden animate-in fade-in duration-300 relative z-10">
           <div className="h-28 md:h-40 bg-gradient-to-r from-[#8B5CF6]/10 to-[#EC4899]/10 dark:from-[#8B5CF6]/20 dark:to-[#EC4899]/20 relative">
-             <div className="absolute inset-0 bg-[#F8FAFC]/50 dark:bg-[#0B0D12]/50 backdrop-blur-[2px]"></div>
+             <div className="absolute inset-0 bg-[#F8FAFC]/50 dark:bg-[#0B0F12]/50 backdrop-blur-[2px]"></div>
           </div>
           
           <div className="px-6 md:px-10 pb-8 relative">
@@ -164,7 +164,7 @@ export default function PublicProfilePage(props: Props) {
                     src={targetProfile.avatar_url || ''}
                     name={targetProfile.display_name || 'User'}
                     size="xl"
-                    className="w-24 h-24 md:w-32 md:h-32 ring-4 ring-white dark:ring-[#11141A] shadow-sm bg-[#EAECF0] dark:bg-[#252A34]"
+                    className="w-[80px] h-[80px] ring-4 ring-white dark:ring-[#11161B] shadow-sm bg-[#EAECF0] dark:bg-white/5"
                   />
                   {targetProfile.is_online && (
                      <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 w-5 h-5 md:w-6 md:h-6 bg-[#12B76A] border-4 border-white dark:border-[#11141A] rounded-full"></div>
@@ -184,7 +184,7 @@ export default function PublicProfilePage(props: Props) {
                    )}
 
                    {relationship === 'outgoing_request' && (
-                     <button disabled className="flex-1 md:flex-none px-4 py-2 bg-[#F8FAFC] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#98A2B3] rounded-[8px] text-[13px] font-medium flex items-center justify-center gap-2 cursor-not-allowed">
+                     <button disabled className="flex-1 md:flex-none px-4 py-2 bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.04)] border border-[#EAECF0] dark:border-white/5 text-[#A7AFB8] rounded-[8px] text-[13px] font-medium flex items-center justify-center gap-2 cursor-not-allowed">
                        <Clock className="w-4 h-4" /> Request Sent
                      </button>
                    )}
@@ -202,7 +202,7 @@ export default function PublicProfilePage(props: Props) {
                            const ok = await respondToRequest(requestId, targetProfile.id, 'declined');
                            if (ok) setRelationship('none');
                          }}
-                         className="px-3 py-2 bg-[#F8FAFC] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#667085] dark:text-[#98A2B3] rounded-[8px] text-[13px] font-medium hover:bg-[#EAECF0] dark:hover:bg-[#252A34] transition-all flex items-center justify-center">
+                         className="px-3 py-2 bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.04)] border border-[#EAECF0] dark:border-white/5 text-[#667085] dark:text-[#A7AFB8] rounded-[8px] text-[13px] font-medium hover:bg-[#EAECF0] dark:hover:bg-[rgba(255,255,255,0.08)] transition-all flex items-center justify-center">
                          <XIcon className="w-4 h-4" />
                        </button>
                      </>
@@ -220,13 +220,13 @@ export default function PublicProfilePage(props: Props) {
                              if (ok) setRelationship('none');
                            }
                          }}
-                         className="px-3 py-2 bg-white dark:bg-[#11141A] border border-[#F04438]/20 text-[#F04438] hover:bg-[#FEF3F2] dark:hover:bg-[#4A1519]/20 rounded-[8px] text-[13px] font-medium transition-all flex items-center justify-center">
+                         className="px-3 py-2 bg-white dark:bg-[#11161B] border border-[#F04438]/20 text-[#F04438] hover:bg-[#FEF3F2] dark:hover:bg-[#4A1519]/20 rounded-[8px] text-[13px] font-medium transition-all flex items-center justify-center">
                          Remove
                        </button>
                      </>
                    )}
                    
-                   <button className="p-2 bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] text-[#98A2B3] hover:text-[#F04438] hover:bg-[#FEF3F2] dark:hover:bg-[#4A1519]/20 rounded-[8px] transition-colors shadow-sm" title="Block User">
+                   <button className="p-2 bg-white dark:bg-[#11161B] border border-[#EAECF0] dark:border-white/5 text-[#A7AFB8] hover:text-[#F04438] hover:bg-[#FEF3F2] dark:hover:bg-[#4A1519]/20 rounded-[8px] transition-colors shadow-sm" title="Block User">
                      <ShieldAlert className="w-4 h-4" />
                    </button>
                  </div>
@@ -238,12 +238,12 @@ export default function PublicProfilePage(props: Props) {
                  <h1 className="text-2xl md:text-3xl font-bold text-[#101828] dark:text-[#F5F7FA] tracking-tight break-words line-clamp-2">
                    {targetProfile.display_name || 'User'}
                  </h1>
-                 <p className="text-[14px] text-[#667085] dark:text-[#98A2B3] mt-0.5 truncate">
+                 <p className="text-[14px] text-[#667085] dark:text-[#A7AFB8] mt-0.5 truncate">
                    @{targetProfile.username || 'unknown'}
                  </p>
               </div>
               
-              <div className="flex flex-wrap items-center gap-4 text-[13px] text-[#667085] dark:text-[#98A2B3] font-medium">
+              <div className="flex flex-wrap items-center gap-4 text-[13px] text-[#667085] dark:text-[#A7AFB8] font-medium">
                  <div className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4" />
                     Joined {targetProfile.created_at ? format(new Date(targetProfile.created_at), 'MMMM yyyy') : 'Unknown'}
@@ -251,9 +251,9 @@ export default function PublicProfilePage(props: Props) {
               </div>
               
               {targetProfile.bio && (
-                 <div className="pt-5 mt-5 border-t border-[#EAECF0] dark:border-[#252A34]">
-                    <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2">About</h3>
-                    <p className="text-[14px] text-[#344054] dark:text-[#D0D5DD] whitespace-pre-wrap leading-relaxed">
+                 <div className="pt-5 mt-5 border-t border-[#EAECF0] dark:border-white/5">
+                    <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#A7AFB8] uppercase tracking-wider mb-2">About</h3>
+                    <p className="text-[14px] text-[#344054] dark:text-[#F5F7FA] whitespace-pre-wrap leading-relaxed">
                       {targetProfile.bio}
                     </p>
                  </div>

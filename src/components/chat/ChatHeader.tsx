@@ -95,7 +95,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
 
   return (
     <>
-    <header className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 dark:border-[#252A34] bg-white/80 dark:bg-[#0B0D12]/80 backdrop-blur-xl flex-shrink-0 min-h-[64px] relative z-50">
+    <header className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-white/5 bg-white/80 dark:bg-[#0B0F12]/80 backdrop-blur-[18px] flex-shrink-0 min-h-[56px] md:min-h-[64px] relative z-50 shadow-sm dark:shadow-none">
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.push('/chat')}
@@ -122,7 +122,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
             {isDirect ? (
               <div className="flex items-center gap-1.5 mt-[2px]">
                 <span className={cn("w-2 h-2 rounded-full", isOnline ? "bg-green-500" : "bg-gray-400 dark:bg-gray-600")} />
-                <span className="text-[13px] font-medium text-gray-500 dark:text-gray-400">
+                <span className="text-[12px] font-medium text-gray-500 dark:text-[#737C86]">
                   {isOnline ? 'Online' : (lastSeen ? formatLastSeen(lastSeen) : 'Offline')}
                 </span>
               </div>
@@ -145,7 +145,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
                 const otherMember = conversation.members?.find(m => m.user_id !== profile?.id)?.profile;
                 if (otherMember) startCall?.(otherMember.id, conversation.id, 'audio');
               }}
-              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F9FAFB] dark:hover:bg-[#1A1E29] transition-colors"
+              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-[#667085] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors"
             >
               <Phone className="w-[18px] h-[18px]" strokeWidth={1.75} />
             </button>
@@ -155,7 +155,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
                 const otherMember = conversation.members?.find(m => m.user_id !== profile?.id)?.profile;
                 if (otherMember) startCall?.(otherMember.id, conversation.id, 'video');
               }}
-              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F9FAFB] dark:hover:bg-[#1A1E29] transition-colors"
+              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-[#667085] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors"
             >
               <Video className="w-[18px] h-[18px]" strokeWidth={1.75} />
             </button>
@@ -165,24 +165,24 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
           <button
             title="More options"
             onClick={() => setShowMenu(!showMenu)}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#1A1E29] transition-colors relative"
+            className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-[#667085] dark:text-[#A7AFB8] hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors relative"
           >
             <MoreVertical className="w-5 h-5" />
           </button>
           
           {showMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#151922] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 overflow-hidden">
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#11161B] border border-gray-200 dark:border-white/5 rounded-[16px] shadow-lg z-50 overflow-hidden">
               <button 
                 onClick={() => { setShowMenu(false); toggleProfilePanel(); }}
-                className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#111827] transition-colors"
+                className="w-full text-left px-4 py-3 text-[13px] font-medium text-gray-700 dark:text-[#F5F7FA] hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors"
               >
                 Conversation Info
               </button>
-              <div className="h-[1px] w-full bg-gray-100 dark:bg-gray-700" />
+              <div className="h-[1px] w-full bg-gray-100 dark:bg-white/5" />
               <button 
   type="button"
   onClick={handleOpenClearChat}
-  className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+  className="w-full text-left px-4 py-3 text-[13px] font-medium text-red-500 hover:bg-red-50 dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors"
   style={{ pointerEvents: 'auto', cursor: 'pointer', position: 'relative', zIndex: 60 }}
 >
   Clear Chat
@@ -193,7 +193,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
         
         {showClearModal && typeof document !== 'undefined' && createPortal(
           <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-            <div className="bg-white dark:bg-[#151922] w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-[#252A34]">
+            <div className="bg-white dark:bg-[rgba(255,255,255,0.04)] w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-white/5">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Clear chat?</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Are you sure you want to clear all messages in this conversation? This will only clear them for you.</p>
               <div className="flex flex-col gap-2">

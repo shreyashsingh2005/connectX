@@ -51,11 +51,11 @@ export function EmptyState({ variant, action }: EmptyStateProps) {
 
   return (
     <div className="flex flex-col items-center justify-center h-full py-12 px-6 text-center">
-      <div className="w-12 h-12 rounded-[12px] bg-white dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] flex items-center justify-center mb-4 shadow-sm">
-        <Icon size={20} strokeWidth={1.5} className="text-[#667085] dark:text-[#98A2B3]" />
+      <div className="w-12 h-12 rounded-[12px] bg-white dark:bg-[rgba(255,255,255,0.04)] border border-[#EAECF0] dark:border-white/5 flex items-center justify-center mb-4 shadow-sm">
+        <Icon size={20} strokeWidth={1.5} className="text-[#667085] dark:text-[#A7AFB8]" />
       </div>
       <h3 className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA] mb-1">{title}</h3>
-      <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] max-w-xs leading-relaxed">{description}</p>
+      <p className="text-[13px] text-[#667085] dark:text-[#A7AFB8] max-w-xs leading-relaxed">{description}</p>
       {action && <div className="mt-4">{action}</div>}
     </div>
   );

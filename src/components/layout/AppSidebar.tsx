@@ -90,7 +90,7 @@ export function AppSidebar() {
   }
 
   return (
-    <aside className={cn("md:flex flex-row md:flex-col items-center justify-between md:justify-start w-full md:w-[68px] h-[64px] md:h-full bg-[#FFFFFF] dark:bg-[#090B10] border-t md:border-t-0 md:border-r border-[#EAECF0] dark:border-[#252A34] py-2 md:py-6 flex-shrink-0 z-[100] fixed bottom-0 left-0 md:relative px-6 md:px-0 transition-transform duration-150", hideOnMobile ? "translate-y-full md:translate-y-0 hidden md:flex" : "translate-y-0 flex")}>
+    <aside className={cn("md:flex flex-row md:flex-col items-center justify-between md:justify-start w-[calc(100%-24px)] mx-[12px] md:mx-0 md:w-[68px] h-[58px] md:h-full bg-white/90 dark:bg-[rgba(20,25,30,0.82)] backdrop-blur-[18px] border md:border-t-0 md:border-r border-[#EAECF0] dark:border-white/5 py-1.5 md:py-6 flex-shrink-0 z-[100] fixed bottom-[12px] md:bottom-0 left-0 md:relative px-4 md:px-0 transition-transform duration-150 rounded-[20px] md:rounded-none shadow-lg dark:shadow-none", hideOnMobile ? "translate-y-full md:translate-y-0 hidden md:flex" : "translate-y-0 flex")}>
       {/* Logo */}
       <Link href="/chat" className="hidden md:flex mb-6 transition-transform hover:opacity-80" aria-label="connectX home">
         <ConnectXLogo size={28} />
@@ -107,10 +107,10 @@ export function AppSidebar() {
               aria-label={label}
               title={label}
               className={cn(
-                'relative group w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-150',
+                'relative group w-[42px] h-[42px] rounded-xl flex items-center justify-center transition-all duration-150',
                 isActive
                   ? 'text-[#101828] dark:text-[#F5F7FA] bg-[#F1F3F5] dark:bg-[#1A1F2B]'
-                  : 'text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F1F3F5] dark:hover:bg-[#1A1F2B]'
+                  : 'text-[#667085] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.06)]'
               )}
             >
               <Icon size={18} strokeWidth={isActive ? 2.25 : 1.75} />
@@ -158,10 +158,10 @@ export function AppSidebar() {
           aria-label="Settings"
           title="Settings"
           className={cn(
-            'relative group w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-150',
+            'relative group w-[42px] h-[42px] rounded-xl flex items-center justify-center transition-all duration-150',
             pathname.startsWith('/settings')
               ? 'text-[#101828] dark:text-[#F5F7FA] bg-[#F1F3F5] dark:bg-[#1A1F2B]'
-              : 'text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F1F3F5] dark:hover:bg-[#1A1F2B]'
+              : 'text-[#667085] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.06)]'
           )}
         >
           <Settings size={18} strokeWidth={2} />
@@ -174,7 +174,7 @@ export function AppSidebar() {
           onClick={handleLogout}
           aria-label="Logout"
           title="Logout"
-          className="relative group w-10 h-10 rounded-xl flex items-center justify-center text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F1F3F5] dark:hover:bg-[#1A1F2B] transition-all duration-150"
+          className="relative group w-[42px] h-[42px] rounded-xl flex items-center justify-center text-[#667085] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.06)] transition-all duration-150"
         >
           <LogOut size={18} strokeWidth={2} />
           <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-gray-900 dark:bg-[#F5F7FA] text-white dark:text-gray-900 text-xs font-medium rounded-md px-2.5 py-1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50 shadow-sm translate-x-[-4px] group-hover:translate-x-0">

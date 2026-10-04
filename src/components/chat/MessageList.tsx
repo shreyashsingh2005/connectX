@@ -23,9 +23,9 @@ function DateSeparator({ date }: { date: Date }) {
   const label = isToday(date) ? 'Today' : isYesterday(date) ? 'Yesterday' : format(date, 'MMMM d, yyyy');
   return (
     <div className="flex items-center gap-3 my-4 px-4">
-      <div className="flex-1 h-px bg-gray-200 dark:bg-[#151922]" />
+      <div className="flex-1 h-px bg-gray-200 dark:bg-[rgba(255,255,255,0.04)]" />
       <span className="text-xs text-gray-500 font-medium px-2">{label}</span>
-      <div className="flex-1 h-px bg-gray-200 dark:bg-[#151922]" />
+      <div className="flex-1 h-px bg-gray-200 dark:bg-[rgba(255,255,255,0.04)]" />
     </div>
   );
 }
@@ -474,7 +474,7 @@ export function MessageList({ conversationId }: MessageListProps) {
             )}
             <button
               onClick={() => scrollToBottom('smooth')}
-              className="w-10 h-10 bg-white dark:bg-[#151922] border border-gray-200 dark:border-[#252A34] rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 dark:hover:bg-[#1A1F2B] transition-colors"
+              className="w-10 h-10 bg-white dark:bg-[rgba(255,255,255,0.04)] border border-gray-200 dark:border-white/5 rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors"
             >
               <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
@@ -484,7 +484,7 @@ export function MessageList({ conversationId }: MessageListProps) {
         )}
       {deleteModalMsg && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-          <div className="bg-white dark:bg-[#151922] w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-[#252A34]">
+          <div className="bg-white dark:bg-[rgba(255,255,255,0.04)] w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-white/5">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Delete message?</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Are you sure you want to delete this message?</p>
             <div className="flex flex-col gap-2">
@@ -498,7 +498,7 @@ export function MessageList({ conversationId }: MessageListProps) {
               )}
               <button 
                 onClick={() => confirmDelete(false)}
-                className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-[#151922] dark:hover:bg-[#2A3040] text-gray-900 dark:text-white rounded-xl font-medium transition-colors"
+                className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-[rgba(255,255,255,0.04)] dark:hover:bg-[#2A3040] text-gray-900 dark:text-white rounded-xl font-medium transition-colors"
               >
                 Delete for me
               </button>

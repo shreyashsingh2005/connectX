@@ -95,22 +95,22 @@ export function ForwardModal({ message, onClose }: ForwardModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#090B10]/80 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-md bg-[#FFFFFF] dark:bg-[#11141A] rounded-[20px] shadow-2xl border border-[#EAECF0] dark:border-[#252A34] overflow-hidden flex flex-col max-h-[80vh]">
-        <div className="p-6 border-b border-[#EAECF0] dark:border-[#252A34] flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B0F12]/80 backdrop-blur-sm animate-fade-in">
+      <div className="w-full max-w-md bg-[#FFFFFF] dark:bg-[#11161B] rounded-[20px] shadow-2xl border border-[#EAECF0] dark:border-white/5 overflow-hidden flex flex-col max-h-[80vh]">
+        <div className="p-6 border-b border-[#EAECF0] dark:border-white/5 flex items-center justify-between">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <Share className="w-5 h-5 text-[#8B5CF6]" />
             Forward Message
           </h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white bg-[#F9FAFB] dark:bg-[#151922] hover:bg-[#EAECF0] dark:hover:bg-[#252A34] rounded-full transition-colors"
+            className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white bg-[#F9FAFB] dark:bg-[rgba(255,255,255,0.04)] hover:bg-[#EAECF0] dark:hover:bg-[rgba(255,255,255,0.08)] rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-4 border-b border-[#EAECF0] dark:border-[#252A34]">
+        <div className="p-4 border-b border-[#EAECF0] dark:border-white/5">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -118,7 +118,7 @@ export function ForwardModal({ message, onClose }: ForwardModalProps) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search conversations..."
-              className="w-full bg-[#F9FAFB] dark:bg-[#0B0D12] border border-gray-200 dark:border-[#252A34] rounded-[12px] py-2.5 h-[44px] pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30 transition-all"
+              className="w-full bg-[#F9FAFB] dark:bg-[#0B0F12] border border-gray-200 dark:border-white/5 rounded-[12px] py-2.5 h-[44px] pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30 transition-all"
               autoFocus
             />
           </div>

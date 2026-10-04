@@ -121,7 +121,7 @@ export function ConversationList() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#FFFFFF] dark:bg-[#11141A] border-r border-[#EAECF0] dark:border-[#252A34] w-full md:w-[320px] flex-shrink-0">
+    <div className="flex flex-col h-full bg-white dark:bg-[#0B0F12] border-r border-[#EAECF0] dark:border-white/5 w-full md:w-[320px] flex-shrink-0">
       {/* Header */}
       <div className="px-4 pt-5 pb-3">
         <div className="flex items-center justify-between mb-4">
@@ -130,7 +130,7 @@ export function ConversationList() {
             <button
               onClick={() => setShowGroupModal(true)}
               title="New Group"
-              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] transition-all"
+              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-all"
             >
               <Users className="w-5 h-5" />
             </button>
@@ -154,7 +154,7 @@ export function ConversationList() {
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-[#F9FAFB] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2 h-[42px] pl-10 pr-4 text-[14px] text-gray-900 dark:text-white placeholder-[#667085] focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/20 transition-all"
+            className="w-full bg-[#F9FAFB] dark:bg-[#11161B] border border-[#EAECF0] dark:border-white/5 rounded-full py-2 h-[40px] pl-10 pr-4 text-[13px] text-gray-900 dark:text-white placeholder-[#737C86] focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/20 transition-all shadow-sm dark:shadow-none"
           />
         </div>
 
@@ -168,7 +168,7 @@ export function ConversationList() {
                 'px-4 py-1.5 text-[13px] rounded-full font-medium transition-all duration-150 capitalize flex items-center justify-center gap-1.5',
                 filter === f
                   ? 'bg-[#8B5CF6] text-white'
-                  : 'bg-transparent text-[#667085] hover:bg-[#F9FAFB] dark:hover:bg-[#151922]'
+                  : 'bg-transparent text-[#667085] hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)]'
               )}
             >
               {f === 'pinned' ? <Pin className="w-3.5 h-3.5" /> : null}
@@ -211,11 +211,8 @@ export function ConversationList() {
               <button
                 key={conv.id}
                 onClick={() => handleSelectConversation(conv)}
-                className={cn(
-                  'w-full flex items-center gap-3 px-4 py-3 transition-all duration-150 text-left group relative',
-                  isActive
-                    ? 'bg-[#F1F3F5] dark:bg-[#1A1F2B]'
-                    : 'hover:bg-[#F1F3F5] dark:hover:bg-[#1A1F2B] bg-transparent'
+                className={cn('w-full flex items-center gap-3 px-4 py-3 transition-all duration-150 text-left group relative border-b border-[#EAECF0] dark:border-white/5 last:border-0',
+                  isActive ? 'bg-[#F1F3F5] dark:bg-[rgba(255,255,255,0.04)]' : 'hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.02)] bg-transparent'
                 )}
               >
                 {/* Avatar */}
@@ -237,17 +234,17 @@ export function ConversationList() {
                     )}>
                       {name}
                     </span>
-                    <span className="text-[11px] text-[#667085] flex-shrink-0">{lastMsgTime}</span>
+                    <span className={cn("text-[11px] flex-shrink-0", unreadCount > 0 ? "text-[#8B5CF6]" : "text-[#667085] dark:text-[#737C86]")}>{lastMsgTime}</span>
                   </div>
                   <div className="flex items-center justify-between gap-2 mt-0.5">
                     <span className={cn(
                       'text-[12px] truncate',
-                      unreadCount > 0 ? 'text-gray-900 dark:text-gray-100 font-medium' : 'text-[#667085]'
+                      unreadCount > 0 ? 'text-gray-900 dark:text-[#F5F7FA] font-medium' : 'text-[#667085] dark:text-[#A7AFB8]'
                     )}>
                       {getLastMessagePreview(conv)}
                     </span>
                     {unreadCount > 0 && (
-                      <span className="flex-shrink-0 min-w-[20px] h-[20px] rounded-full bg-[#101828] dark:bg-[#F5F7FA] text-white dark:text-[#101828] text-[10px] font-bold flex items-center justify-center px-1">
+                      <span className="flex-shrink-0 min-w-[18px] h-[18px] rounded-full bg-[#8B5CF6] text-white text-[10px] font-bold flex items-center justify-center px-1">
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}

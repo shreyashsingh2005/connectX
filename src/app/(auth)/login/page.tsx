@@ -110,7 +110,7 @@ function LoginContent() {
     }
   }
 
-  const inputClass = "w-full bg-white dark:bg-[#0B0D12] border border-gray-200 dark:border-[#252A34] rounded-[14px] h-[48px] pl-10 pr-4 text-[15px] text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-[3px] focus:ring-[#8B5CF6]/15 transition-all duration-200";
+  const inputClass = "w-full bg-white dark:bg-[#0B0F12] border border-gray-200 dark:border-white/5 rounded-[14px] h-[48px] pl-10 pr-4 text-[15px] text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-[3px] focus:ring-[#8B5CF6]/15 transition-all duration-200";
 
   return (
     <div className="w-full max-w-[420px] mx-auto flex flex-col justify-center h-full">
@@ -180,7 +180,7 @@ function LoginContent() {
           </button>
           
           {needsVerification && (
-            <div className="mt-4 p-4 bg-[#F8FAFC] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] rounded-[14px] flex flex-col items-center justify-center space-y-3 animate-in fade-in slide-in-from-top-2">
+            <div className="mt-4 p-4 bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.04)] border border-[#EAECF0] dark:border-white/5 rounded-[14px] flex flex-col items-center justify-center space-y-3 animate-in fade-in slide-in-from-top-2">
               <button
                 type="button"
                 onClick={handleResendVerification}
@@ -195,17 +195,17 @@ function LoginContent() {
 
         <div className="relative my-8">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200 dark:border-[#252A34]" />
+            <div className="w-full border-t border-gray-200 dark:border-white/5" />
           </div>
           <div className="relative flex justify-center text-[13px]">
-            <span className="px-4 bg-white dark:bg-[#11141A] text-gray-500 dark:text-gray-400 font-medium">or continue with</span>
+            <span className="px-4 bg-white dark:bg-[#11161B] text-gray-500 dark:text-gray-400 font-medium">or continue with</span>
           </div>
         </div>
 
         <button
           onClick={handleGoogleLogin}
             disabled={loading || googleLoading}
-          className="w-full h-[48px] bg-white dark:bg-[#151922] border border-gray-200 dark:border-[#252A34] text-[15px] text-gray-700 dark:text-gray-200 rounded-[14px] font-medium hover:bg-gray-50 dark:hover:bg-[#1A1F2B] transition-all active:scale-[0.98] flex items-center justify-center gap-3 shadow-sm focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-gray-200 dark:focus-visible:ring-gray-700"
+          className="w-full h-[48px] bg-white dark:bg-[rgba(255,255,255,0.04)] border border-gray-200 dark:border-white/5 text-[15px] text-gray-700 dark:text-gray-200 rounded-[14px] font-medium hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.06)] transition-all active:scale-[0.98] flex items-center justify-center gap-3 shadow-sm focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-gray-200 dark:focus-visible:ring-gray-700"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -240,10 +240,10 @@ function FeatureItem({ icon: Icon, text }: { icon: any, text: string }) {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-[100dvh] w-full bg-[#F8FAFC] dark:bg-[#0B0D12] flex items-center justify-center p-0 md:p-6 lg:p-8">
-      <div className="w-full max-w-[1100px] bg-white dark:bg-[#11141A] md:rounded-[28px] md:shadow-2xl flex flex-col md:flex-row overflow-hidden min-h-[100dvh] md:min-h-0 md:h-[680px] page-transition-enter border border-transparent md:border-[#EAECF0] dark:md:border-[#252A34]">
+    <div className="min-h-[100dvh] w-full bg-[#F8FAFC] dark:bg-[#0B0F12] flex items-center justify-center p-0 md:p-6 lg:p-8">
+      <div className="w-full max-w-[1100px] bg-white dark:bg-[#11161B] md:rounded-[28px] md:shadow-2xl flex flex-col md:flex-row overflow-hidden min-h-[100dvh] md:min-h-0 md:h-[680px] page-transition-enter border border-transparent md:border-[#EAECF0] dark:md:border-white/5">
         
-        <div className="w-full md:w-[480px] lg:w-[500px] relative bg-[#090A0F] p-8 md:p-12 flex flex-col justify-between overflow-hidden flex-shrink-0 border-b md:border-b-0 md:border-r border-[#252A34]">
+        <div className="w-full md:w-[480px] lg:w-[500px] relative bg-[#090A0F] p-8 md:p-12 flex flex-col justify-between overflow-hidden flex-shrink-0 border-b md:border-b-0 md:border-r border-white/5">
           <div className="absolute inset-0 z-0 opacity-60">
             <div className="absolute top-[-10%] left-[-20%] w-[70%] h-[70%] rounded-full bg-[#8B5CF6] mix-blend-screen filter blur-[100px] opacity-30 animate-pulse" style={{ animationDuration: '8s' }} />
             <div className="absolute bottom-[-20%] right-[-10%] w-[80%] h-[80%] rounded-full bg-[#4F46E5] mix-blend-screen filter blur-[120px] opacity-20" />
@@ -271,11 +271,11 @@ export default function LoginPage() {
           </div>
 
           <div className="relative z-10 hidden md:block animate-in fade-in duration-700" style={{ animationDelay: '500ms' }}>
-            <p className="text-[#98A2B3] text-[14px] font-medium">Everything you need to stay connected.</p>
+            <p className="text-[#A7AFB8] text-[14px] font-medium">Everything you need to stay connected.</p>
           </div>
         </div>
         
-        <div className="flex-1 bg-white dark:bg-[#11141A] p-6 md:p-12 lg:p-16 flex flex-col justify-center overflow-y-auto" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <div className="flex-1 bg-white dark:bg-[#11161B] p-6 md:p-12 lg:p-16 flex flex-col justify-center overflow-y-auto" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           <Suspense fallback={<div className="flex-1 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-[#8B5CF6]"/></div>}>
             <LoginContent />
           </Suspense>

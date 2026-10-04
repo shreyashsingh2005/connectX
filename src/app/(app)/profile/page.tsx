@@ -41,7 +41,7 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#F7F8FA] dark:bg-[#090B10]">
+      <div className="flex-1 flex items-center justify-center bg-[#F7F8FA] dark:bg-[#0B0F12]">
         <Loader2 size={32} className="animate-spin text-[#8B5CF6]" />
       </div>
     );
@@ -114,12 +114,12 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#F7F8FA] dark:bg-[#090B10] overflow-y-auto items-center">
+    <div className="flex-1 flex flex-col h-full bg-[#F7F8FA] dark:bg-[#0B0F12] overflow-y-auto items-center">
       <div className="w-full max-w-[600px] flex flex-col min-h-full pb-10">
         
         <div className="flex items-center justify-between py-6 px-4 md:px-0">
           <div className="flex items-center gap-4">
-            <button onClick={() => router.push('/settings')} className="p-1 -ml-1 text-[#667085] dark:text-[#98A2B3] hover:bg-[#EAECF0]/50 dark:hover:bg-[#151922] rounded-full transition-colors outline-none">
+            <button onClick={() => router.push('/settings')} className="p-1 -ml-1 text-[#667085] dark:text-[#A7AFB8] hover:bg-[#EAECF0]/50 dark:hover:bg-[rgba(255,255,255,0.04)] rounded-full transition-colors outline-none">
               <ArrowLeft size={20} strokeWidth={1.75} />
             </button>
             <h1 className="text-xl font-bold text-[#101828] dark:text-[#F5F7FA]">Edit Profile</h1>
@@ -127,7 +127,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="px-4 md:px-0">
-          <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[20px] border border-[#EAECF0] dark:border-[#252A34] p-6 shadow-sm">
+          <div className="bg-[#FFFFFF] dark:bg-[#11161B] rounded-[20px] border border-[#EAECF0] dark:border-white/5 p-6 shadow-sm">
             <form onSubmit={handleUpdateProfile} className="space-y-6">
               
               {/* Avatar Section */}
@@ -139,40 +139,40 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <div>
-                  <button type="button" onClick={() => setShowPhotoEditor(true)} className="h-[36px] px-4 bg-[#F1F3F5] dark:bg-[#1A1F2B] text-[#101828] dark:text-[#F5F7FA] hover:bg-[#E5E7EB] dark:hover:bg-[#252A34] transition-colors rounded-[10px] text-[13px] font-medium shadow-sm mb-1.5 outline-none">
+                  <button type="button" onClick={() => setShowPhotoEditor(true)} className="h-[36px] px-4 bg-[#F1F3F5] dark:bg-[#1A1F2B] text-[#101828] dark:text-[#F5F7FA] hover:bg-[#E5E7EB] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors rounded-[10px] text-[13px] font-medium shadow-sm mb-1.5 outline-none">
                     Change photo
                   </button>
-                  <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">JPG or PNG. Max 5MB.</p>
+                  <p className="text-[12px] text-[#667085] dark:text-[#A7AFB8]">JPG or PNG. Max 5MB.</p>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Display Name</label>
+                <label className="text-[13px] font-medium text-[#344054] dark:text-[#F5F7FA]">Display Name</label>
                 <div className="relative">
-                  <UserRound size={16} strokeWidth={1.75} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#98A2B3]" />
+                  <UserRound size={16} strokeWidth={1.75} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A7AFB8]" />
                   <input
                     type="text" required value={editForm.display_name} onChange={e => setEditForm({ ...editForm, display_name: e.target.value })}
-                    className="w-full bg-[#FFFFFF] dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[12px] h-[44px] pl-10 pr-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm"
+                    className="w-full bg-[#FFFFFF] dark:bg-[#11161B] border border-[#EAECF0] dark:border-white/5 rounded-[12px] h-[44px] pl-10 pr-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Username</label>
+                <label className="text-[13px] font-medium text-[#344054] dark:text-[#F5F7FA]">Username</label>
                 <div className="relative">
-                  <AtSign size={16} strokeWidth={1.75} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#98A2B3]" />
+                  <AtSign size={16} strokeWidth={1.75} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A7AFB8]" />
                   <input
                     type="text" required value={editForm.username} onChange={handleUsernameChange}
                     className={cn(
-                      "w-full bg-[#FFFFFF] dark:bg-[#11141A] border rounded-[12px] h-[44px] pl-10 pr-20 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:ring-1 transition-all shadow-sm",
+                      "w-full bg-[#FFFFFF] dark:bg-[#11161B] border rounded-[12px] h-[44px] pl-10 pr-20 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:ring-1 transition-all shadow-sm",
                       isUsernameAvailable === false 
                         ? "border-[#F97066] focus:border-[#F97066] focus:ring-[#F97066]" 
-                        : "border-[#EAECF0] dark:border-[#252A34] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]"
+                        : "border-[#EAECF0] dark:border-white/5 focus:border-[#8B5CF6] focus:ring-[#8B5CF6]"
                     )}
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
                     {isCheckingUsername ? (
-                      <Loader2 size={14} strokeWidth={2} className="animate-spin text-[#98A2B3]" />
+                      <Loader2 size={14} strokeWidth={2} className="animate-spin text-[#A7AFB8]" />
                     ) : isUsernameAvailable === false ? (
                       <span className="text-[12px] font-medium text-[#D92D20] dark:text-[#F97066]">Taken</span>
                     ) : isUsernameAvailable === true && editForm.username.length >= 3 && editForm.username !== profile.username ? (
@@ -183,10 +183,10 @@ export default function ProfilePage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Bio</label>
+                <label className="text-[13px] font-medium text-[#344054] dark:text-[#F5F7FA]">Bio</label>
                 <textarea
                   value={editForm.bio} onChange={e => setEditForm({ ...editForm, bio: e.target.value })}
-                  className="w-full bg-[#FFFFFF] dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[12px] py-3 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm resize-none"
+                  className="w-full bg-[#FFFFFF] dark:bg-[#11161B] border border-[#EAECF0] dark:border-white/5 rounded-[12px] py-3 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm resize-none"
                   rows={3}
                 />
               </div>

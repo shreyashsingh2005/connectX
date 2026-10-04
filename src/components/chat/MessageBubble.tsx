@@ -125,7 +125,7 @@ export const MessageBubble = memo(function MessageBubble({
         ) : (!isOwn && <div className="w-[28px] flex-shrink-0" />)}
         
         <div className={cn(
-          'max-w-[85%] md:max-w-[75%] rounded-[18px] px-4 py-3 text-[13px] border flex items-center gap-3',
+          'max-w-[80%] md:max-w-[70%] rounded-[16px] px-4 py-3 text-[13px] border flex items-center gap-3',
           isOwn ? 'border-[var(--chat-outgoing-border)] bg-black/10 dark:bg-white/10 text-[var(--chat-outgoing-text)]' : 'border-[var(--chat-incoming-border)] bg-black/5 dark:bg-white/5 text-[var(--chat-incoming-text)]'
         )}>
           <Lock size={16} className="opacity-70 flex-shrink-0" /> 
@@ -142,9 +142,9 @@ export const MessageBubble = memo(function MessageBubble({
           <div className="w-8 flex-shrink-0" />
         )}
         <div className={cn(
-          'max-w-[85%] md:max-w-[75%] rounded-[18px] px-4 py-2.5 italic text-gray-500 text-sm border',
-          isOwn ? 'border-[#2A2F45]' : 'border-gray-200 dark:border-[#252A34]',
-          'bg-gray-100 dark:bg-[#11141A]'
+          'max-w-[80%] md:max-w-[70%] rounded-[16px] px-4 py-2.5 italic text-gray-500 text-sm border',
+          isOwn ? 'border-[#2A2F45]' : 'border-gray-200 dark:border-white/5',
+          'bg-gray-100 dark:bg-[#11161B]'
         )}>
           {"\u{1F6AB}"} This message was deleted
         </div>
@@ -185,7 +185,7 @@ export const MessageBubble = memo(function MessageBubble({
       )}
       {!isOwn && !showAvatar && <div className="w-7 flex-shrink-0" />}
 
-      <div className={cn('flex flex-col max-w-[85%] md:max-w-[75%]', isOwn ? 'items-end' : 'items-start')}>
+      <div className={cn('flex flex-col max-w-[80%] md:max-w-[70%]', isOwn ? 'items-end' : 'items-start')}>
         {/* Sender name (group) */}
         {showSender && !isOwn && (
           <span className="text-xs font-medium text-[var(--chat-outgoing-bg)] mb-1 ml-1">
@@ -197,7 +197,7 @@ export const MessageBubble = memo(function MessageBubble({
         {message.reply_to && (
           <div className={cn(
             'flex items-start gap-2 mb-1 px-3 py-1.5 rounded-[12px] text-xs border-l-2 border-[#8B5CF6] max-w-full w-full',
-            'bg-gray-200 dark:bg-[#151922] text-gray-600 dark:text-gray-400 cursor-pointer hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors'
+            'bg-gray-200 dark:bg-[rgba(255,255,255,0.04)] text-gray-600 dark:text-gray-400 cursor-pointer hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors'
           )}>
             <div className="min-w-0">
               <span className={cn("font-medium block", isOwn ? 'text-[var(--chat-outgoing-text)] font-semibold' : 'text-[var(--chat-outgoing-bg)]')}>{message.reply_to.sender?.display_name}</span>
@@ -210,11 +210,11 @@ export const MessageBubble = memo(function MessageBubble({
         <div
           ref={bubbleRef}
           className={cn(
-            'relative px-3.5 py-2.5 message-animate max-w-full shadow-sm',
+            'relative px-3.5 py-2 message-animate max-w-full shadow-sm shadow-black/5 dark:shadow-none',
             isEmojiOnly ? 'bg-transparent shadow-none px-0 py-0' : (
               isOwn 
-                ? `bg-[var(--chat-outgoing-bg)] text-[var(--chat-outgoing-text)] ${showAvatar ? 'rounded-[14px] rounded-br-[4px]' : 'rounded-[14px] rounded-r-[4px]'}` 
-                : `bg-[var(--chat-incoming-bg)] text-[var(--chat-incoming-text)] border border-[var(--chat-incoming-border)] ${showAvatar ? 'rounded-[14px] rounded-bl-[4px]' : 'rounded-[14px] rounded-l-[4px]'}`
+                ? `bg-[var(--chat-outgoing-bg)] text-[var(--chat-outgoing-text)] ${showAvatar ? 'rounded-[16px] rounded-br-[4px]' : 'rounded-[16px] rounded-r-[4px]'}` 
+                : `bg-[var(--chat-incoming-bg)] text-[var(--chat-incoming-text)] border border-[var(--chat-incoming-border)] ${showAvatar ? 'rounded-[16px] rounded-bl-[4px]' : 'rounded-[16px] rounded-l-[4px]'}`
             )
           )}
         >
@@ -246,7 +246,7 @@ export const MessageBubble = memo(function MessageBubble({
             {message.is_edited && (
               <span className="text-[10px] opacity-50">edited</span>
             )}
-            <span className={`text-[11px] font-medium tracking-wide ${isEmojiOnly ? 'text-gray-500 dark:text-gray-400' : (isOwn ? 'text-[var(--chat-outgoing-muted)] drop-shadow-sm' : 'text-[var(--chat-incoming-muted)]')}`}>
+            <span className={`text-[10px] font-medium tracking-wide ${isEmojiOnly ? 'text-gray-500 dark:text-gray-400' : (isOwn ? 'text-[var(--chat-outgoing-muted)] drop-shadow-sm' : 'text-[var(--chat-incoming-muted)]')}`}>
               {formatMessageTime(message.created_at)}
             </span>
             {isOwn && <DeliveryIcon status={message.status} isEmojiOnly={isEmojiOnly} />}
@@ -260,7 +260,7 @@ export const MessageBubble = memo(function MessageBubble({
               <button
                 key={emoji}
                 onClick={() => onReact?.(message.id, emoji)}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] hover:bg-gray-50 dark:hover:bg-[#1A1E29] transition-colors text-[11px] font-medium shadow-sm text-gray-700 dark:text-gray-300"
+                className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white dark:bg-[#11161B] border border-gray-200 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors text-[10px] font-medium shadow-sm text-gray-700 dark:text-gray-300"
               >
                 <span>{emoji}</span>
                 {count > 1 && <span className="text-gray-600 dark:text-gray-400 text-[10px]">{count}</span>}
@@ -273,7 +273,7 @@ export const MessageBubble = memo(function MessageBubble({
       {/* Actions (hover) */}
       {showActions && (
         <div className={cn(
-          'flex items-center gap-0.5 self-center transition-opacity bg-white dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] shadow-sm p-0.5 z-10',
+          'flex items-center gap-0.5 self-center transition-opacity bg-white dark:bg-[rgba(255,255,255,0.04)] border border-[#EAECF0] dark:border-white/5 rounded-[10px] shadow-sm p-0.5 z-10',
           isOwn ? 'mr-2 flex-row-reverse' : 'ml-2'
         )}>
           {/* Quick emoji */}
@@ -286,7 +286,7 @@ export const MessageBubble = memo(function MessageBubble({
               </button>
             {showEmojiPicker && (
               <div className={cn(
-                'absolute bottom-full mb-1 flex gap-1 p-2 bg-gray-100 dark:bg-[#11141A] border border-gray-300 dark:border-[#252A34] rounded-[12px] shadow-xl z-10',
+                'absolute bottom-full mb-1 flex gap-1 p-2 bg-white/95 dark:bg-[#11161B]/95 backdrop-blur-[24px] border border-[#EAECF0] dark:border-white/5 rounded-[16px] shadow-xl z-10',
                 isOwn ? 'right-0' : 'left-0'
               )}>
                 {QUICK_EMOJIS.map(emoji => (
@@ -304,7 +304,7 @@ export const MessageBubble = memo(function MessageBubble({
 
           <button
             onClick={() => onReply?.(message)}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+            className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
             title="Reply"
           >
             <Reply className="w-3.5 h-3.5" />
@@ -313,7 +313,7 @@ export const MessageBubble = memo(function MessageBubble({
           {onForward && (
             <button
               onClick={() => onForward(message)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+              className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
               title="Forward"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 17 20 12 15 7"></polyline><path d="M4 18v-2a4 4 0 0 1 4-4h12"></path></svg>
@@ -324,14 +324,14 @@ export const MessageBubble = memo(function MessageBubble({
             <>
               <button
                 onClick={() => onEdit?.(message)}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+                className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
                 title="Edit"
               >
                 <Edit2 className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => onDelete?.(message.id)}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-all"
+                className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-all"
                 title="Delete"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -341,7 +341,7 @@ export const MessageBubble = memo(function MessageBubble({
 
           <button
             onClick={() => navigator.clipboard.writeText(displayContent || '')}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+            className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
             title="Copy"
           >
             <Copy className="w-3.5 h-3.5" />
@@ -385,7 +385,7 @@ export const MessageBubble = memo(function MessageBubble({
                   toast.error(e.message || 'Failed to toggle pin');
                 }
               }}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+              className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
               title={isPinned ? "Unpin Message" : "Pin Message"}
             >
               <Pin className={cn("w-3.5 h-3.5", isPinned && "fill-current text-gray-900 dark:text-white")} />

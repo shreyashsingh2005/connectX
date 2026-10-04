@@ -65,7 +65,7 @@ export default function LoginForm() {
               onChange={e => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full bg-gray-100 dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] rounded-xl py-3 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30 transition-all"
+              className="w-full bg-gray-100 dark:bg-[#11161B] border border-gray-200 dark:border-white/5 rounded-xl py-3 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30 transition-all"
             />
           </div>
         </div>
@@ -85,7 +85,7 @@ export default function LoginForm() {
               onChange={e => setPassword(e.target.value)}
               required
               placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
-              className="w-full bg-gray-100 dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] rounded-xl py-3 pl-10 pr-12 text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30 transition-all"
+              className="w-full bg-gray-100 dark:bg-[#11161B] border border-gray-200 dark:border-white/5 rounded-xl py-3 pl-10 pr-12 text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30 transition-all"
             />
             <button
               type="button"
@@ -109,7 +109,7 @@ export default function LoginForm() {
 
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-200 dark:border-[#252A34]" />
+          <div className="w-full border-t border-gray-200 dark:border-white/5" />
         </div>
         <div className="relative flex justify-center text-sm">
           <span className="px-3 bg-gray-50 dark:bg-[#111827] text-gray-500">or continue with</span>
@@ -118,7 +118,7 @@ export default function LoginForm() {
 
       <button
         onClick={handleGoogleLogin}
-        className="w-full bg-gray-100 dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] text-gray-900 dark:text-white py-3 rounded-xl font-medium hover:bg-gray-200 dark:bg-[#151922] transition-colors flex items-center justify-center gap-3"
+        className="w-full bg-gray-100 dark:bg-[#11161B] border border-gray-200 dark:border-white/5 text-gray-900 dark:text-white py-3 rounded-xl font-medium hover:bg-gray-200 dark:bg-[rgba(255,255,255,0.04)] transition-colors flex items-center justify-center gap-3"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

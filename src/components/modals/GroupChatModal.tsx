@@ -73,8 +73,8 @@ export function GroupChatModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowGroupModal(false)} />
-      <div className="relative w-full max-w-md bg-gray-50 dark:bg-[#111827] rounded-[20px] border border-gray-200 dark:border-[#252A34] shadow-2xl animate-slide-up">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-[#252A34]">
+      <div className="relative w-full max-w-md bg-gray-50 dark:bg-[#111827] rounded-[20px] border border-gray-200 dark:border-white/5 shadow-2xl animate-slide-up">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-white/5">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-[#8B5CF6]" />
             <h2 className="font-semibold text-gray-900 dark:text-white">{step === 'select' ? 'New Group Chat' : 'Group Details'}</h2>
@@ -107,7 +107,7 @@ export function GroupChatModal() {
                   type="text" value={query} autoFocus
                   onChange={e => { setQuery(e.target.value); search(e.target.value); }}
                   placeholder="Search users..."
-                  className="w-full bg-gray-100 dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] rounded-xl py-2.5 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#8B5CF6]/50 transition-all"
+                  className="w-full bg-gray-100 dark:bg-[#11161B] border border-gray-200 dark:border-white/5 rounded-xl py-2.5 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#8B5CF6]/50 transition-all"
                 />
                 {isSearching && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 animate-spin" />}
               </div>
@@ -117,7 +117,7 @@ export function GroupChatModal() {
               {results.map(user => {
                 const isSelected = !!selected.find(u => u.id === user.id);
                 return (
-                  <button key={user.id} onClick={() => toggleSelect(user)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 dark:bg-[#11141A] transition-colors text-left">
+                  <button key={user.id} onClick={() => toggleSelect(user)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 dark:bg-[#11161B] transition-colors text-left">
                     <UserAvatar src={user.avatar_url} name={user.display_name} size="sm" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-900 dark:text-white text-sm">{user.display_name}</p>
@@ -130,7 +130,7 @@ export function GroupChatModal() {
               {!query.trim() && <div className="text-center py-4 text-gray-600 text-sm">Search to add members</div>}
             </div>
 
-            <div className="px-5 py-4 border-t border-gray-200 dark:border-[#252A34]">
+            <div className="px-5 py-4 border-t border-gray-200 dark:border-white/5">
               <button
                 onClick={() => setStep('info')}
                 disabled={selected.length < 1}
@@ -150,18 +150,18 @@ export function GroupChatModal() {
                   onChange={e => setGroupName(e.target.value)}
                   placeholder="e.g. Team Alpha"
                   maxLength={50}
-                  className="w-full bg-gray-100 dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] rounded-xl py-2.5 px-4 text-gray-900 dark:text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#8B5CF6]/50 transition-all"
+                  className="w-full bg-gray-100 dark:bg-[#11161B] border border-gray-200 dark:border-white/5 rounded-xl py-2.5 px-4 text-gray-900 dark:text-white placeholder-gray-600 text-sm focus:outline-none focus:border-[#8B5CF6]/50 transition-all"
                 />
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-2">Members ({selected.length + 1})</p>
                 <div className="flex flex-wrap gap-2">
-                  <div className="flex items-center gap-1.5 bg-gray-200 dark:bg-[#151922] rounded-full px-2.5 py-1">
+                  <div className="flex items-center gap-1.5 bg-gray-200 dark:bg-[rgba(255,255,255,0.04)] rounded-full px-2.5 py-1">
                     <UserAvatar src={profile?.avatar_url} name={profile?.display_name || ''} size="sm" />
                     <span className="text-xs text-gray-700 dark:text-gray-300">{profile?.display_name} (you)</span>
                   </div>
                   {selected.map(u => (
-                    <div key={u.id} className="flex items-center gap-1.5 bg-gray-200 dark:bg-[#151922] rounded-full px-2.5 py-1">
+                    <div key={u.id} className="flex items-center gap-1.5 bg-gray-200 dark:bg-[rgba(255,255,255,0.04)] rounded-full px-2.5 py-1">
                       <UserAvatar src={u.avatar_url} name={u.display_name} size="sm" />
                       <span className="text-xs text-gray-700 dark:text-gray-300">{u.display_name}</span>
                     </div>
@@ -170,7 +170,7 @@ export function GroupChatModal() {
               </div>
             </div>
             <div className="px-5 pb-5 flex gap-3">
-              <button onClick={() => setStep('select')} className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-[#252A34] text-gray-700 dark:text-gray-300 text-sm hover:bg-gray-100 dark:bg-[#11141A] transition-colors">Back</button>
+              <button onClick={() => setStep('select')} className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-white/5 text-gray-700 dark:text-gray-300 text-sm hover:bg-gray-100 dark:bg-[#11161B] transition-colors">Back</button>
               <button
                 onClick={handleCreate}
                 disabled={!groupName.trim() || isCreating}

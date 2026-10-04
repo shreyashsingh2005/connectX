@@ -60,7 +60,7 @@ export function CallOverlay() {
   // 1. INCOMING CALL RINGING
   if (callStatus === 'incoming_ringing') {
     return (
-      <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[200] bg-white dark:bg-[#151922] shadow-2xl rounded-2xl border border-gray-200 dark:border-[#252A34] p-4 flex items-center gap-4 w-[90%] max-w-sm animate-fade-in">
+      <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[200] bg-white dark:bg-[rgba(255,255,255,0.04)] shadow-2xl rounded-2xl border border-gray-200 dark:border-white/5 p-4 flex items-center gap-4 w-[90%] max-w-sm animate-fade-in">
         <UserAvatar src={avatarUrl || undefined} name={displayName || 'User'} size="md" className="animate-pulse" />
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-gray-900 dark:text-white truncate">{displayName}</p>

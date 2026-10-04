@@ -538,7 +538,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   
   if (isBlocked) {
     return (
-      <div className="mx-3 mb-2 mt-2 p-3 bg-gray-100 dark:bg-[#1A1F2B] border border-gray-200 dark:border-[#252A34] rounded-xl text-center text-gray-500 text-sm backdrop-blur-sm">
+      <div className="mx-3 mb-2 mt-2 p-3 bg-gray-100 dark:bg-[#1A1F2B] border border-gray-200 dark:border-white/5 rounded-xl text-center text-gray-500 text-sm backdrop-blur-sm">
         You cannot send messages to this conversation.
       </div>
     );
@@ -563,9 +563,9 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       {/* Attachment Menu */}
       {showAttachmentMenu && (
-        <div ref={attachmentMenuRef} className="absolute bottom-[100%] left-0 mb-3 z-50 w-48 bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[14px] shadow-lg p-2 animate-in fade-in zoom-in-95 duration-150">
+        <div ref={attachmentMenuRef} className="absolute bottom-[100%] left-0 mb-3 z-50 w-48 bg-white dark:bg-[#11161B] border border-[#EAECF0] dark:border-white/5 rounded-[14px] shadow-lg p-2 animate-in fade-in zoom-in-95 duration-150">
           {menuItems.map((item) => (
-            <button key={item.label} onClick={() => handleAttachmentClick(item.label)} className="w-full flex items-center gap-3 px-2 py-2 hover:bg-gray-50 dark:hover:bg-[#151922] rounded-[10px] transition-colors group text-left">
+            <button key={item.label} onClick={() => handleAttachmentClick(item.label)} className="w-full flex items-center gap-3 px-2 py-2 hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.04)] rounded-[10px] transition-colors group text-left">
               <div className={cn("w-8 h-8 rounded-[8px] flex items-center justify-center transition-colors", item.bg, item.color)}>
                 <item.icon size={16} strokeWidth={2.5} />
               </div>
@@ -577,7 +577,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       {/* Emoji Picker */}
       {showEmojiPicker && (
-        <div ref={emojiPickerRef} className="absolute bottom-[100%] right-0 mb-3 z-50 w-[300px] shadow-lg rounded-[14px] overflow-hidden border border-[#EAECF0] dark:border-[#252A34] animate-in fade-in slide-in-from-bottom-2 duration-150">
+        <div ref={emojiPickerRef} className="absolute bottom-[100%] right-0 mb-3 z-50 w-[300px] shadow-lg rounded-[14px] overflow-hidden border border-[#EAECF0] dark:border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-150">
           <EmojiPicker 
             onEmojiClick={handleEmojiClick}
             theme={resolvedTheme === 'dark' ? Theme.DARK : Theme.LIGHT}
@@ -591,22 +591,22 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       )}
 
       <form onSubmit={handleSend} onDrop={handleDrop} onDragOver={e => e.preventDefault()}
-        className="bg-white dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] shadow-sm rounded-[20px] flex-shrink-0 p-1.5 relative transition-all duration-200 focus-within:border-[#8B5CF6]/40 focus-within:ring-[3px] focus-within:ring-[#8B5CF6]/15 group" 
+        className="bg-white/80 dark:bg-[#11161B]/80 backdrop-blur-[18px] border border-[#EAECF0] dark:border-white/5 shadow-sm dark:shadow-none rounded-[26px] flex-shrink-0 p-1.5 relative transition-all duration-200 focus-within:border-[#8B5CF6]/40 focus-within:ring-[3px] focus-within:ring-[#8B5CF6]/15 group" 
       >
         {replyToMessage && (
-          <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-[#F7F8FC] dark:bg-[#11141A] rounded-[10px] border border-[#EAECF0] dark:border-[#252A34]">
+          <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-[#F7F8FC] dark:bg-[#11161B] rounded-[10px] border border-[#EAECF0] dark:border-white/5">
             <div className="flex-1 border-l-2 border-[#8B5CF6] pl-2 min-w-0">
               <p className="text-[12px] font-medium text-[#8B5CF6] truncate">{replyToMessage.sender?.display_name || 'Someone'}</p>
-              <p className="text-[12px] text-[#667085] dark:text-[#98A2B3] truncate">{replyToMessage.decrypted_content || 'Attachment'}</p>
+              <p className="text-[12px] text-[#667085] dark:text-[#A7AFB8] truncate">{replyToMessage.decrypted_content || 'Attachment'}</p>
             </div>
-            <button type="button" onClick={() => setReplyToMessage(null)} className="text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] p-1 rounded-md hover:bg-gray-200 dark:hover:bg-[#252A34] transition-colors"><X size={14} /></button>
+            <button type="button" onClick={() => setReplyToMessage(null)} className="text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA] p-1 rounded-md hover:bg-gray-200 dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"><X size={14} /></button>
           </div>
         )}
 
         {attachments.length > 0 && (
           <div className="flex gap-2 mb-2 overflow-x-auto p-1 no-scrollbar">
             {attachments.map(att => (
-              <div key={att.id} className={cn("relative group flex-shrink-0 rounded-[10px] border border-[#EAECF0] dark:border-[#252A34] bg-[#F7F8FC] dark:bg-[#11141A] overflow-hidden", att.type === 'audio' ? 'w-48 h-14' : 'w-14 h-14')}>
+              <div key={att.id} className={cn("relative group flex-shrink-0 rounded-[10px] border border-[#EAECF0] dark:border-white/5 bg-[#F7F8FC] dark:bg-[#11161B] overflow-hidden", att.type === 'audio' ? 'w-48 h-14' : 'w-14 h-14')}>
                 {att.type === 'image' ? (
                   <img src={att.preview} alt="" className="w-full h-full object-cover" />
                 ) : att.type === 'video' ? (
@@ -616,7 +616,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
                     <audio src={att.preview} controls className="w-full h-8" />
                   </div>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center"><FileText size={20} className="text-[#667085] dark:text-[#98A2B3]" /></div>
+                  <div className="w-full h-full flex items-center justify-center"><FileText size={20} className="text-[#667085] dark:text-[#A7AFB8]" /></div>
                 )}
                 <button type="button" onClick={() => removeAttachment(att.id)} className="absolute top-1 right-1 bg-black/50 hover:bg-black/70 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10"><X size={12} /></button>
                 {att.uploadProgress !== undefined && att.uploadProgress < 100 && (
@@ -629,7 +629,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
         <div className="flex items-end gap-1.5">
           <button type="button" ref={attachButtonRef} onClick={() => setShowAttachmentMenu(!showAttachmentMenu)}
-            className={cn("w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-[12px] transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showAttachmentMenu ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "text-[#98A2B3] dark:text-[#667085] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F7F8FC] dark:hover:bg-[#11141A]")}
+            className={cn("w-[42px] h-[42px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showAttachmentMenu ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "text-[#A7AFB8] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F7F8FC] dark:hover:bg-[rgba(255,255,255,0.04)]")}
           >
             <Plus size={20} strokeWidth={2} />
           </button>
@@ -643,12 +643,12 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
               onPaste={handlePaste}
               placeholder={isRecording ? `Recording... ${recordingDuration}s` : "Type a message..."}
               disabled={isRecording || isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error'}
-              className="flex-1 max-h-[120px] bg-transparent text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder:text-[#98A2B3] resize-none py-2 px-1 focus:outline-none custom-scrollbar leading-relaxed"
+              className="flex-1 max-h-[120px] bg-transparent text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder:text-[#A7AFB8] resize-none py-2 px-1 focus:outline-none custom-scrollbar leading-relaxed"
               rows={1}
             />
             
             <button type="button" ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              className={cn("w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-[10px] transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showEmojiPicker ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "text-[#98A2B3] dark:text-[#667085] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F7F8FC] dark:hover:bg-[#11141A]")}
+              className={cn("w-[36px] h-[36px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showEmojiPicker ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "text-[#A7AFB8] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA] hover:bg-[#F7F8FC] dark:hover:bg-[rgba(255,255,255,0.04)]")}
             >
               <Smile size={18} strokeWidth={2} />
             </button>
@@ -657,13 +657,13 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
           {text.trim() || attachments.length > 0 ? (
             <button type="submit" disabled={isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error'}
-              className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-[12px] text-white hover:opacity-90 active:scale-95 transition-all shadow-md disabled:opacity-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 bg-[#8B5CF6]"
+              className="w-[42px] h-[42px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 active:scale-95 transition-all shadow-md disabled:opacity-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 bg-[#8B5CF6]"
             >
               {isSending ? <Loader2 size={16} className="animate-spin opacity-70" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
             </button>
           ) : (
             <button type="button" onClick={isRecording ? stopRecording : startRecording}
-              className={cn("w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-[12px] transition-all hover:opacity-90 active:scale-95 shadow-md focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 text-white", isRecording ? "bg-[#F04438] animate-pulse" : "bg-[#8B5CF6]")}
+              className={cn("w-[42px] h-[42px] flex-shrink-0 flex items-center justify-center rounded-full transition-all hover:opacity-90 active:scale-95 shadow-md focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 text-white", isRecording ? "bg-[#F04438] animate-pulse" : "bg-[#8B5CF6]")}
             >
               {isRecording ? <Square size={16} className="fill-current" /> : <Mic size={18} strokeWidth={2} />}
             </button>

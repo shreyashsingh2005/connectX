@@ -101,7 +101,7 @@ export function UsernameSetupModal() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="w-full max-w-[400px] bg-white dark:bg-[#11141A] rounded-[20px] shadow-xl border border-gray-200 dark:border-[#252A34] p-6 text-center animate-in fade-in zoom-in-95 duration-200">
+      <div className="w-full max-w-[400px] bg-white dark:bg-[#11161B] rounded-[20px] shadow-xl border border-gray-200 dark:border-white/5 p-6 text-center animate-in fade-in zoom-in-95 duration-200">
         <div className="flex justify-center mb-4">
           <ConnectXLogo size={48} />
         </div>
@@ -121,10 +121,10 @@ export function UsernameSetupModal() {
               placeholder="username"
               maxLength={20}
               className={cn(
-                "w-full bg-white dark:bg-[#0B0D12] border rounded-[10px] h-[44px] pl-10 pr-10 text-[14px] text-gray-900 dark:text-white focus:outline-none transition-all",
+                "w-full bg-white dark:bg-[#0B0F12] border rounded-[10px] h-[44px] pl-10 pr-10 text-[14px] text-gray-900 dark:text-white focus:outline-none transition-all",
                 isAvailable === true ? "border-green-500 focus:ring-1 focus:ring-green-500" :
                 isAvailable === false ? "border-red-500 focus:ring-1 focus:ring-red-500" :
-                "border-gray-200 dark:border-[#252A34] focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]"
+                "border-gray-200 dark:border-white/5 focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]"
               )}
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2">

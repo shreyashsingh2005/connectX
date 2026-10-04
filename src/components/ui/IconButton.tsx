@@ -10,7 +10,7 @@ export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
 }
 
 const variantStyles = {
-  default: 'bg-gray-100 dark:bg-[#151922] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#374151]',
+  default: 'bg-gray-100 dark:bg-[rgba(255,255,255,0.04)] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#374151]',
   ghost: 'bg-transparent text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-[#1F2937]',
   active: 'bg-[#8B5CF6] text-white shadow-md shadow-[#8B5CF6]/20',
   destructive: 'bg-transparent text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10',

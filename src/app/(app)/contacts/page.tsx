@@ -221,26 +221,26 @@ export default function ContactsPage() {
     const reqId = requestIds[p.id];
 
     return (
-      <div key={p.id} className="w-full flex flex-col p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:border-[#8B5CF6]/30 hover:shadow-md transition-all duration-150 gap-4">
+      <div key={p.id} className="w-full flex items-center justify-between py-3 border-b border-[#EAECF0] dark:border-white/5 last:border-0 hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.02)] px-2 -mx-2 rounded-[12px] transition-colors">
         <div 
-          className="flex items-center gap-3 cursor-pointer min-w-0"
+          className="flex items-center gap-3 cursor-pointer min-w-0 flex-1"
           onClick={() => router.push(`/profile/${p.username || p.id}`)}
         >
-          <UserAvatar src={p.avatar_url} name={p.display_name} size="lg" className="w-[44px] h-[44px]" />
+          <UserAvatar src={p.avatar_url} name={p.display_name} size="md" className="w-[40px] h-[40px] flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[15px] truncate">{p.display_name}</p>
-            <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] truncate">@{p.username}</p>
+            <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[14px] truncate">{p.display_name}</p>
+            <p className="text-[12px] text-[#667085] dark:text-[#737C86] truncate">@{p.username}</p>
           </div>
         </div>
 
-        <div className="flex items-center justify-end w-full">
+        <div className="flex items-center gap-2 flex-shrink-0 ml-3">
           {status === 'friend' ? (
             <button
               onClick={() => handleStartChat(p)}
-              className="w-full py-2 bg-[#F8FAFC] dark:bg-[#151922] text-[#101828] dark:text-[#F5F7FA] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] text-[13px] font-medium hover:bg-[#EAECF0] dark:hover:bg-[#252A34] transition-all flex items-center justify-center gap-2"
+              className="w-8 h-8 bg-transparent text-[#101828] dark:text-[#A7AFB8] hover:text-[#8B5CF6] hover:bg-[#F3F0FF] dark:hover:bg-[rgba(255,255,255,0.06)] rounded-[10px] transition-all flex items-center justify-center"
+              title="Message"
             >
-              <MessageSquare className="w-4 h-4 text-[#8B5CF6]" />
-              Message
+              <MessageSquare className="w-[18px] h-[18px]" />
             </button>
           ) : status === 'outgoing_request' ? (
             <button
@@ -249,21 +249,21 @@ export default function ContactsPage() {
                 fetchAllData();
                 if (context === 'search') performSearch(query);
               }}
-              className="w-full py-2 bg-[#FEF3F2] dark:bg-[#F04438]/10 text-[#F04438] hover:bg-[#FEE4E2] dark:hover:bg-[#F04438]/20 rounded-[10px] text-[13px] font-medium transition-all"
+              className="px-3 h-8 bg-[#FEF3F2] dark:bg-[rgba(240,68,56,0.1)] text-[#F04438] hover:bg-[#FEE4E2] dark:hover:bg-[rgba(240,68,56,0.2)] rounded-[10px] text-[12px] font-medium transition-all"
             >
-              Cancel Request
+              Cancel
             </button>
           ) : status === 'incoming_request' ? (
-            <div className="flex w-full gap-2">
+            <div className="flex gap-1.5">
               <button
                 onClick={async () => {
                   if(reqId) await respondToRequest(reqId, p.id, 'accepted');
                   fetchAllData();
                   if (context === 'search') performSearch(query);
                 }}
-                className="flex-1 py-2 bg-[#8B5CF6] text-white rounded-[10px] text-[13px] font-medium hover:bg-[#7C3AED] transition-all"
+                className="w-8 h-8 bg-[#8B5CF6] text-white rounded-[10px] hover:bg-[#7C3AED] transition-all flex items-center justify-center"
               >
-                Accept
+                <Check className="w-[16px] h-[16px]" />
               </button>
               <button
                 onClick={async () => {
@@ -271,9 +271,9 @@ export default function ContactsPage() {
                   fetchAllData();
                   if (context === 'search') performSearch(query);
                 }}
-                className="flex-1 py-2 bg-[#F8FAFC] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#667085] dark:text-[#98A2B3] rounded-[10px] text-[13px] font-medium hover:bg-[#EAECF0] dark:hover:bg-[#252A34] transition-all"
+                className="w-8 h-8 bg-gray-100 dark:bg-[rgba(255,255,255,0.06)] text-gray-500 dark:text-[#A7AFB8] hover:bg-gray-200 dark:hover:bg-[rgba(255,255,255,0.1)] rounded-[10px] transition-all flex items-center justify-center"
               >
-                Decline
+                <XIcon className="w-[16px] h-[16px]" />
               </button>
             </div>
           ) : (
@@ -286,9 +286,9 @@ export default function ContactsPage() {
                   setRelationshipMap(prev => ({...prev, [p.id]: 'outgoing_request'}));
                 }
               }}
-              className="w-full py-2 bg-[#8B5CF6] text-white rounded-[10px] text-[13px] font-medium hover:bg-[#7C3AED] transition-all shadow-sm"
+              className="px-3 h-8 bg-[#8B5CF6] text-white rounded-[10px] text-[12px] font-medium hover:bg-[#7C3AED] transition-all shadow-sm"
             >
-              Add Friend
+              Add
             </button>
           )}
         </div>
@@ -297,7 +297,7 @@ export default function ContactsPage() {
   };
 
   return (
-    <div className="flex flex-col flex-1 z-10 overflow-hidden relative bg-[#F8FAFC] dark:bg-[#0B0D12]">
+    <div className="flex flex-col flex-1 z-10 overflow-hidden relative bg-white dark:bg-[#0B0F12]">
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-[600px] mx-auto px-4 md:px-8 py-6 md:py-10">
           
@@ -305,17 +305,17 @@ export default function ContactsPage() {
 
           {/* Search Bar */}
           <div className="relative mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#98A2B3]" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#A7AFB8]" />
             <input
               type="text"
               placeholder="Search people..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full bg-[#FFFFFF] dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] rounded-[16px] h-[52px] pl-11 pr-4 text-[15px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#98A2B3] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] shadow-sm transition-all"
+              className="w-full bg-[#FFFFFF] dark:bg-[#11161B] border border-[#EAECF0] dark:border-white/5 rounded-[16px] h-[52px] pl-11 pr-4 text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#98A2B3] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] shadow-sm transition-all"
             />
             {isSearching && (
               <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                <Loader2 className="w-4 h-4 text-[#98A2B3] animate-spin" />
+                <Loader2 className="w-4 h-4 text-[#A7AFB8] animate-spin" />
               </div>
             )}
           </div>
@@ -325,10 +325,10 @@ export default function ContactsPage() {
               <h2 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] mb-2 px-1">Search Results</h2>
               {searchResults.length === 0 && !isSearching ? (
                 <div className="text-center py-12">
-                  <p className="text-[14px] text-[#667085] dark:text-[#98A2B3]">No users found for "{query}"</p>
+                  <p className="text-[14px] text-[#667085] dark:text-[#A7AFB8]">No users found for "{query}"</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-0">
                   {searchResults.map(p => renderProfileCard(p, 'search'))}
                 </div>
               )}
@@ -336,21 +336,21 @@ export default function ContactsPage() {
           ) : (
             <div className="space-y-8 pb-10">
               {/* Segmented Control */}
-              <div className="flex p-1 bg-[#EAECF0]/60 dark:bg-[#11141A] rounded-[14px]">
+              <div className="flex p-1 bg-[#EAECF0]/60 dark:bg-[#11161B] rounded-[14px]">
                 <button 
                   onClick={() => setActiveTab('requests')}
                   className={cn(
                     "flex-1 py-2.5 text-[14px] font-semibold rounded-[10px] transition-all flex items-center justify-center gap-2",
                     activeTab === 'requests' 
-                      ? "bg-[#FFFFFF] dark:bg-[#1A1E29] text-[#101828] dark:text-[#F5F7FA] shadow-sm" 
-                      : "text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA]"
+                      ? "bg-[#FFFFFF] dark:bg-[rgba(255,255,255,0.06)] text-[#101828] dark:text-[#F5F7FA] shadow-sm" 
+                      : "text-[#667085] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA]"
                   )}
                 >
                   Requests
                   {incomingRequests.length > 0 && (
                     <span className={cn(
                       "px-2 py-0.5 rounded-full text-[12px] font-bold",
-                      activeTab === 'requests' ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "bg-[#EAECF0] dark:bg-[#252A34] text-[#667085] dark:text-[#98A2B3]"
+                      activeTab === 'requests' ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] text-[#667085] dark:text-[#A7AFB8]"
                     )}>
                       {incomingRequests.length}
                     </span>
@@ -361,15 +361,15 @@ export default function ContactsPage() {
                   className={cn(
                     "flex-1 py-2.5 text-[14px] font-semibold rounded-[10px] transition-all flex items-center justify-center gap-2",
                     activeTab === 'friends' 
-                      ? "bg-[#FFFFFF] dark:bg-[#1A1E29] text-[#101828] dark:text-[#F5F7FA] shadow-sm" 
-                      : "text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA]"
+                      ? "bg-[#FFFFFF] dark:bg-[rgba(255,255,255,0.06)] text-[#101828] dark:text-[#F5F7FA] shadow-sm" 
+                      : "text-[#667085] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA]"
                   )}
                 >
                   Friends
                   {friendships.length > 0 && (
                     <span className={cn(
                       "px-2 py-0.5 rounded-full text-[12px] font-bold",
-                      activeTab === 'friends' ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "bg-[#EAECF0] dark:bg-[#252A34] text-[#667085] dark:text-[#98A2B3]"
+                      activeTab === 'friends' ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] text-[#667085] dark:text-[#A7AFB8]"
                     )}>
                       {friendships.length}
                     </span>
@@ -385,17 +385,17 @@ export default function ContactsPage() {
                   {incomingRequests.length > 0 && (
                     <div className="space-y-4">
                       <h2 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] px-1">Friend Requests</h2>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex flex-col gap-0">
                         {incomingRequests.map(req => (
-                          <div key={req.id} className="w-full flex flex-col p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-md transition-all duration-150 gap-4">
+                          <div key={req.id} className="w-full flex flex-col p-4 bg-white dark:bg-[#11161B] rounded-[16px] border border-[#EAECF0] dark:border-white/5 hover:shadow-md transition-all duration-150 gap-4">
                             <div 
                               className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
                               onClick={() => router.push(`/profile/${req.sender?.username || req.sender_id}`)}
                             >
                               <UserAvatar src={req.sender?.avatar_url} name={req.sender?.display_name || 'User'} size="lg" className="w-[44px] h-[44px]" />
                               <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[15px] truncate">{req.sender?.display_name || 'User'}</p>
-                                <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] truncate">@{req.sender?.username || 'unknown'}</p>
+                                <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[14px] truncate">{req.sender?.display_name || 'User'}</p>
+                                <p className="text-[13px] text-[#667085] dark:text-[#A7AFB8] truncate">@{req.sender?.username || 'unknown'}</p>
                               </div>
                             </div>
                             <div className="flex w-full gap-2">
@@ -413,7 +413,7 @@ export default function ContactsPage() {
                                   await respondToRequest(req.id, req.sender_id, 'declined');
                                   fetchAllData();
                                 }}
-                                className="flex-1 py-2 bg-[#F8FAFC] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#667085] dark:text-[#98A2B3] rounded-[10px] text-[13px] font-medium hover:bg-[#EAECF0] dark:hover:bg-[#252A34] transition-all"
+                                className="flex-1 py-2 bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.04)] border border-[#EAECF0] dark:border-white/5 text-[#667085] dark:text-[#A7AFB8] rounded-[10px] text-[13px] font-medium hover:bg-[#EAECF0] dark:hover:bg-[rgba(255,255,255,0.08)] transition-all"
                               >
                                 Decline
                               </button>
@@ -430,17 +430,17 @@ export default function ContactsPage() {
                       <h2 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] px-1 flex items-center gap-2">
                         <Clock className="w-4 h-4 text-[#8B5CF6]" /> Sent Requests
                       </h2>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex flex-col gap-0">
                         {outgoingRequests.map(req => (
-                          <div key={req.id} className="w-full flex flex-col p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-md transition-all duration-150 gap-4">
+                          <div key={req.id} className="w-full flex flex-col p-4 bg-white dark:bg-[#11161B] rounded-[16px] border border-[#EAECF0] dark:border-white/5 hover:shadow-md transition-all duration-150 gap-4">
                             <div 
                               className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
                               onClick={() => router.push(`/profile/${req.receiver?.username || req.receiver_id}`)}
                             >
                               <UserAvatar src={req.receiver?.avatar_url} name={req.receiver?.display_name || 'User'} size="lg" className="w-[44px] h-[44px]" />
                               <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[15px] truncate">{req.receiver?.display_name || 'User'}</p>
-                                <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] truncate">@{req.receiver?.username || 'unknown'}</p>
+                                <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[14px] truncate">{req.receiver?.display_name || 'User'}</p>
+                                <p className="text-[13px] text-[#667085] dark:text-[#A7AFB8] truncate">@{req.receiver?.username || 'unknown'}</p>
                               </div>
                             </div>
                             <div className="flex w-full">
@@ -464,7 +464,7 @@ export default function ContactsPage() {
                   {suggestions.length > 0 && (
                     <div className="space-y-4">
                       <h2 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] px-1">People you may know</h2>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex flex-col gap-0">
                         {suggestions.map(p => renderProfileCard(p, 'suggestion'))}
                       </div>
                     </div>
@@ -472,11 +472,11 @@ export default function ContactsPage() {
                   
                   {incomingRequests.length === 0 && outgoingRequests.length === 0 && suggestions.length === 0 && (
                     <div className="text-center py-16">
-                      <div className="w-12 h-12 bg-white dark:bg-[#11141A] rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-[#EAECF0] dark:border-[#252A34]">
-                        <UserPlus className="w-5 h-5 text-[#98A2B3]" />
+                      <div className="w-12 h-12 bg-white dark:bg-[#11161B] rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-[#EAECF0] dark:border-white/5">
+                        <UserPlus className="w-5 h-5 text-[#A7AFB8]" />
                       </div>
                       <h3 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA] mb-1">No pending requests</h3>
-                      <p className="text-[14px] text-[#667085] dark:text-[#98A2B3]">Use the search bar above to find people.</p>
+                      <p className="text-[14px] text-[#667085] dark:text-[#A7AFB8]">Use the search bar above to find people.</p>
                     </div>
                   )}
                 </div>
@@ -484,18 +484,18 @@ export default function ContactsPage() {
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                   {friendships.length === 0 ? (
                     <div className="text-center py-16">
-                      <div className="w-12 h-12 bg-white dark:bg-[#11141A] rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-[#EAECF0] dark:border-[#252A34]">
-                        <Users className="w-5 h-5 text-[#98A2B3]" />
+                      <div className="w-12 h-12 bg-white dark:bg-[#11161B] rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-[#EAECF0] dark:border-white/5">
+                        <Users className="w-5 h-5 text-[#A7AFB8]" />
                       </div>
                       <h3 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA] mb-1">No friends yet</h3>
-                      <p className="text-[14px] text-[#667085] dark:text-[#98A2B3] mb-6">Search for people by their unique @username and start connecting.</p>
+                      <p className="text-[14px] text-[#667085] dark:text-[#A7AFB8] mb-6">Search for people by their unique @username and start connecting.</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-0">
                       {friendships.map(f => {
                         if (!f.friend) return null;
                         return (
-                          <div key={f.id} className="w-full flex flex-col p-4 bg-white dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] hover:shadow-md hover:border-[#8B5CF6]/30 transition-all duration-150 gap-4">
+                          <div key={f.id} className="w-full flex flex-col p-4 bg-white dark:bg-[#11161B] rounded-[16px] border border-[#EAECF0] dark:border-white/5 hover:shadow-md hover:border-[#8B5CF6]/30 transition-all duration-150 gap-4">
                             <div 
                               className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
                               onClick={() => router.push(`/profile/${f.friend?.username || f.friend?.id}`)}
@@ -507,15 +507,15 @@ export default function ContactsPage() {
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[15px] truncate">{f.friend.display_name}</p>
-                                <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] truncate">@{f.friend.username}</p>
+                                <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[14px] truncate">{f.friend.display_name}</p>
+                                <p className="text-[13px] text-[#667085] dark:text-[#A7AFB8] truncate">@{f.friend.username}</p>
                               </div>
                             </div>
 
                             <button
                               onClick={() => handleStartChat(f.friend!)}
                               disabled={isStartingChat === f.friend.id}
-                              className="w-full py-2 bg-[#F8FAFC] dark:bg-[#151922] text-[#101828] dark:text-[#F5F7FA] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] text-[13px] font-medium flex items-center justify-center gap-2 hover:bg-[#EAECF0] dark:hover:bg-[#252A34] transition-all shadow-sm"
+                              className="w-full py-2 bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.04)] text-[#101828] dark:text-[#F5F7FA] border border-[#EAECF0] dark:border-white/5 rounded-[10px] text-[13px] font-medium flex items-center justify-center gap-2 hover:bg-[#EAECF0] dark:hover:bg-[rgba(255,255,255,0.08)] transition-all shadow-sm"
                             >
                               {isStartingChat === f.friend.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4 text-[#8B5CF6]" />}
                               Message

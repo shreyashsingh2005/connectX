@@ -43,7 +43,7 @@ export function UserAvatar({ src, name, size = 'md', isOnline, className }: User
       ) : (
         <div
           className={cn(
-            'w-full h-full rounded-full flex items-center justify-center font-medium  bg-[#8B5CF6]/10 text-[#8B5CF6] border border-[#EAECF0] dark:border-[#252A34]',
+            'w-full h-full rounded-full flex items-center justify-center font-medium  bg-[#8B5CF6]/10 text-[#8B5CF6] border border-[#EAECF0] dark:border-white/5',
             sizes.text
           )}
           aria-label={`Avatar for ${name}`}

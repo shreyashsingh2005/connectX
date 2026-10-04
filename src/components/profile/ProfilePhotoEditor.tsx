@@ -226,9 +226,9 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] w-full max-w-[400px] rounded-[20px] shadow-2xl overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-[#11161B] border border-[#EAECF0] dark:border-white/5 w-full max-w-[400px] rounded-[20px] shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#EAECF0] dark:border-[#252A34]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#EAECF0] dark:border-white/5">
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">Profile Photo</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
             <X size={20} />
@@ -239,7 +239,7 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
         <div className="p-6 flex flex-col items-center">
           {!previewUrl ? (
             <div className="w-full flex flex-col items-center gap-4">
-              <div className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center bg-gray-50 dark:bg-[#151922]">
+              <div className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center bg-gray-50 dark:bg-[rgba(255,255,255,0.04)]">
                 <Camera size={32} className="text-gray-400" />
               </div>
               <p className="text-sm text-gray-500 text-center max-w-[250px]">
@@ -261,7 +261,7 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
             <div className="w-full flex flex-col items-center gap-6">
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wider self-start">Position & Crop</p>
               
-              <div className="relative w-[280px] h-[280px] bg-gray-100 dark:bg-black rounded-full overflow-hidden cursor-move border border-[#EAECF0] dark:border-[#252A34] shadow-inner"
+              <div className="relative w-[280px] h-[280px] bg-gray-100 dark:bg-black rounded-full overflow-hidden cursor-move border border-[#EAECF0] dark:border-white/5 shadow-inner"
                 onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
                 onTouchStart={handleMouseDown} onTouchMove={handleMouseMove} onTouchEnd={handleMouseUp}
               >
@@ -278,7 +278,7 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
               </div>
 
               <div className="w-full flex gap-3 mt-2">
-                <button onClick={() => setPreviewUrl(null)} disabled={loading} className="flex-1 py-2.5 bg-gray-100 dark:bg-[#151922] text-gray-700 dark:text-gray-300 rounded-[12px] font-medium text-sm hover:bg-gray-200 dark:hover:bg-[#252A34] transition-colors">
+                <button onClick={() => setPreviewUrl(null)} disabled={loading} className="flex-1 py-2.5 bg-gray-100 dark:bg-[rgba(255,255,255,0.04)] text-gray-700 dark:text-gray-300 rounded-[12px] font-medium text-sm hover:bg-gray-200 dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors">
                   Cancel
                 </button>
                 <button onClick={handleSave} disabled={loading} className="flex-1 py-2.5 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white rounded-[12px] font-medium text-sm transition-colors shadow-sm flex items-center justify-center gap-2">

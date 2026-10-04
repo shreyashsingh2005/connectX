@@ -31,10 +31,10 @@ export default function ForgotPasswordPage() {
     }
   }
 
-  const inputClass = "w-full bg-white dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] rounded-[10px] h-[44px] pl-10 pr-4 text-[14px] text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all";
+  const inputClass = "w-full bg-white dark:bg-[#11161B] border border-gray-200 dark:border-white/5 rounded-[10px] h-[44px] pl-10 pr-4 text-[14px] text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all";
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0D12] flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F12] flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-[400px] relative z-10">
         <div className="text-center mb-6">
           <div className="flex items-center justify-center mb-4">
@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
           <p className="text-[14px] text-gray-600 dark:text-gray-400">Securely reset your password</p>
         </div>
 
-        <div className="bg-white dark:bg-[#11141A] rounded-2xl border border-gray-200 dark:border-[#252A34] p-6 shadow-sm">
+        <div className="bg-white dark:bg-[#11161B] rounded-2xl border border-gray-200 dark:border-white/5 p-6 shadow-sm">
           {sent ? (
             <div className="text-center">
               <div className="w-16 h-16 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 flex items-center justify-center mx-auto mb-6">

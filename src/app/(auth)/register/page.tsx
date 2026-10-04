@@ -92,10 +92,10 @@ export default function RegisterPage() {
     }
   }
 
-  const inputClass = "w-full bg-white dark:bg-[#11141A] border border-gray-200 dark:border-[#252A34] rounded-[10px] h-[44px] pl-10 pr-4 text-[14px] text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all";
+  const inputClass = "w-full bg-white dark:bg-[#11161B] border border-gray-200 dark:border-white/5 rounded-[10px] h-[44px] pl-10 pr-4 text-[14px] text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all";
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0D12] flex flex-col items-center justify-center p-4 py-12">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F12] flex flex-col items-center justify-center p-4 py-12">
       <div className="w-full max-w-[400px] relative z-10">
         <div className="text-center mb-6">
           <div className="flex items-center justify-center mb-4">
@@ -105,7 +105,7 @@ export default function RegisterPage() {
           <p className="text-[14px] text-gray-600 dark:text-gray-400">Create an account to start chatting</p>
         </div>
 
-        <div className="bg-white dark:bg-[#11141A] rounded-2xl border border-gray-200 dark:border-[#252A34] p-6 shadow-sm">
+        <div className="bg-white dark:bg-[#11161B] rounded-2xl border border-gray-200 dark:border-white/5 p-6 shadow-sm">
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-[14px] font-medium text-gray-700 dark:text-gray-300">Full Name</label>
@@ -167,7 +167,7 @@ export default function RegisterPage() {
                         "h-full flex-1 rounded-full transition-all duration-300",
                         strengthScore >= level 
                           ? strengthScore < 3 ? "bg-red-500" : strengthScore < 5 ? "bg-yellow-500" : "bg-green-500"
-                          : "bg-gray-200 dark:bg-[#252A34]"
+                          : "bg-gray-200 dark:bg-[rgba(255,255,255,0.08)]"
                       )} />
                     ))}
                   </div>

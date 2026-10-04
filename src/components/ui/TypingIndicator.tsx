@@ -9,7 +9,7 @@
 
   return (
     <div className="flex items-center gap-2 px-4 py-1.5 animate-fade-in">
-      <div className="flex items-center gap-0.5 bg-gray-200 dark:bg-[#151922] rounded-full px-3 py-2 shadow-sm">
+      <div className="flex items-center gap-0.5 bg-gray-200 dark:bg-[rgba(255,255,255,0.04)] rounded-full px-3 py-2 shadow-sm">
         <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[#8B5CF6] block" />
         <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[#8B5CF6] block" />
         <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[#8B5CF6] block" />

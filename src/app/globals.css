@@ -6,39 +6,25 @@
   --color-brand: #8B5CF6;
   --color-brand-dark: #7C3AED;
   
-  --color-surface-50: #FFFFFF;
-  --color-surface-100: #F7F8FC;
-  --color-surface-200: #FAFAFB;
-  --color-surface-700: #151922;
-  --color-surface-800: #11141A;
-  --color-surface-900: #0B0D12;
-  
-  --color-border-light: #EAECF0;
-  --color-border-dark: #252A34;
-  
-  --color-text-primary-light: #101828;
-  --color-text-primary-dark: #F5F7FA;
-  --color-text-secondary-light: #667085;
-  --color-text-secondary-dark: #98A2B3;
-  --color-text-muted-light: #98A2B3;
-  --color-text-muted-dark: #667085;
-
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 12px;
-  --radius-2xl: 14px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
 }
 
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  --bg-primary: #F7F8FC;
+  /* LIGHT MODE (Clean equivalent) */
+  --bg-primary: #F6F7F9;
+  --bg-secondary: #F0F2F5;
   --bg-surface: #FFFFFF;
-  --bg-panel: #FAFAFB;
-  --bg-hover: #F1F3F5;
+  --bg-elevated: #FFFFFF;
+  --bg-hover: #F0F2F5;
   
-  --border-color: #EAECF0;
+  --border-color: #E6E8EC;
+  --border-light: rgba(0, 0, 0, 0.05);
   
   --text-primary: #101828;
   --text-secondary: #667085;
@@ -50,20 +36,23 @@
 }
 
 .dark {
-  --bg-primary: #0B0D12;
-  --bg-surface: #11141A;
-  --bg-panel: #151922;
-  --bg-hover: #1A1F2B;
+  /* PREMIUM DARK MODE */
+  --bg-primary: #0B0F12;
+  --bg-secondary: #11161B;
+  --bg-surface: rgba(255, 255, 255, 0.045);
+  --bg-elevated: rgba(255, 255, 255, 0.07);
+  --bg-hover: rgba(255, 255, 255, 0.06);
   
-  --border-color: #252A34;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.04);
   
   --text-primary: #F5F7FA;
-  --text-secondary: #98A2B3;
-  --text-muted: #667085;
+  --text-secondary: #A7AFB8;
+  --text-muted: #737C86;
   
   --color-brand: #A78BFA;
   --color-brand-hover: #C4B5FD;
-  --color-brand-subtle: rgba(139, 92, 246, 0.15);
+  --color-brand-subtle: rgba(167, 139, 250, 0.15);
 }
 
 html, body {
@@ -72,6 +61,26 @@ html, body {
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base custom styles */
+.glass-panel {
+  background: var(--bg-surface);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--border-color);
+}
+
+.glass-elevated {
+  background: var(--bg-elevated);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.chat-bg {
+  background: radial-gradient(circle at top right, rgba(167, 139, 250, 0.05), transparent 40%), var(--bg-primary);
 }
 
 ::-webkit-scrollbar {
@@ -92,15 +101,12 @@ html, body {
   background: var(--text-muted);
 }
 
-:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
-
-@supports selector(:has(*)) { :focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--color-brand-subtle); } }
+:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-brand-subtle); }
 
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -113,18 +119,5 @@ html, body {
 .skeleton {
   animation: skeletonPulse 1.5s ease-in-out infinite;
   background-color: var(--border-color);
-  border-radius: 6px;
-}
-
-.page-transition-enter { animation: pageEnter 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards; } @keyframes pageEnter { from { opacity: 0; transform: translateY(6px) scale(0.995); } to { opacity: 1; transform: translateY(0) scale(1); } } .chat-open-enter { animation: chatEnter 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards; } @keyframes chatEnter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } } @media (prefers-reduced-motion: reduce) { .page-transition-enter, .chat-open-enter, .animate-in { animation: none !important; transform: none !important; } }
-@keyframes pulseOpacity {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-\[pulseOpacity_900ms_ease-in-out_infinite\] {
-    animation: none !important;
-    opacity: 0.8 !important;
-  }
+  border-radius: 8px;
 }

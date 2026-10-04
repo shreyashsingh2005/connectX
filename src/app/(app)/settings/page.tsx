@@ -337,7 +337,7 @@ export default function SettingsPage() {
 
   if (!profile) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#F7F8FA] dark:bg-[#090B10]">
+      <div className="flex-1 flex items-center justify-center bg-[#F6F7F9] dark:bg-[#0B0F12]">
         <Loader2 size={32} strokeWidth={1.75} className="animate-spin text-[#8B5CF6]" />
       </div>
     );
@@ -358,7 +358,7 @@ export default function SettingsPage() {
 
   const BackHeader = ({ title }: { title: string }) => (
     <div className="flex items-center gap-4 py-4 md:py-6 px-4 md:px-0">
-      <button onClick={() => setActiveSection('main')} className="p-1 -ml-1 text-[#667085] dark:text-[#98A2B3] hover:bg-[#EAECF0]/50 dark:hover:bg-[#151922] rounded-full transition-colors outline-none">
+      <button onClick={() => setActiveSection('main')} className="p-1 -ml-1 text-[#667085] dark:text-[#A7AFB8] hover:bg-[#EAECF0]/50 dark:hover:bg-[rgba(255,255,255,0.04)] rounded-full transition-colors outline-none">
         <ArrowLeft size={20} strokeWidth={1.75} />
       </button>
       <h2 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA]">{title}</h2>
@@ -366,7 +366,7 @@ export default function SettingsPage() {
   );
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#F7F8FA] dark:bg-[#090B10] overflow-y-auto no-scrollbar items-center relative">
+    <div className="flex-1 flex flex-col h-full bg-[#F6F7F9] dark:bg-[#0B0F12] overflow-y-auto no-scrollbar items-center relative">
       <div className="w-full max-w-[600px] flex flex-col min-h-full">
         
         {/* MAIN OVERVIEW */}
@@ -375,42 +375,42 @@ export default function SettingsPage() {
             <h1 className="text-2xl font-bold text-[#101828] dark:text-[#F5F7FA] mb-6">Settings</h1>
 
             {/* Compact Profile Header */}
-            <div className="flex items-center gap-4 bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] p-4 mb-6 cursor-pointer hover:bg-[#F9FAFB] dark:hover:bg-[#1A1F2B] transition-colors" onClick={() => setActiveSection("account")}>
+            <div className="flex items-center gap-4 bg-white dark:bg-[#11161B] rounded-[16px] border border-[#EAECF0] dark:border-white/5 shadow-sm dark:shadow-none p-4 mb-6 cursor-pointer hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.02)] transition-colors" onClick={() => setActiveSection("account")}>
               <UserAvatar src={profile.avatar_url} name={profile.display_name} size="lg" className="w-[48px] h-[48px]" isOnline={true} />
               <div className="flex-1 min-w-0">
                 <h2 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA] truncate">{profile.display_name}</h2>
-                <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] truncate">@{profile.username}</p>
+                <p className="text-[13px] text-[#667085] dark:text-[#A7AFB8] truncate">@{profile.username}</p>
               </div>
-              <ChevronRight size={18} strokeWidth={1.75} className="text-[#98A2B3]" />
+              <ChevronRight size={18} strokeWidth={1.75} className="text-[#A7AFB8]" />
             </div>
 
             {/* Compact Lists */}
             <div className="flex flex-col gap-6">
               <div>
-                <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2 px-1">Preferences</h3>
-                <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] overflow-hidden">
+                <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#A7AFB8] uppercase tracking-wider mb-2 px-1">Preferences</h3>
+                <div className="bg-white dark:bg-[#11161B] rounded-[16px] border border-[#EAECF0] dark:border-white/5 shadow-sm dark:shadow-none overflow-hidden">
                   {mainSections.map((item, index) => (
-                    <button key={item.id} onClick={() => setActiveSection(item.id as any)} className={cn("flex items-center justify-between w-full p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#1A1F2B] transition-colors outline-none group", index !== mainSections.length - 1 && "border-b border-[#EAECF0] dark:border-[#252A34]")}>
+                    <button key={item.id} onClick={() => setActiveSection(item.id as any)} className={cn("flex items-center justify-between w-full p-3 hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.02)] transition-colors outline-none group", index !== mainSections.length - 1 && "border-b border-[#EAECF0] dark:border-white/5")}>
                       <div className="flex items-center gap-3">
-                        <item.icon size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3] group-hover:text-[#101828] dark:group-hover:text-[#F5F7FA] transition-colors" />
+                        <item.icon size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#A7AFB8] group-hover:text-[#101828] dark:group-hover:text-[#F5F7FA] transition-colors" />
                         <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</span>
                       </div>
-                      <ChevronRight size={16} strokeWidth={1.75} className="text-[#D0D5DD] dark:text-[#475467] group-hover:text-[#667085] dark:group-hover:text-[#98A2B3] transition-colors" />
+                      <ChevronRight size={16} strokeWidth={1.75} className="text-[#F5F7FA] dark:text-[#475467] group-hover:text-[#667085] dark:group-hover:text-[#A7AFB8] transition-colors" />
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2 px-1">More</h3>
-                <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-[#EAECF0] dark:border-[#252A34] overflow-hidden">
+                <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#A7AFB8] uppercase tracking-wider mb-2 px-1">More</h3>
+                <div className="bg-white dark:bg-[#11161B] rounded-[16px] border border-[#EAECF0] dark:border-white/5 shadow-sm dark:shadow-none overflow-hidden">
                   {secondarySections.map((item, index) => (
-                    <button key={item.id} onClick={() => setActiveSection(item.id as any)} className={cn("flex items-center justify-between w-full p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#1A1F2B] transition-colors outline-none group", index !== secondarySections.length - 1 && "border-b border-[#EAECF0] dark:border-[#252A34]")}>
+                    <button key={item.id} onClick={() => setActiveSection(item.id as any)} className={cn("flex items-center justify-between w-full p-3 hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.02)] transition-colors outline-none group", index !== secondarySections.length - 1 && "border-b border-[#EAECF0] dark:border-white/5")}>
                       <div className="flex items-center gap-3">
-                        <item.icon size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3] group-hover:text-[#101828] dark:group-hover:text-[#F5F7FA] transition-colors" />
+                        <item.icon size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#A7AFB8] group-hover:text-[#101828] dark:group-hover:text-[#F5F7FA] transition-colors" />
                         <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</span>
                       </div>
-                      <ChevronRight size={16} strokeWidth={1.75} className="text-[#D0D5DD] dark:text-[#475467] group-hover:text-[#667085] dark:group-hover:text-[#98A2B3] transition-colors" />
+                      <ChevronRight size={16} strokeWidth={1.75} className="text-[#F5F7FA] dark:text-[#475467] group-hover:text-[#667085] dark:group-hover:text-[#A7AFB8] transition-colors" />
                     </button>
                   ))}
                 </div>
@@ -424,48 +424,48 @@ export default function SettingsPage() {
           <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
             <BackHeader title="Account" />
             
-            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[24px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0 mb-4">
+            <div className="bg-[#FFFFFF] dark:bg-[#11161B] rounded-[24px] border border-transparent dark:border-white/5 md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0 mb-4">
               <div className="flex items-center gap-5 p-5">
                 <div className="relative group cursor-pointer flex-shrink-0" onClick={() => setShowPhotoEditor(true)}>
                   <UserAvatar src={profile.avatar_url} name={profile.display_name} size="2xl" className="w-[64px] h-[64px]" />
-                  <div className="absolute inset-0 bg-[#090B10]/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="absolute inset-0 bg-[#0B0F12]/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Camera size={18} strokeWidth={1.75} className="text-white" />
                   </div>
                 </div>
                 <div>
-                  <button type="button" onClick={() => setShowPhotoEditor(true)} className="h-[34px] px-3 bg-[#FFFFFF] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] dark:hover:bg-[#252A34] transition-colors rounded-[8px] text-[13px] font-medium shadow-sm mb-1.5 outline-none">
+                  <button type="button" onClick={() => setShowPhotoEditor(true)} className="h-[34px] px-3 bg-[#FFFFFF] dark:bg-[rgba(255,255,255,0.04)] border border-[#EAECF0] dark:border-white/5 text-[#344054] dark:text-[#F5F7FA] hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors rounded-[8px] text-[13px] font-medium shadow-sm mb-1.5 outline-none">
                     Change photo
                   </button>
-                  <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">JPG or PNG. Max 5MB.</p>
+                  <p className="text-[12px] text-[#667085] dark:text-[#A7AFB8]">JPG or PNG. Max 5MB.</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[24px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0">
+            <div className="bg-[#FFFFFF] dark:bg-[#11161B] rounded-[24px] border border-transparent dark:border-white/5 md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0">
                <div className="flex flex-col p-2">
-                 <button onClick={() => setEditingField("display_name")} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                 <button onClick={() => setEditingField("display_name")} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] rounded-[12px] transition-colors group outline-none">
                    <div className="flex flex-col text-left">
-                     <span className="text-[12px] text-[#667085] dark:text-[#98A2B3] mb-0.5">Display name</span>
+                     <span className="text-[12px] text-[#667085] dark:text-[#A7AFB8] mb-0.5">Display name</span>
                      <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{profile.display_name}</span>
                    </div>
-                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#A7AFB8] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
                  </button>
                  
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
                  
-                 <button onClick={() => setEditingField("username")} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                 <button onClick={() => setEditingField("username")} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] rounded-[12px] transition-colors group outline-none">
                    <div className="flex flex-col text-left">
-                     <span className="text-[12px] text-[#667085] dark:text-[#98A2B3] mb-0.5">Username</span>
+                     <span className="text-[12px] text-[#667085] dark:text-[#A7AFB8] mb-0.5">Username</span>
                      <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">@{profile.username}</span>
                    </div>
-                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#A7AFB8] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
                  </button>
 
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
                  
                  <div className="flex items-center justify-between p-3">
                    <div className="flex flex-col">
-                     <span className="text-[12px] text-[#667085] dark:text-[#98A2B3] mb-0.5">Email</span>
+                     <span className="text-[12px] text-[#667085] dark:text-[#A7AFB8] mb-0.5">Email</span>
                      <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{profile.email}</span>
                    </div>
                    <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#10B981] dark:text-[#32D583]">
@@ -473,20 +473,20 @@ export default function SettingsPage() {
                    </div>
                  </div>
 
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
                  
-                 <button onClick={() => setEditingField("bio")} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                 <button onClick={() => setEditingField("bio")} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] rounded-[12px] transition-colors group outline-none">
                    <div className="flex flex-col text-left">
-                     <span className="text-[12px] text-[#667085] dark:text-[#98A2B3] mb-0.5">About</span>
+                     <span className="text-[12px] text-[#667085] dark:text-[#A7AFB8] mb-0.5">About</span>
                      <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA] truncate max-w-[220px]">{profile.bio || 'No bio provided'}</span>
                    </div>
-                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#A7AFB8] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
                  </button>
                </div>
             </div>
 
             <div className="px-4 md:px-0 mt-8">
-              <button onClick={handleLogout} className="flex items-center justify-center gap-2 w-full h-[48px] bg-[#FFFFFF] dark:bg-[#11141A] border border-[#EAECF0] dark:border-[#252A34] text-[#101828] dark:text-[#F5F7FA] rounded-[12px] text-[14px] font-medium hover:bg-[#F9FAFB] dark:hover:bg-[#151922] transition-colors shadow-sm">
+              <button onClick={handleLogout} className="flex items-center justify-center gap-2 w-full h-[48px] bg-[#FFFFFF] dark:bg-[#11161B] border border-[#EAECF0] dark:border-white/5 text-[#101828] dark:text-[#F5F7FA] rounded-[12px] text-[14px] font-medium hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors shadow-sm">
                 <LogOut size={16} strokeWidth={1.75} /> Sign out
               </button>
             </div>
@@ -503,21 +503,21 @@ export default function SettingsPage() {
         {activeSection === 'appearance' && (
           <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
             <div className="flex items-center gap-4 py-4 md:py-6 px-4 md:px-0">
-              <button onClick={() => setActiveSection('main')} className="p-1 -ml-1 text-[#667085] dark:text-[#98A2B3] hover:bg-[#EAECF0]/50 dark:hover:bg-[#151922] rounded-full transition-colors outline-none">
+              <button onClick={() => setActiveSection('main')} className="p-1 -ml-1 text-[#667085] dark:text-[#A7AFB8] hover:bg-[#EAECF0]/50 dark:hover:bg-[rgba(255,255,255,0.04)] rounded-full transition-colors outline-none">
                 <ArrowLeft size={20} strokeWidth={1.75} />
               </button>
               <h2 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA]">Appearance</h2>
             </div>
             
-            <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2 px-1 mx-4 md:mx-0 mt-2">Theme</h3>
-            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mx-4 md:mx-0 mb-6 p-2">
-              <div className="flex bg-[#F7F8FA] dark:bg-[#090B10] rounded-[12px] p-1 border border-[#EAECF0] dark:border-[#252A34]">
+            <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#A7AFB8] uppercase tracking-wider mb-2 px-1 mx-4 md:mx-0 mt-2">Theme</h3>
+            <div className="bg-[#FFFFFF] dark:bg-[#11161B] rounded-[16px] border border-transparent dark:border-white/5 md:border-[#EAECF0] shadow-sm overflow-hidden mx-4 md:mx-0 mb-6 p-2">
+              <div className="flex bg-[#F6F7F9] dark:bg-[#0B0F12] rounded-[12px] p-1 border border-[#EAECF0] dark:border-white/5">
                  {[
                    { id: 'light', icon: Sun, label: 'Light' },
                    { id: 'dark', icon: Moon, label: 'Dark' },
                    { id: 'system', icon: Monitor, label: 'System' },
                  ].map((t) => (
-                   <button key={t.id} onClick={() => setTheme(t.id)} className={cn('flex-1 flex items-center justify-center gap-2 h-[44px] rounded-[10px] transition-all outline-none', theme === t.id ? 'bg-[#FFFFFF] dark:bg-[#151922] text-[#8B5CF6] dark:text-[#A78BFA] shadow-sm border border-[#EAECF0] dark:border-[#252A34]' : 'text-[#667085] dark:text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA]')}>
+                   <button key={t.id} onClick={() => setTheme(t.id)} className={cn('flex-1 flex items-center justify-center gap-2 h-[44px] rounded-[10px] transition-all outline-none', theme === t.id ? 'bg-[#FFFFFF] dark:bg-[rgba(255,255,255,0.04)] text-[#8B5CF6] dark:text-[#A78BFA] shadow-sm border border-[#EAECF0] dark:border-white/5' : 'text-[#667085] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA]')}>
                      <t.icon size={16} strokeWidth={1.75} />
                      <span className="text-[13px] font-medium">{t.label}</span>
                    </button>
@@ -525,30 +525,30 @@ export default function SettingsPage() {
                </div>
             </div>
 
-            <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2 px-1 mx-4 md:mx-0">Chat Appearance</h3>
-            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mx-4 md:mx-0 mb-6">
+            <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#A7AFB8] uppercase tracking-wider mb-2 px-1 mx-4 md:mx-0">Chat Appearance</h3>
+            <div className="bg-[#FFFFFF] dark:bg-[#11161B] rounded-[16px] border border-transparent dark:border-white/5 md:border-[#EAECF0] shadow-sm overflow-hidden mx-4 md:mx-0 mb-6">
               <div className="flex flex-col">
-                <button onClick={() => setShowThemePicker(true)} className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] transition-colors w-full text-left outline-none group">
+                <button onClick={() => setShowThemePicker(true)} className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors w-full text-left outline-none group">
                   <span className="text-[15px] font-medium text-[#101828] dark:text-[#F5F7FA]">Chat theme</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-[14px] text-[#667085] dark:text-[#98A2B3] capitalize">{globalTheme.themeId === 'connect-purple' ? 'Purple' : globalTheme.themeId}</span>
-                    <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                    <span className="text-[14px] text-[#667085] dark:text-[#A7AFB8] capitalize">{globalTheme.themeId === 'connect-purple' ? 'Purple' : globalTheme.themeId}</span>
+                    <ChevronRight size={16} strokeWidth={1.75} className="text-[#A7AFB8] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
                   </div>
                 </button>
-                <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-32px)] mx-auto" />
-                <button onClick={() => setShowThemePicker(true)} className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] transition-colors w-full text-left outline-none group">
+                <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
+                <button onClick={() => setShowThemePicker(true)} className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors w-full text-left outline-none group">
                   <span className="text-[15px] font-medium text-[#101828] dark:text-[#F5F7FA]">Chat background</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-[14px] text-[#667085] dark:text-[#98A2B3] capitalize">{globalTheme.backgroundId}</span>
-                    <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                    <span className="text-[14px] text-[#667085] dark:text-[#A7AFB8] capitalize">{globalTheme.backgroundId}</span>
+                    <ChevronRight size={16} strokeWidth={1.75} className="text-[#A7AFB8] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
                   </div>
                 </button>
-                <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-32px)] mx-auto" />
-                <button onClick={() => setShowThemePicker(true)} className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] transition-colors w-full text-left outline-none group">
+                <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
+                <button onClick={() => setShowThemePicker(true)} className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors w-full text-left outline-none group">
                   <span className="text-[15px] font-medium text-[#101828] dark:text-[#F5F7FA]">Message bubbles</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-[14px] text-[#667085] dark:text-[#98A2B3] capitalize">{globalTheme.accentColor}</span>
-                    <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                    <span className="text-[14px] text-[#667085] dark:text-[#A7AFB8] capitalize">{globalTheme.accentColor}</span>
+                    <ChevronRight size={16} strokeWidth={1.75} className="text-[#A7AFB8] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
                   </div>
                 </button>
               </div>
@@ -563,14 +563,14 @@ export default function SettingsPage() {
           <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
             <BackHeader title="Privacy" />
             
-            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[24px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0">
+            <div className="bg-[#FFFFFF] dark:bg-[#11161B] rounded-[24px] border border-transparent dark:border-white/5 md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0">
                <div className="flex flex-col p-2">
                   {[
                     { key: 'show_online_status', label: 'Last seen', value: localSettings.show_online_status || 'everyone' },
                     { key: 'profile_visibility', label: 'Profile visibility', value: localSettings.profile_visibility || 'everyone' }
                   ].map((item, i) => (
                     <div key={item.key}>
-                      <div className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group">
+                      <div className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] rounded-[12px] transition-colors group">
                         <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">{item.label}</span>
                         <div className="flex items-center gap-2">
                            <select
@@ -579,20 +579,20 @@ export default function SettingsPage() {
                                setLocalSettings({ ...localSettings, [item.key]: e.target.value });
                                handleSaveSettings();
                              }}
-                             className="appearance-none bg-transparent text-[13px] text-[#667085] dark:text-[#98A2B3] outline-none cursor-pointer text-right"
+                             className="appearance-none bg-transparent text-[13px] text-[#667085] dark:text-[#A7AFB8] outline-none cursor-pointer text-right"
                            >
                              <option value="everyone">Everyone</option>
                              <option value="contacts">My Contacts</option>
                              <option value="nobody">Nobody</option>
                            </select>
-                           <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] pointer-events-none" />
+                           <ChevronRight size={16} strokeWidth={1.75} className="text-[#A7AFB8] pointer-events-none" />
                         </div>
                       </div>
-                      <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
+                      <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
                     </div>
                   ))}
 
-                  <div className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors">
+                  <div className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] rounded-[12px] transition-colors">
                     <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Read receipts</span>
                     <label className="relative inline-flex items-center cursor-pointer mr-2">
                       <input 
@@ -607,11 +607,11 @@ export default function SettingsPage() {
                     </label>
                   </div>
                   
-                  <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
+                  <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
 
-                  <button className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                  <button className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] rounded-[12px] transition-colors group outline-none">
                     <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Blocked users</span>
-                    <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                    <ChevronRight size={16} strokeWidth={1.75} className="text-[#A7AFB8] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
                   </button>
                </div>
             </div>
@@ -622,22 +622,22 @@ export default function SettingsPage() {
         {activeSection === 'notifications' && (
           <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
             <div className="flex items-center gap-4 py-4 md:py-6 px-4 md:px-0">
-              <button onClick={() => setActiveSection('main')} className="p-1 -ml-1 text-[#667085] dark:text-[#98A2B3] hover:bg-[#EAECF0]/50 dark:hover:bg-[#151922] rounded-full transition-colors outline-none">
+              <button onClick={() => setActiveSection('main')} className="p-1 -ml-1 text-[#667085] dark:text-[#A7AFB8] hover:bg-[#EAECF0]/50 dark:hover:bg-[rgba(255,255,255,0.04)] rounded-full transition-colors outline-none">
                 <ArrowLeft size={20} strokeWidth={1.75} />
               </button>
               <div>
                 <h2 className="text-[18px] font-semibold text-[#101828] dark:text-[#F5F7FA]">Notifications</h2>
-                <p className="text-[13px] text-[#667085] dark:text-[#98A2B3]">Choose how connectX keeps you informed.</p>
+                <p className="text-[13px] text-[#667085] dark:text-[#A7AFB8]">Choose how connectX keeps you informed.</p>
               </div>
             </div>
             
             {/* 1. MESSAGE NOTIFICATIONS */}
-            <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2 px-1 mx-4 md:mx-0 mt-2">Message Notifications</h3>
-            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mx-4 md:mx-0 mb-6">
+            <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#A7AFB8] uppercase tracking-wider mb-2 px-1 mx-4 md:mx-0 mt-2">Message Notifications</h3>
+            <div className="bg-[#FFFFFF] dark:bg-[#11161B] rounded-[16px] border border-transparent dark:border-white/5 md:border-[#EAECF0] shadow-sm overflow-hidden mx-4 md:mx-0 mb-6">
               <div className="flex flex-col">
-                <div className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] transition-colors">
+                <div className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors">
                   <div className="flex items-center gap-3">
-                    <MessageSquare size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3]" />
+                    <MessageSquare size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#A7AFB8]" />
                     <span className="text-[15px] font-medium text-[#101828] dark:text-[#F5F7FA]">Messages</span>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -653,11 +653,11 @@ export default function SettingsPage() {
                   </label>
                 </div>
                 
-                <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-32px)] mx-auto" />
+                <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
                 
-                <div className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] transition-colors">
+                <div className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors">
                   <div className="flex items-center gap-3">
-                    <AtSign size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3]" />
+                    <AtSign size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#A7AFB8]" />
                     <span className="text-[15px] font-medium text-[#101828] dark:text-[#F5F7FA]">Group notifications</span>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -676,12 +676,12 @@ export default function SettingsPage() {
             </div>
 
             {/* 2. SOUND & VIBRATION */}
-            <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2 px-1 mx-4 md:mx-0">Sound & Vibration</h3>
-            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mx-4 md:mx-0 mb-6">
+            <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#A7AFB8] uppercase tracking-wider mb-2 px-1 mx-4 md:mx-0">Sound & Vibration</h3>
+            <div className="bg-[#FFFFFF] dark:bg-[#11161B] rounded-[16px] border border-transparent dark:border-white/5 md:border-[#EAECF0] shadow-sm overflow-hidden mx-4 md:mx-0 mb-6">
               <div className="flex flex-col">
-                <div className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] transition-colors">
+                <div className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors">
                   <div className="flex items-center gap-3">
-                    <Bell size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3]" />
+                    <Bell size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#A7AFB8]" />
                     <span className="text-[15px] font-medium text-[#101828] dark:text-[#F5F7FA]">Notification sound</span>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -700,12 +700,12 @@ export default function SettingsPage() {
             </div>
 
             {/* 3. IN-APP NOTIFICATIONS */}
-            <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#98A2B3] uppercase tracking-wider mb-2 px-1 mx-4 md:mx-0">In-App Notifications</h3>
-            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[16px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mx-4 md:mx-0">
+            <h3 className="text-[12px] font-semibold text-[#667085] dark:text-[#A7AFB8] uppercase tracking-wider mb-2 px-1 mx-4 md:mx-0">In-App Notifications</h3>
+            <div className="bg-[#FFFFFF] dark:bg-[#11161B] rounded-[16px] border border-transparent dark:border-white/5 md:border-[#EAECF0] shadow-sm overflow-hidden mx-4 md:mx-0">
               <div className="flex flex-col">
-                <div className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] transition-colors">
+                <div className="flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors">
                   <div className="flex items-center gap-3">
-                    <Smartphone size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#98A2B3]" />
+                    <Smartphone size={18} strokeWidth={1.75} className="text-[#667085] dark:text-[#A7AFB8]" />
                     <span className="text-[15px] font-medium text-[#101828] dark:text-[#F5F7FA]">Show notifications while using connectX</span>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -731,7 +731,7 @@ export default function SettingsPage() {
           <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
             <BackHeader title="Security" />
             
-            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[24px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0">
+            <div className="bg-[#FFFFFF] dark:bg-[#11161B] rounded-[24px] border border-transparent dark:border-white/5 md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0">
                <div className="flex flex-col p-2">
                  <div className="flex items-center justify-between p-3">
                    <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Email verification</span>
@@ -740,7 +740,7 @@ export default function SettingsPage() {
                    </div>
                  </div>
                  
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
                  
                  <div className="flex items-center justify-between p-3">
                    <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">End-to-end encryption</span>
@@ -749,18 +749,18 @@ export default function SettingsPage() {
                    </div>
                  </div>
 
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
                  
-                 <button onClick={() => setShowPasswordModal(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                 <button onClick={() => setShowPasswordModal(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] rounded-[12px] transition-colors group outline-none">
                      <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Change password</span>
-                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#A7AFB8] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
                  </button>
 
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[#252A34] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
                  
-                 <button onClick={() => setShowSessionsModal(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[#151922] rounded-[12px] transition-colors group outline-none">
+                 <button onClick={() => setShowSessionsModal(true)} className="flex items-center justify-between p-3 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] rounded-[12px] transition-colors group outline-none">
                      <span className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA]">Manage sessions</span>
-                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#98A2B3] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
+                   <ChevronRight size={16} strokeWidth={1.75} className="text-[#A7AFB8] group-hover:text-[#667085] dark:group-hover:text-[#F5F7FA]" />
                  </button>
                </div>
             </div>
@@ -772,17 +772,17 @@ export default function SettingsPage() {
           <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
             <BackHeader title={activeSection === 'help' ? 'Help' : 'About'} />
             
-            <div className="bg-[#FFFFFF] dark:bg-[#11141A] rounded-[24px] border border-transparent dark:border-[#252A34] md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0 p-6 flex flex-col items-center justify-center min-h-[200px]">
+            <div className="bg-[#FFFFFF] dark:bg-[#11161B] rounded-[24px] border border-transparent dark:border-white/5 md:border-[#EAECF0] shadow-sm overflow-hidden mt-2 mx-4 md:mx-0 p-6 flex flex-col items-center justify-center min-h-[200px]">
                {activeSection === 'about' ? (
                  <>
                    <div className="w-12 h-12 bg-gradient-to-tr from-[#8B5CF6] to-[#EC4899] rounded-[14px] flex items-center justify-center text-white font-bold text-[20px] mb-4 shadow-sm">
                      cX
                    </div>
                    <h3 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA]">connectX</h3>
-                   <p className="text-[13px] text-[#667085] dark:text-[#98A2B3] mt-1">Version 1.0.0</p>
+                   <p className="text-[13px] text-[#667085] dark:text-[#A7AFB8] mt-1">Version 1.0.0</p>
                  </>
                ) : (
-                 <p className="text-[14px] text-[#667085] dark:text-[#98A2B3] text-center">Help centre coming soon.</p>
+                 <p className="text-[14px] text-[#667085] dark:text-[#A7AFB8] text-center">Help centre coming soon.</p>
                )}
             </div>
           </div>
@@ -793,12 +793,12 @@ export default function SettingsPage() {
       {/* Edit Profile Modal */}
       {editingField && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#000000]/35 backdrop-blur-[2px] animate-in fade-in duration-200">
-          <div className="bg-[#FFFFFF] dark:bg-[#11141A] w-full sm:max-w-[440px] rounded-t-[24px] sm:rounded-[24px] shadow-2xl border border-transparent dark:border-[#252A34] overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300">
-            <div className="flex items-center justify-between p-5 border-b border-[#EAECF0] dark:border-[#252A34]">
+          <div className="bg-[#FFFFFF] dark:bg-[#11161B] w-full sm:max-w-[440px] rounded-t-[24px] sm:rounded-[24px] shadow-2xl border border-transparent dark:border-white/5 overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300">
+            <div className="flex items-center justify-between p-5 border-b border-[#EAECF0] dark:border-white/5">
               <h2 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA]">
                 {editingField === 'display_name' ? 'Edit Display Name' : editingField === 'username' ? 'Edit Username' : 'Edit About'}
               </h2>
-              <button onClick={() => setEditingField(null)} className="text-[#98A2B3] hover:text-[#101828] dark:hover:text-[#F5F7FA] transition-colors p-1 rounded-full hover:bg-[#F8FAFC] dark:hover:bg-[#151922] outline-none">
+              <button onClick={() => setEditingField(null)} className="text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA] transition-colors p-1 rounded-full hover:bg-[#F8FAFC] dark:hover:bg-[rgba(255,255,255,0.04)] outline-none">
                 <X size={18} strokeWidth={1.75} />
               </button>
             </div>
@@ -806,12 +806,12 @@ export default function SettingsPage() {
             <form onSubmit={handleUpdateProfile} className="flex-1 overflow-y-auto p-5 space-y-5">
               {editingField === 'display_name' && (
                 <div className="space-y-1.5">
-                  <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Display Name</label>
+                  <label className="text-[13px] font-medium text-[#344054] dark:text-[#F5F7FA]">Display Name</label>
                   <div className="relative">
-                    <UserRound size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#98A2B3]" />
+                    <UserRound size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A7AFB8]" />
                     <input
                       type="text" required value={editForm.display_name} onChange={e => setEditForm({ ...editForm, display_name: e.target.value })}
-                      className="w-full bg-[#FFFFFF] dark:bg-[#090B10] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] h-[44px] pl-9 pr-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm"
+                      className="w-full bg-[#FFFFFF] dark:bg-[#0B0F12] border border-[#EAECF0] dark:border-white/5 rounded-[10px] h-[44px] pl-9 pr-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm"
                     />
                   </div>
                 </div>
@@ -819,21 +819,21 @@ export default function SettingsPage() {
 
               {editingField === 'username' && (
                 <div className="space-y-1.5">
-                  <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">Username</label>
+                  <label className="text-[13px] font-medium text-[#344054] dark:text-[#F5F7FA]">Username</label>
                   <div className="relative">
-                    <AtSign size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#98A2B3]" />
+                    <AtSign size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A7AFB8]" />
                     <input
                       type="text" required value={editForm.username} onChange={handleUsernameChange}
                       className={cn(
-                        "w-full bg-[#FFFFFF] dark:bg-[#090B10] border rounded-[10px] h-[44px] pl-9 pr-20 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:ring-1 transition-all shadow-sm",
+                        "w-full bg-[#FFFFFF] dark:bg-[#0B0F12] border rounded-[10px] h-[44px] pl-9 pr-20 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:ring-1 transition-all shadow-sm",
                         isUsernameAvailable === false 
                           ? "border-[#F97066] focus:border-[#F97066] focus:ring-[#F97066]" 
-                          : "border-[#EAECF0] dark:border-[#252A34] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]"
+                          : "border-[#EAECF0] dark:border-white/5 focus:border-[#8B5CF6] focus:ring-[#8B5CF6]"
                       )}
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                       {isCheckingUsername ? (
-                        <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#667085] dark:text-[#98A2B3]">
+                        <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#667085] dark:text-[#A7AFB8]">
                           <Loader2 size={14} strokeWidth={2} className="animate-spin" />
                         </div>
                       ) : isUsernameAvailable === false ? (
@@ -848,17 +848,17 @@ export default function SettingsPage() {
 
               {editingField === 'bio' && (
                 <div className="space-y-1.5">
-                  <label className="text-[13px] font-medium text-[#344054] dark:text-[#D0D5DD]">About</label>
+                  <label className="text-[13px] font-medium text-[#344054] dark:text-[#F5F7FA]">About</label>
                   <textarea
                     value={editForm.bio} onChange={e => setEditForm({ ...editForm, bio: e.target.value })}
-                    className="w-full bg-[#FFFFFF] dark:bg-[#090B10] border border-[#EAECF0] dark:border-[#252A34] rounded-[10px] py-2 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm resize-none"
+                    className="w-full bg-[#FFFFFF] dark:bg-[#0B0F12] border border-[#EAECF0] dark:border-white/5 rounded-[10px] py-2 px-3 text-[14px] text-[#101828] dark:text-[#F5F7FA] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm resize-none"
                     rows={2}
                   />
                 </div>
               )}
               
               <div className="pt-2 flex gap-3 mt-6">
-                <button type="button" onClick={() => setEditingField(null)} className="flex-1 h-[40px] bg-[#FFFFFF] dark:bg-[#151922] border border-[#EAECF0] dark:border-[#252A34] text-[#344054] dark:text-[#D0D5DD] rounded-[10px] text-[13px] font-medium hover:bg-[#F9FAFB] dark:hover:bg-[#252A34] transition-colors shadow-sm outline-none">
+                <button type="button" onClick={() => setEditingField(null)} className="flex-1 h-[40px] bg-[#FFFFFF] dark:bg-[rgba(255,255,255,0.04)] border border-[#EAECF0] dark:border-white/5 text-[#344054] dark:text-[#F5F7FA] rounded-[10px] text-[13px] font-medium hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors shadow-sm outline-none">
                   Cancel
                 </button>
                 <button type="submit" disabled={isSaving || isUsernameAvailable === false} className="flex-1 h-[40px] bg-[#8B5CF6] text-white rounded-[10px] text-[13px] font-medium hover:bg-[#7C3AED] transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 outline-none">

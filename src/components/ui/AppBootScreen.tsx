@@ -12,7 +12,7 @@ export function AppBootScreen() {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#F8F9FC] dark:bg-[#0B0D12] flex items-center justify-center overflow-hidden" role="status" aria-live="polite">
+    <div className="fixed inset-0 z-[100] bg-[#F8F9FC] dark:bg-[#0B0F12] flex items-center justify-center overflow-hidden" role="status" aria-live="polite">
       {/* Background radial gradient */}
       <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
         <div 
@@ -26,7 +26,7 @@ export function AppBootScreen() {
       <div className="relative z-10 flex flex-col items-center">
         {/* Logo Mark */}
         <div className="animate-in fade-in zoom-in-95 duration-500 fill-mode-both">
-          <div className="w-[48px] h-[48px] md:w-[60px] md:h-[60px] bg-white dark:bg-[#11141A] rounded-[14px] md:rounded-[16px] flex items-center justify-center shadow-sm shadow-[#8B5CF6]/10 border border-gray-100 dark:border-[#252A34]">
+          <div className="w-[48px] h-[48px] md:w-[60px] md:h-[60px] bg-white dark:bg-[#11161B] rounded-[14px] md:rounded-[16px] flex items-center justify-center shadow-sm shadow-[#8B5CF6]/10 border border-gray-100 dark:border-white/5">
             <ConnectXLogo size={32} className="scale-90 md:scale-100" />
           </div>
         </div>
@@ -37,7 +37,7 @@ export function AppBootScreen() {
         </h1>
 
         {/* Subtitle */}
-        <p className="mt-2 text-[14px] md:text-[15px] text-[#6B7280] dark:text-[#98A2B3] animate-in fade-in duration-500 fill-mode-both" style={{ animationDelay: '200ms' }}>
+        <p className="mt-2 text-[14px] md:text-[15px] text-[#6B7280] dark:text-[#A7AFB8] animate-in fade-in duration-500 fill-mode-both" style={{ animationDelay: '200ms' }}>
           Secure chats. Real connections.
         </p>
 
