@@ -447,7 +447,7 @@ export function MessageList({ conversationId }: MessageListProps) {
 
   if (isLoadingMessages) {
     return (
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
+      <div className="flex-1 overflow-y-auto px-3 md:px-4 py-3 md:py-4 space-y-2">
         {Array.from({ length: 8 }).map((_, i) => <MessageSkeleton key={i} isOwn={i % 3 === 0} />)}
       </div>
     );
@@ -458,7 +458,7 @@ export function MessageList({ conversationId }: MessageListProps) {
   }
 
   return (
-    <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-4 relative">
+    <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-3 md:px-4 py-3 md:py-4 relative">
         {showScrollButton && (
           <div className="fixed bottom-24 right-8 z-50 flex flex-col items-end gap-2">
             {hasNewMessages && (

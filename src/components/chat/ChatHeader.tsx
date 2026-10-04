@@ -145,7 +145,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
                 const otherMember = conversation.members?.find(m => m.user_id !== profile?.id)?.profile;
                 if (otherMember) startCall?.(otherMember.id, conversation.id, 'audio');
               }}
-              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-bg-secondary transition-colors"
+              className="w-[36px] h-[36px] rounded-[9px] flex items-center justify-center text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-bg-secondary transition-colors"
             >
               <Phone className="w-[18px] h-[18px]" strokeWidth={1.75} />
             </button>
@@ -155,7 +155,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
                 const otherMember = conversation.members?.find(m => m.user_id !== profile?.id)?.profile;
                 if (otherMember) startCall?.(otherMember.id, conversation.id, 'video');
               }}
-              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-bg-secondary transition-colors"
+              className="w-[36px] h-[36px] rounded-[9px] flex items-center justify-center text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-bg-secondary transition-colors"
             >
               <Video className="w-[18px] h-[18px]" strokeWidth={1.75} />
             </button>

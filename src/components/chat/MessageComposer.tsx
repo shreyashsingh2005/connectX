@@ -591,7 +591,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       )}
 
       <form onSubmit={handleSend} onDrop={handleDrop} onDragOver={e => e.preventDefault()}
-        className="bg-bg-surface/80 dark:bg-bg-surface/80 backdrop-blur-[18px] border border-border-subtle shadow-sm dark:shadow-none rounded-[26px] flex-shrink-0 p-1.5 relative transition-all duration-200 focus-within:border-[#8B5CF6]/40 focus-within:ring-[3px] focus-within:ring-[#8B5CF6]/15 group" 
+        className="bg-[#FFFFFF] dark:bg-[#171A21] border border-border-subtle shadow-sm dark:shadow-none rounded-[26px] flex-shrink-0 p-1.5 relative transition-all duration-200 focus-within:border-[#8B5CF6]/40 focus-within:ring-[3px] focus-within:ring-[#8B5CF6]/15 group" 
       >
         {replyToMessage && (
           <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-bg-primary rounded-[10px] border border-border-subtle">
@@ -629,7 +629,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
         <div className="flex items-end gap-1.5">
           <button type="button" ref={attachButtonRef} onClick={() => setShowAttachmentMenu(!showAttachmentMenu)}
-            className={cn("w-[40px] h-[40px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showAttachmentMenu ? "bg-brand/10 text-brand" : "text-text-sec dark:text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F7F8FC] dark:hover:bg-[rgba(255,255,255,0.04)]")}
+            className={cn("w-[36px] h-[36px] md:w-[40px] md:h-[40px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showAttachmentMenu ? "bg-brand/10 text-brand" : "text-text-sec dark:text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F7F8FC] dark:hover:bg-[rgba(255,255,255,0.04)]")}
           >
             <Plus size={18} strokeWidth={2} />
           </button>
@@ -648,7 +648,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
             />
             
             <button type="button" ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              className={cn("w-[34px] h-[34px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showEmojiPicker ? "bg-brand/10 text-brand" : "text-text-sec dark:text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F7F8FC] dark:hover:bg-[rgba(255,255,255,0.04)]")}
+              className={cn("w-[36px] h-[36px] flex-shrink-0 flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-[#8B5CF6]/30", showEmojiPicker ? "bg-brand/10 text-brand" : "text-text-sec dark:text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F7F8FC] dark:hover:bg-[rgba(255,255,255,0.04)]")}
             >
               <Smile size={18} strokeWidth={2} />
             </button>
@@ -657,13 +657,13 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
           {text.trim() || attachments.length > 0 ? (
             <button type="submit" disabled={isSending || e2eeState === 'initializing' || e2eeState === 'idle' || e2eeState === 'waiting_for_device_authorization' || e2eeState === 'error'}
-              className="w-[40px] h-[40px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 active:scale-95 transition-all shadow-md disabled:opacity-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 bg-brand"
+              className="w-[36px] h-[36px] md:w-[40px] md:h-[40px] flex-shrink-0 flex items-center justify-center rounded-full text-white hover:opacity-90 active:scale-95 transition-all shadow-md disabled:opacity-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 bg-brand"
             >
               {isSending ? <Loader2 size={16} className="animate-spin opacity-70" /> : <Send size={16} className="ml-0.5" strokeWidth={2} />}
             </button>
           ) : (
             <button type="button" onClick={isRecording ? stopRecording : startRecording}
-              className={cn("w-[40px] h-[40px] flex-shrink-0 flex items-center justify-center rounded-full transition-all hover:opacity-90 active:scale-95 shadow-md focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 text-white", isRecording ? "bg-[#F04438] animate-pulse" : "bg-brand")}
+              className={cn("w-[36px] h-[36px] md:w-[40px] md:h-[40px] flex-shrink-0 flex items-center justify-center rounded-full transition-all hover:opacity-90 active:scale-95 shadow-md focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#8B5CF6]/30 text-white", isRecording ? "bg-[#F04438] animate-pulse" : "bg-brand")}
             >
               {isRecording ? <Square size={14} className="fill-current" /> : <Mic size={18} strokeWidth={2} />}
             </button>

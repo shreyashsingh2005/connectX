@@ -69,10 +69,10 @@ const getAccentHex = (color: string | undefined) => {
     '--chat-outgoing-text': '#FFFFFF',
     '--chat-outgoing-muted': 'rgba(255, 255, 255, 0.8)',
     '--chat-outgoing-border': 'rgba(0, 0, 0, 0.05)',
-    '--chat-incoming-bg': 'var(--color-bg-surface)',
+    '--chat-incoming-bg': resolvedTheme === 'dark' ? '#171A21' : '#FFFFFF',
     '--chat-incoming-text': 'var(--color-text-main)',
     '--chat-incoming-muted': 'var(--color-text-muted)',
-    '--chat-incoming-border': 'var(--color-border-subtle)',
+    '--chat-incoming-border': resolvedTheme === 'dark' ? '#252936' : '#ECEAF1',
     backgroundImage: resolvedTheme === 'dark' ? `radial-gradient(circle at top right, rgba(167, 139, 250, 0.04), transparent 50%), linear-gradient(${themeColors[activeTheme?.themeId || 'connect-purple']?.dark || '#0B0F12'}, ${themeColors[activeTheme?.themeId || 'connect-purple']?.dark || '#0B0F12'})` : `linear-gradient(${themeColors[activeTheme?.themeId || 'connect-purple']?.light || '#F6F7F9'}, ${themeColors[activeTheme?.themeId || 'connect-purple']?.light || '#F6F7F9'})`
   } as React.CSSProperties;
   
