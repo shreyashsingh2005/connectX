@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { UserAvatar } from '@/components/ui/UserAvatar';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { Profile, Friendship } from '@/types';
 import { cn, debounce } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -342,9 +343,7 @@ export default function ContactsPage() {
             <div className="mb-[24px]">
               <h2 className="text-[13px] font-[600] text-text-main mt-4 mb-2 px-1">Search Results</h2>
               {searchResults.length === 0 && !isSearching ? (
-                <div className="text-center py-6">
-                  <p className="text-[13px] text-text-sec">No users found for "{query}"</p>
-                </div>
+                <EmptyState variant="no-search-results" />
               ) : (
                 <div className="flex flex-col bg-bg-surface border border-border-subtle rounded-[10px] overflow-hidden">
                   {searchResults.map(p => {

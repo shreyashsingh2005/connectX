@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
 import { ConnectXLogo } from '@/components/ui/ConnectXLogo';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -108,7 +109,10 @@ export function AppSidebar() {
         {navItems.map(({ href, icon: Icon, label }) => {
           const isActive = pathname.startsWith(href);
           return (
-            <Link
+            <TooltipProvider delayDuration={150}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
               key={href}
               href={href}
               aria-label={label}
@@ -139,6 +143,12 @@ export function AppSidebar() {
                 {label}
               </span>
             </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right" sideOffset={12} className="hidden md:block">
+                  {label}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           );
         })}
         

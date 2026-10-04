@@ -591,7 +591,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       )}
 
       <form onSubmit={handleSend} onDrop={handleDrop} onDragOver={e => e.preventDefault()}
-        className="bg-[#FFFFFF] dark:bg-[#171A21] border border-border-subtle shadow-sm dark:shadow-none rounded-[26px] flex-shrink-0 p-1.5 relative transition-all duration-200 focus-within:border-[#8B5CF6]/40 focus-within:ring-[3px] focus-within:ring-[#8B5CF6]/15 group" 
+        className="bg-[#FFFFFF] dark:bg-[#171A21] border border-border-subtle shadow-sm dark:shadow-none rounded-[26px] flex-shrink-0 p-1.5 relative transition-all duration-200 focus-within:border-[#8B5CF6]/40 focus-within:ring-[2px] focus-within:ring-[#8B5CF6]/20 hover:border-brand/30 group" 
       >
         {replyToMessage && (
           <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-bg-primary rounded-[10px] border border-border-subtle">

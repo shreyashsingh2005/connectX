@@ -1,18 +1,32 @@
 const fs = require('fs');
 
-let code = fs.readFileSync('src/components/layout/AppSidebar.tsx', 'utf8');
+let sidebar = fs.readFileSync('src/components/layout/AppSidebar.tsx', 'utf8');
 
-// Use brand color and soft brand bg for active item
-code = code.replace(
-  /'text-text-main bg-\[\#F1F3F5\] dark:bg-\[\#1A1F2B\]'/g,
-  "'text-brand bg-brand-soft'"
-);
+// Import Radix tooltips
+if (!sidebar.includes('TooltipProvider')) {
+  sidebar = sidebar.replace(
+    "import { ConnectXLogo } from '@/components/ui/ConnectXLogo';",
+    "import { ConnectXLogo } from '@/components/ui/ConnectXLogo';\nimport { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';"
+  );
+}
 
-// Fix tooltip colors
-code = code.replace(
-  /bg-gray-900 dark:bg-\[\#F5F7FA\] text-white dark:text-text-main/g,
-  'bg-text-main text-bg-surface'
-);
+// Replace the <Link ...> with Tooltip wrapped Link
+const linkRegex = /<Link\s+key=\{href\}[\s\S]*?<\/Link>/g;
+sidebar = sidebar.replace(linkRegex, (match) => {
+  // Extract the buggy tooltip
+  const withoutTooltip = match.replace(/\{\/\* Tooltip \*\/\}\s*<span className="hidden md:block absolute left-full ml-3.*?<\/span>/, '');
+  
+  return `<TooltipProvider delayDuration={150}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  ${withoutTooltip}
+                </TooltipTrigger>
+                <TooltipContent side="right" sideOffset={12} className="hidden md:block">
+                  {label}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>`;
+});
 
-fs.writeFileSync('src/components/layout/AppSidebar.tsx', code);
-console.log('AppSidebar active state updated');
+fs.writeFileSync('src/components/layout/AppSidebar.tsx', sidebar);
+console.log('Updated AppSidebar to use Radix Tooltips');

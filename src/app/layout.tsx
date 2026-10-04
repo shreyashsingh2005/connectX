@@ -41,24 +41,28 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
           <Toaster
-            position="top-right"
+            position="top-center"
             toastOptions={{
+              className: 'text-[13px] font-medium shadow-md',
+              duration: 3000,
               style: {
-                background: 'var(--toast-bg, #171E2D)',
-                color: 'var(--toast-color, #F9FAFB)',
-                border: '1px solid var(--toast-border, #1F2937)',
+                background: 'var(--color-bg-surface)',
+                color: 'var(--color-text-main)',
+                border: '1px solid var(--color-border-subtle)',
                 borderRadius: '12px',
+                maxWidth: '360px',
+                padding: '10px 14px',
               },
               success: {
                 iconTheme: {
-                  primary: '#EC4899',
-                  secondary: 'var(--toast-bg, #0B0F19)',
+                  primary: '#8B5CF6',
+                  secondary: '#FFFFFF',
                 },
               },
               error: {
                 iconTheme: {
-                  primary: '#EF4444',
-                  secondary: 'var(--toast-bg, #0B0F19)',
+                  primary: '#F04438',
+                  secondary: '#FFFFFF',
                 },
               },
             }}

@@ -73,13 +73,13 @@ export function GroupChatModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowGroupModal(false)} />
-      <div className="relative w-full max-w-md bg-bg-secondary rounded-[20px] border border-border-subtle border-border-subtle shadow-2xl animate-slide-up">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle border-border-subtle">
+      <div className="relative w-full max-w-md bg-bg-surface dark:bg-bg-elevated rounded-[18px] shadow-xl border border-border-subtle overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-[0.98] duration-150 ease-out">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-brand" />
             <h2 className="font-semibold text-text-main">{step === 'select' ? 'New Group Chat' : 'Group Details'}</h2>
           </div>
-          <button onClick={() => setShowGroupModal(false)} className="text-text-muted hover:text-text-main dark:text-gray-200 transition-colors">
+          <button onClick={() => setShowGroupModal(false)} className="w-9 h-9 flex items-center justify-center text-text-muted hover:text-text-main hover:bg-bg-secondary rounded-full transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>

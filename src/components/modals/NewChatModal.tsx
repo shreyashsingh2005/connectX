@@ -54,13 +54,13 @@ export function NewChatModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg-primary/80 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-md bg-[#FFFFFF] dark:bg-bg-surface rounded-[20px] shadow-2xl border border-border-subtle border-border-subtle overflow-hidden flex flex-col max-h-[80vh]">
-        <div className="p-6 border-b border-border-subtle border-border-subtle flex items-center justify-between">
-          <h2 className="text-[18px] font-bold text-text-main">New Chat / Find Friends</h2>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-150">
+      <div className="w-full max-w-md bg-bg-surface dark:bg-bg-elevated rounded-[18px] shadow-xl border border-border-subtle overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-[0.98] duration-150 ease-out">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle">
+          <h2 className="text-[17px] font-semibold text-text-main">New Chat / Find Friends</h2>
           <button
             onClick={() => setShowNewChatModal(false)}
-            className="p-2 text-text-muted hover:text-text-main dark:hover:text-white bg-[#F9FAFB] dark:bg-[rgba(255,255,255,0.04)] hover:bg-[#EAECF0] dark:hover:bg-[rgba(255,255,255,0.08)] rounded-full transition-colors"
+            className="w-9 h-9 flex items-center justify-center text-text-muted hover:text-text-main hover:bg-bg-secondary rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
           </button>

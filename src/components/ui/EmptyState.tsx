@@ -50,13 +50,13 @@ export function EmptyState({ variant, action }: EmptyStateProps) {
   const { Icon, title, description } = variantConfig[variant];
 
   return (
-    <div className="flex flex-col items-center justify-center h-full py-12 px-6 text-center">
-      <div className="w-12 h-12 rounded-[12px] bg-bg-surface border border-border-subtle border-border-subtle flex items-center justify-center mb-4 shadow-sm">
-        <Icon size={20} strokeWidth={1.5} className="text-text-sec" />
+    <div className="flex flex-col items-center justify-center h-full py-8 px-6 text-center">
+      <div className="w-[44px] h-[44px] rounded-[12px] bg-bg-surface border border-border-subtle border-border-subtle flex items-center justify-center mb-4 shadow-sm">
+        <Icon size={22} strokeWidth={1.5} className="text-text-sec" />
       </div>
-      <h3 className="text-[14px] font-medium text-text-main mb-1">{title}</h3>
-      <p className="text-[13px] text-text-sec max-w-xs leading-relaxed">{description}</p>
-      {action && <div className="mt-4">{action}</div>}
+      <h3 className="text-[15px] font-semibold text-text-main mb-1">{title}</h3>
+      <p className="text-[13px] text-text-muted max-w-[240px] leading-relaxed mx-auto">{description}</p>
+      {action && <div className="mt-5">{action}</div>}
     </div>
   );
 
