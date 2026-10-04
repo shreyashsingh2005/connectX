@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { createClient } from '@/lib/supabase/client';
 import { useChatStore } from '@/store/useChatStore';
 import toast from 'react-hot-toast';
@@ -181,17 +182,18 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
           )}
         </div>
         
-        {showClearModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+        {showClearModal && typeof document !== 'undefined' && createPortal(
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
             <div className="bg-white dark:bg-[#151922] w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-[#252A34]">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Clear chat?</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Are you sure you want to clear all messages in this conversation? This will only clear them for you.</p>
               <div className="flex flex-col gap-2">
                 <button 
                   onClick={handleClearChat}
-                  className="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-colors"
+                  disabled={isClearing}
+                  className="w-full py-2.5 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white rounded-xl font-medium transition-colors"
                 >
-                  Clear chat
+                  {isClearing ? 'Clearing...' : 'Clear chat'}
                 </button>
                 <button 
                   onClick={() => setShowClearModal(false)}
@@ -201,7 +203,8 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
                 </button>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </header>
