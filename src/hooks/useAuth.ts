@@ -21,12 +21,16 @@ export function useAuth() {
     // Self-healing: If profile doesn't exist, try to create it automatically
     if (profileRes.error || !profileRes.data) {
       const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user) {
-        const user = userData.user;
-        const newProfile = {
-          id: user.id,
-          username: user.user_metadata?.username || `user_${user.id.substring(0, 8)}`,
-          display_name: user.user_metadata?.display_name || user.user_metadata?.full_name || user.user_metadata?.name || 'New User',
+      
+        if (userData?.user) {
+          const user = userData.user;
+          const tempUsername = `user_${Math.random().toString(36).substring(2, 11)}`;
+          const newProfile = {
+            id: user.id,
+            username: user.user_metadata?.username || tempUsername,
+            username_normalized: user.user_metadata?.username?.toLowerCase() || tempUsername,
+            display_name: user.user_metadata?.display_name || user.user_metadata?.full_name || user.user_metadata?.name || 'New User',
+
           email: user.email || '',
             avatar_url: user.user_metadata?.avatar_url || null,
         };

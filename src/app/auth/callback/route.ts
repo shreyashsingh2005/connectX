@@ -41,15 +41,20 @@ export async function GET(request: NextRequest) {
         .eq('id', session.user.id)
         .single();
         
+      
       if (!profile) {
+        // Generate a random compliant username (user_ + 9 random alphanumeric chars)
+        const tempUsername = `user_${Math.random().toString(36).substring(2, 11)}`;
         const newProfile = {
           id: session.user.id,
-          username: `user_${session.user.id.substring(0, 8)}`,
+          username: tempUsername,
+          username_normalized: tempUsername,
           display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'New User',
           email: session.user.email || '',
           avatar_url: session.user.user_metadata?.avatar_url || null,
         };
         await supabase.from('profiles').insert(newProfile);
+
         await supabase.from('user_settings').insert({ user_id: session.user.id });
       }
 
