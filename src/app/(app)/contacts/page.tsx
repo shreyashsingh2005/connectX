@@ -22,148 +22,143 @@ export default function ContactsPage() {
   const [isSearching, setIsSearching] = useState(false);
   
   // Maps to quickly check relationship status
-  const [relationshipMap, setRelationshipMap] = useState<Record<string, string>>({});
+  const [relationshipMap, setRelationshipMap] = useState<Record<string, 'friend' | 'incoming_request' | 'outgoing_request' | 'none'>>({});
   const [requestIds, setRequestIds] = useState<Record<string, string>>({});
   
-  // Data State
-  const [friendships, setFriendships] = useState<Friendship[]>([]);
   const [incomingRequests, setIncomingRequests] = useState<any[]>([]);
   const [outgoingRequests, setOutgoingRequests] = useState<any[]>([]);
+  const [friendships, setFriendships] = useState<Friendship[]>([]);
   const [suggestions, setSuggestions] = useState<Profile[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const [isStartingChat, setIsStartingChat] = useState<string | null>(null);
   
-  const router = useRouter();
+  const [isStartingChat, setIsStartingChat] = useState<string | null>(null);
+
   const supabase = createClient();
   const profile = useAuthStore(s => s.profile);
+  const router = useRouter();
   const { sendFriendRequest, respondToRequest, cancelRequest } = useFriendActions();
 
   const fetchAllData = useCallback(async () => {
     if (!profile) return;
-    
-    // Fetch Friendships
-    const { data: friendsData } = await supabase
-      .from('friendships')
-      .select('id, created_at, user_id, friend_id, friend:profiles!friendships_friend_id_fkey(*)')
-      .eq('user_id', profile.id)
-      .order('created_at', { ascending: false });
-
-    const { data: friendsData2 } = await supabase
-      .from('friendships')
-      .select('id, created_at, user_id, friend_id, friend:profiles!friendships_user_id_fkey(*)')
-      .eq('friend_id', profile.id)
-      .order('created_at', { ascending: false });
-
-    const validFriends: Friendship[] = [];
-    if (friendsData) {
-      friendsData.forEach((f: any) => {
-        if (f.friend) validFriends.push({ ...f, friend: f.friend as Profile });
+    try {
+      // 1. Fetch Friendships
+      const { data: fData } = await supabase
+        .from('friendships')
+        .select(`*, friend:profiles!friendships_friend_id_fkey(*)`)
+        .eq('user_id', profile.id);
+        
+      setFriendships(fData || []);
+      
+      const newMap: Record<string, any> = {};
+      fData?.forEach(f => {
+        newMap[f.friend_id] = 'friend';
       });
-    }
-    if (friendsData2) {
-      friendsData2.forEach((f: any) => {
-        if (f.friend && f.friend.id !== profile.id && !validFriends.find(vf => vf.friend?.id === f.friend.id)) {
-          validFriends.push({ ...f, friend: f.friend as Profile });
+
+      // 2. Fetch Requests
+      const { data: rData } = await supabase
+        .from('friend_requests')
+        .select(`*, sender:profiles!friend_requests_sender_id_fkey(*), receiver:profiles!friend_requests_receiver_id_fkey(*)`)
+        .or(`sender_id.eq.${profile.id},receiver_id.eq.${profile.id}`)
+        .eq('status', 'pending');
+        
+      const incoming: any[] = [];
+      const outgoing: any[] = [];
+      const newReqIds: Record<string, string> = {};
+
+      rData?.forEach(r => {
+        if (r.receiver_id === profile.id) {
+          incoming.push(r);
+          newMap[r.sender_id] = 'incoming_request';
+          newReqIds[r.sender_id] = r.id;
+        } else {
+          outgoing.push(r);
+          newMap[r.receiver_id] = 'outgoing_request';
+          newReqIds[r.receiver_id] = r.id;
         }
       });
+
+      setIncomingRequests(incoming);
+      setOutgoingRequests(outgoing);
+      setRelationshipMap(newMap);
+      setRequestIds(newReqIds);
+
+      // 3. Suggestions
+      if (!query) {
+        const excludeIds = [profile.id, ...Object.keys(newMap)];
+        let queryBuilder = supabase.from('profiles').select('*').limit(5);
+        if (excludeIds.length > 0) {
+           queryBuilder = queryBuilder.not('id', 'in', `(${excludeIds.join(',')})`);
+        }
+        const { data: sData } = await queryBuilder;
+        setSuggestions(sData || []);
+      }
+    } catch (err) {
+      console.error(err);
     }
-    setFriendships(validFriends);
-
-    // Fetch Requests
-    const { data: incReq } = await supabase
-      .from('friend_requests')
-      .select('*, sender:profiles!friend_requests_sender_id_fkey(*)')
-      .eq('receiver_id', profile.id)
-      .eq('status', 'pending');
-    setIncomingRequests(incReq || []);
-
-    const { data: outReq } = await supabase
-      .from('friend_requests')
-      .select('*, receiver:profiles!friend_requests_receiver_id_fkey(*)')
-      .eq('sender_id', profile.id)
-      .eq('status', 'pending');
-    setOutgoingRequests(outReq || []);
-
-    // Fetch Suggestions (random users not friends/requested)
-    const { data: allUsers } = await supabase
-      .from('profiles')
-      .select('*')
-      .neq('id', profile.id)
-      .limit(50);
-      
-    if (allUsers) {
-      const friendIds = new Set(validFriends.map(f => f.friend?.id));
-      const incReqIds = new Set((incReq || []).map(r => r.sender_id));
-      const outReqIds = new Set((outReq || []).map(r => r.receiver_id));
-      
-      const possibleSuggestions = allUsers.filter(u => 
-        !friendIds.has(u.id) && 
-        !incReqIds.has(u.id) && 
-        !outReqIds.has(u.id)
-      );
-      
-      setSuggestions(possibleSuggestions.slice(0, 5));
-    }
-    
-    setIsLoading(false);
-  }, [profile, supabase]);
+  }, [profile, supabase, query]);
 
   useEffect(() => {
     fetchAllData();
   }, [fetchAllData]);
 
-  // Real-time synchronization
+  // Handle Realtime updates
   useEffect(() => {
     if (!profile) return;
-    const channel = supabase.channel(`contacts_realtime:${profile.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'friend_requests' }, () => fetchAllData())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, () => fetchAllData())
+    const channel = supabase
+      .channel('contacts_page')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'friend_requests' }, () => {
+        fetchAllData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, () => {
+        fetchAllData();
+      })
       .subscribe();
+      
     return () => { supabase.removeChannel(channel); };
   }, [profile, supabase, fetchAllData]);
 
   const performSearch = useCallback(
     debounce(async (q: string) => {
-      if (!q.trim() || !profile) { setSearchResults([]); return; }
+      if (!q.trim() || !profile) {
+        setSearchResults([]);
+        setIsSearching(false);
+        return;
+      }
       setIsSearching(true);
       try {
-        const normalized = q.toLowerCase();
-        const { data: users } = await supabase
+        const searchTerm = q.toLowerCase();
+        const { data } = await supabase
           .from('profiles')
           .select('*')
           .neq('id', profile.id)
-          .or(`username_normalized.ilike.%${normalized}%,display_name.ilike.%${q}%`)
+          .or(`username_normalized.ilike.%${searchTerm}%,display_name.ilike.%${searchTerm}%`)
           .limit(20);
           
-        const fetchedUsers = users || [];
-        setSearchResults(fetchedUsers);
+        setSearchResults(data || []);
         
-        if (fetchedUsers.length > 0) {
-          const userIds = fetchedUsers.map(u => u.id);
-          const uids = userIds.join(',');
-          
-          const { data: fData } = await supabase
+        if (data && data.length > 0) {
+          const userIds = data.map(u => u.id);
+          const { data: friendships } = await supabase
             .from('friendships')
-            .select('user_id, friend_id')
-            .or(`and(user_id.eq.${profile.id},friend_id.in.(${uids})),and(friend_id.eq.${profile.id},user_id.in.(${uids}))`);
+            .select('friend_id')
+            .eq('user_id', profile.id)
+            .in('friend_id', userIds);
             
-          const { data: rData } = await supabase
+          const { data: requests } = await supabase
             .from('friend_requests')
-            .select('id, sender_id, receiver_id, status')
-            .eq('status', 'pending')
-            .or(`and(sender_id.eq.${profile.id},receiver_id.in.(${uids})),and(receiver_id.eq.${profile.id},sender_id.in.(${uids}))`);
+            .select('*')
+            .in('sender_id', [profile.id, ...userIds])
+            .in('receiver_id', [profile.id, ...userIds])
+            .eq('status', 'pending');
             
-          const newMap: Record<string, string> = {};
-          const newReqIds: Record<string, string> = {};
+          const newMap = { ...relationshipMap };
+          const newReqIds = { ...requestIds };
           
-          fetchedUsers.forEach(u => {
-            const isFriend = fData?.some(f => (f.user_id === profile.id && f.friend_id === u.id) || (f.friend_id === profile.id && f.user_id === u.id));
-            if (isFriend) {
+          data.forEach(u => {
+            if (friendships?.some(f => f.friend_id === u.id)) {
               newMap[u.id] = 'friend';
               return;
             }
-            const req = rData?.find(r => (r.sender_id === profile.id && r.receiver_id === u.id) || (r.receiver_id === profile.id && r.sender_id === u.id));
+            const req = requests?.find(r => (r.sender_id === profile.id && r.receiver_id === u.id) || (r.receiver_id === profile.id && r.sender_id === u.id));
             if (req) {
               newReqIds[u.id] = req.id;
               if (req.sender_id === profile.id) newMap[u.id] = 'outgoing_request';
@@ -182,16 +177,12 @@ export default function ContactsPage() {
         setIsSearching(false);
       }
     }, 500),
-    [profile, supabase]
+    [profile, supabase, relationshipMap, requestIds]
   );
 
   useEffect(() => {
     performSearch(query);
   }, [query, performSearch]);
-
-  useEffect(() => {
-    if (query.trim()) performSearch(query);
-  }, [incomingRequests, outgoingRequests, friendships, query, performSearch]);
 
   async function handleStartChat(targetProfile: Profile) {
     if (!profile || isStartingChat) return;
@@ -201,10 +192,7 @@ export default function ContactsPage() {
         other_user_id: targetProfile.id 
       });
       
-      if (error) {
-        console.error('RPC Error:', error);
-        throw error;
-      }
+      if (error) throw error;
       if (!convId) throw new Error('No conversation ID returned');
       
       router.push(`/chat/${convId}`);
@@ -216,77 +204,100 @@ export default function ContactsPage() {
     }
   }
 
-  const renderProfileCard = (p: Profile, context: 'search' | 'suggestion') => {
-    const status = relationshipMap[p.id] || 'none';
-    const reqId = requestIds[p.id];
-
+  // --- REUSABLE COMPACT ROW COMPONENT ---
+  const CompactUserRow = ({ 
+    user, 
+    context, 
+    reqId 
+  }: { 
+    user: Profile; 
+    context: 'friend' | 'incoming' | 'outgoing' | 'none'; 
+    reqId?: string;
+  }) => {
     return (
-      <div key={p.id} className="w-full flex items-center justify-between py-3 border-b border-[#EAECF0] dark:border-white/5 last:border-0 hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.02)] px-2 -mx-2 rounded-[12px] transition-colors">
+      <div className="flex items-center gap-[10px] w-full min-h-[60px] h-[60px] px-[10px] py-[8px] bg-[rgba(255,255,255,0.035)] border border-[rgba(255,255,255,0.07)] rounded-[10px] hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+        
+        {/* Identity Section */}
         <div 
-          className="flex items-center gap-3 cursor-pointer min-w-0 flex-1"
-          onClick={() => router.push(`/profile/${p.username || p.id}`)}
+          className="flex items-center gap-[10px] cursor-pointer flex-1 min-w-0"
+          onClick={() => router.push(`/profile/${user.username || user.id}`)}
         >
-          <UserAvatar src={p.avatar_url} name={p.display_name} size="md" className="w-[40px] h-[40px] flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[14px] truncate">{p.display_name}</p>
-            <p className="text-[12px] text-[#667085] dark:text-[#737C86] truncate">@{p.username}</p>
+          <div className="relative flex-shrink-0">
+            <UserAvatar src={user.avatar_url} name={user.display_name} className="w-[36px] h-[36px] text-sm" />
+            {user.is_online && (
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#12B76A] border-[1.5px] border-[#0B0F12] rounded-full" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0 flex flex-col justify-center leading-tight">
+            <span className="font-[600] text-[#101828] dark:text-[#F5F7FA] text-[13px] truncate leading-[18px]">
+              {user.display_name}
+            </span>
+            <span className="text-[11px] text-[#667085] dark:text-[#A7AFB8] truncate leading-[16px]">
+              @{user.username}
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-          {status === 'friend' ? (
+        {/* Action Button Section (Right side, fits in row) */}
+        <div className="flex-shrink-0 flex items-center gap-1.5 ml-2">
+          {context === 'friend' && (
             <button
-              onClick={() => handleStartChat(p)}
-              className="w-8 h-8 bg-transparent text-[#101828] dark:text-[#A7AFB8] hover:text-[#8B5CF6] hover:bg-[#F3F0FF] dark:hover:bg-[rgba(255,255,255,0.06)] rounded-[10px] transition-all flex items-center justify-center"
-              title="Message"
+              onClick={() => handleStartChat(user)}
+              disabled={isStartingChat === user.id}
+              className="flex items-center gap-1.5 h-[30px] px-[11px] bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 text-[#8B5CF6] rounded-[8px] text-[12px] font-medium transition-colors"
             >
-              <MessageSquare className="w-[18px] h-[18px]" />
+              {isStartingChat === user.id ? <Loader2 className="w-[15px] h-[15px] animate-spin" /> : <MessageSquare className="w-[15px] h-[15px]" />}
+              Message
             </button>
-          ) : status === 'outgoing_request' ? (
+          )}
+
+          {context === 'incoming' && (
+            <>
+              <button
+                onClick={async () => {
+                  if(reqId) await respondToRequest(reqId, user.id, 'accepted');
+                  fetchAllData();
+                  if (query) performSearch(query);
+                }}
+                className="h-[30px] px-3 bg-[#8B5CF6] text-white rounded-[8px] text-[12px] font-medium hover:bg-[#7C3AED] transition-colors"
+              >
+                Accept
+              </button>
+              <button
+                onClick={async () => {
+                  if(reqId) await respondToRequest(reqId, user.id, 'declined');
+                  fetchAllData();
+                  if (query) performSearch(query);
+                }}
+                className="h-[30px] px-3 bg-[rgba(255,255,255,0.06)] text-[#A7AFB8] hover:bg-[rgba(255,255,255,0.1)] rounded-[8px] text-[12px] font-medium transition-colors border border-white/5"
+              >
+                Decline
+              </button>
+            </>
+          )}
+
+          {context === 'outgoing' && (
             <button
               onClick={async () => {
                 if(reqId) await cancelRequest(reqId);
                 fetchAllData();
-                if (context === 'search') performSearch(query);
+                if (query) performSearch(query);
               }}
-              className="px-3 h-8 bg-[#FEF3F2] dark:bg-[rgba(240,68,56,0.1)] text-[#F04438] hover:bg-[#FEE4E2] dark:hover:bg-[rgba(240,68,56,0.2)] rounded-[10px] text-[12px] font-medium transition-all"
+              className="h-[30px] px-3 bg-[rgba(240,68,56,0.1)] text-[#F04438] hover:bg-[rgba(240,68,56,0.2)] rounded-[8px] text-[12px] font-medium transition-colors"
             >
               Cancel
             </button>
-          ) : status === 'incoming_request' ? (
-            <div className="flex gap-1.5">
-              <button
-                onClick={async () => {
-                  if(reqId) await respondToRequest(reqId, p.id, 'accepted');
-                  fetchAllData();
-                  if (context === 'search') performSearch(query);
-                }}
-                className="w-8 h-8 bg-[#8B5CF6] text-white rounded-[10px] hover:bg-[#7C3AED] transition-all flex items-center justify-center"
-              >
-                <Check className="w-[16px] h-[16px]" />
-              </button>
-              <button
-                onClick={async () => {
-                  if(reqId) await respondToRequest(reqId, p.id, 'declined');
-                  fetchAllData();
-                  if (context === 'search') performSearch(query);
-                }}
-                className="w-8 h-8 bg-gray-100 dark:bg-[rgba(255,255,255,0.06)] text-gray-500 dark:text-[#A7AFB8] hover:bg-gray-200 dark:hover:bg-[rgba(255,255,255,0.1)] rounded-[10px] transition-all flex items-center justify-center"
-              >
-                <XIcon className="w-[16px] h-[16px]" />
-              </button>
-            </div>
-          ) : (
+          )}
+
+          {context === 'none' && (
             <button
               onClick={async () => {
-                await sendFriendRequest(p.id);
+                await sendFriendRequest(user.id);
                 fetchAllData();
-                if (context === 'search') performSearch(query);
-                else {
-                  setRelationshipMap(prev => ({...prev, [p.id]: 'outgoing_request'}));
-                }
+                if (query) performSearch(query);
+                else setRelationshipMap(prev => ({...prev, [user.id]: 'outgoing_request'}));
               }}
-              className="px-3 h-8 bg-[#8B5CF6] text-white rounded-[10px] text-[12px] font-medium hover:bg-[#7C3AED] transition-all shadow-sm"
+              className="h-[30px] px-3 bg-[#8B5CF6] text-white rounded-[8px] text-[12px] font-medium hover:bg-[#7C3AED] transition-colors"
             >
               Add
             </button>
@@ -298,60 +309,68 @@ export default function ContactsPage() {
 
   return (
     <div className="flex flex-col flex-1 z-10 overflow-hidden relative bg-white dark:bg-[#0B0F12]">
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-[600px] mx-auto px-4 md:px-8 py-6 md:py-10">
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        {/* 1. MAIN CONTAINER (max-width 680px, compact padding) */}
+        <div className="w-full max-w-[680px] mx-auto px-[20px] py-[24px]">
           
-          <h1 className="text-[24px] md:text-[28px] font-bold text-[#101828] dark:text-[#F5F7FA] tracking-tight mb-6">Friends</h1>
+          {/* 2. HEADER */}
+          <h1 className="text-[22px] leading-[28px] font-[650] text-[#101828] dark:text-[#F5F7FA] tracking-tight mb-[16px]">
+            Friends
+          </h1>
 
-          {/* Search Bar */}
-          <div className="relative mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#A7AFB8]" />
+          {/* 3. SEARCH */}
+          <div className="relative mb-[12px]">
+            <Search className="absolute left-[12px] top-1/2 -translate-y-1/2 w-[17px] h-[17px] text-[#A7AFB8]" />
             <input
               type="text"
               placeholder="Search people..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full bg-[#FFFFFF] dark:bg-[#11161B] border border-[#EAECF0] dark:border-white/5 rounded-[16px] h-[52px] pl-11 pr-4 text-[14px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#98A2B3] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] shadow-sm transition-all"
+              className="w-full bg-[rgba(255,255,255,0.035)] border border-[rgba(255,255,255,0.07)] rounded-[10px] h-[40px] pl-[36px] pr-[12px] text-[13px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#A7AFB8] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all"
             />
             {isSearching && (
-              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <div className="absolute right-[12px] top-1/2 -translate-y-1/2">
                 <Loader2 className="w-4 h-4 text-[#A7AFB8] animate-spin" />
               </div>
             )}
           </div>
 
           {query.trim() ? (
-            <div className="space-y-4 pb-10">
-              <h2 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] mb-2 px-1">Search Results</h2>
+            <div className="mb-[24px]">
+              <h2 className="text-[14px] font-[600] text-[#101828] dark:text-[#F5F7FA] mb-[8px] px-1">Search Results</h2>
               {searchResults.length === 0 && !isSearching ? (
-                <div className="text-center py-12">
-                  <p className="text-[14px] text-[#667085] dark:text-[#A7AFB8]">No users found for "{query}"</p>
+                <div className="text-center py-6">
+                  <p className="text-[13px] text-[#A7AFB8]">No users found for "{query}"</p>
                 </div>
               ) : (
-                <div className="flex flex-col gap-0">
-                  {searchResults.map(p => renderProfileCard(p, 'search'))}
+                <div className="flex flex-col gap-[6px]">
+                  {searchResults.map(p => {
+                    let ctx: any = 'none';
+                    const st = relationshipMap[p.id];
+                    if (st === 'friend') ctx = 'friend';
+                    else if (st === 'incoming_request') ctx = 'incoming';
+                    else if (st === 'outgoing_request') ctx = 'outgoing';
+                    return <CompactUserRow key={p.id} user={p} context={ctx} reqId={requestIds[p.id]} />;
+                  })}
                 </div>
               )}
             </div>
           ) : (
-            <div className="space-y-8 pb-10">
-              {/* Segmented Control */}
-              <div className="flex p-1 bg-[#EAECF0]/60 dark:bg-[#11161B] rounded-[14px]">
+            <>
+              {/* 4. TABS */}
+              <div className="flex p-[3px] bg-[rgba(255,255,255,0.04)] rounded-[10px] h-[38px] mb-[16px] border border-white/5">
                 <button 
                   onClick={() => setActiveTab('requests')}
                   className={cn(
-                    "flex-1 py-2.5 text-[14px] font-semibold rounded-[10px] transition-all flex items-center justify-center gap-2",
+                    "flex-1 h-[30px] text-[13px] font-[600] rounded-[8px] transition-all flex items-center justify-center gap-2",
                     activeTab === 'requests' 
-                      ? "bg-[#FFFFFF] dark:bg-[rgba(255,255,255,0.06)] text-[#101828] dark:text-[#F5F7FA] shadow-sm" 
-                      : "text-[#667085] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA]"
+                      ? "bg-[rgba(255,255,255,0.08)] text-[#F5F7FA] shadow-sm" 
+                      : "text-[#A7AFB8] hover:text-[#F5F7FA]"
                   )}
                 >
                   Requests
                   {incomingRequests.length > 0 && (
-                    <span className={cn(
-                      "px-2 py-0.5 rounded-full text-[12px] font-bold",
-                      activeTab === 'requests' ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] text-[#667085] dark:text-[#A7AFB8]"
-                    )}>
+                    <span className="w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold bg-[#8B5CF6] text-white">
                       {incomingRequests.length}
                     </span>
                   )}
@@ -359,102 +378,44 @@ export default function ContactsPage() {
                 <button 
                   onClick={() => setActiveTab('friends')}
                   className={cn(
-                    "flex-1 py-2.5 text-[14px] font-semibold rounded-[10px] transition-all flex items-center justify-center gap-2",
+                    "flex-1 h-[30px] text-[13px] font-[600] rounded-[8px] transition-all flex items-center justify-center gap-2",
                     activeTab === 'friends' 
-                      ? "bg-[#FFFFFF] dark:bg-[rgba(255,255,255,0.06)] text-[#101828] dark:text-[#F5F7FA] shadow-sm" 
-                      : "text-[#667085] dark:text-[#A7AFB8] hover:text-[#101828] dark:hover:text-[#F5F7FA]"
+                      ? "bg-[rgba(255,255,255,0.08)] text-[#F5F7FA] shadow-sm" 
+                      : "text-[#A7AFB8] hover:text-[#F5F7FA]"
                   )}
                 >
-                  Friends
+                  My Friends
                   {friendships.length > 0 && (
-                    <span className={cn(
-                      "px-2 py-0.5 rounded-full text-[12px] font-bold",
-                      activeTab === 'friends' ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] text-[#667085] dark:text-[#A7AFB8]"
-                    )}>
-                      {friendships.length}
-                    </span>
+                    <span className="text-[12px] opacity-70">({friendships.length})</span>
                   )}
                 </button>
               </div>
 
-              {isLoading ? (
-                <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-[#8B5CF6]" /></div>
-              ) : activeTab === 'requests' ? (
-                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                  {/* Incoming Requests */}
+              {activeTab === 'requests' ? (
+                <div className="animate-in fade-in duration-200">
+                  {/* Incoming */}
                   {incomingRequests.length > 0 && (
-                    <div className="space-y-4">
-                      <h2 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] px-1">Friend Requests</h2>
-                      <div className="flex flex-col gap-0">
+                    <div className="mb-[16px]">
+                      <h2 className="text-[14px] font-[600] text-[#101828] dark:text-[#F5F7FA] mb-[8px] px-1 flex items-center gap-2">
+                        <UserPlus className="w-4 h-4 text-[#8B5CF6]" /> Incoming
+                      </h2>
+                      <div className="flex flex-col gap-[6px]">
                         {incomingRequests.map(req => (
-                          <div key={req.id} className="w-full flex flex-col p-4 bg-white dark:bg-[#11161B] rounded-[16px] border border-[#EAECF0] dark:border-white/5 hover:shadow-md transition-all duration-150 gap-4">
-                            <div 
-                              className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
-                              onClick={() => router.push(`/profile/${req.sender?.username || req.sender_id}`)}
-                            >
-                              <UserAvatar src={req.sender?.avatar_url} name={req.sender?.display_name || 'User'} size="lg" className="w-[44px] h-[44px]" />
-                              <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[14px] truncate">{req.sender?.display_name || 'User'}</p>
-                                <p className="text-[13px] text-[#667085] dark:text-[#A7AFB8] truncate">@{req.sender?.username || 'unknown'}</p>
-                              </div>
-                            </div>
-                            <div className="flex w-full gap-2">
-                              <button
-                                onClick={async () => {
-                                  await respondToRequest(req.id, req.sender_id, 'accepted');
-                                  fetchAllData();
-                                }}
-                                className="flex-1 py-2 bg-[#8B5CF6] text-white rounded-[10px] text-[13px] font-medium hover:bg-[#7C3AED] transition-all shadow-sm"
-                              >
-                                Accept
-                              </button>
-                              <button
-                                onClick={async () => {
-                                  await respondToRequest(req.id, req.sender_id, 'declined');
-                                  fetchAllData();
-                                }}
-                                className="flex-1 py-2 bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.04)] border border-[#EAECF0] dark:border-white/5 text-[#667085] dark:text-[#A7AFB8] rounded-[10px] text-[13px] font-medium hover:bg-[#EAECF0] dark:hover:bg-[rgba(255,255,255,0.08)] transition-all"
-                              >
-                                Decline
-                              </button>
-                            </div>
-                          </div>
+                          <CompactUserRow key={req.id} user={req.sender!} context="incoming" reqId={req.id} />
                         ))}
                       </div>
                     </div>
                   )}
 
-                  {/* Outgoing Requests */}
+                  {/* Outgoing */}
                   {outgoingRequests.length > 0 && (
-                    <div className="space-y-4">
-                      <h2 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] px-1 flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-[#8B5CF6]" /> Sent Requests
+                    <div className="mb-[16px]">
+                      <h2 className="text-[14px] font-[600] text-[#101828] dark:text-[#F5F7FA] mb-[8px] px-1 flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-[#8B5CF6]" /> Sent
                       </h2>
-                      <div className="flex flex-col gap-0">
+                      <div className="flex flex-col gap-[6px]">
                         {outgoingRequests.map(req => (
-                          <div key={req.id} className="w-full flex flex-col p-4 bg-white dark:bg-[#11161B] rounded-[16px] border border-[#EAECF0] dark:border-white/5 hover:shadow-md transition-all duration-150 gap-4">
-                            <div 
-                              className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
-                              onClick={() => router.push(`/profile/${req.receiver?.username || req.receiver_id}`)}
-                            >
-                              <UserAvatar src={req.receiver?.avatar_url} name={req.receiver?.display_name || 'User'} size="lg" className="w-[44px] h-[44px]" />
-                              <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[14px] truncate">{req.receiver?.display_name || 'User'}</p>
-                                <p className="text-[13px] text-[#667085] dark:text-[#A7AFB8] truncate">@{req.receiver?.username || 'unknown'}</p>
-                              </div>
-                            </div>
-                            <div className="flex w-full">
-                              <button
-                                onClick={async () => {
-                                  await cancelRequest(req.id);
-                                  fetchAllData();
-                                }}
-                                className="w-full py-2 bg-[#FEF3F2] dark:bg-[#F04438]/10 text-[#F04438] hover:bg-[#FEE4E2] dark:hover:bg-[#F04438]/20 rounded-[10px] text-[13px] font-medium transition-all"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </div>
+                          <CompactUserRow key={req.id} user={req.receiver!} context="outgoing" reqId={req.id} />
                         ))}
                       </div>
                     </div>
@@ -462,72 +423,45 @@ export default function ContactsPage() {
 
                   {/* Suggestions */}
                   {suggestions.length > 0 && (
-                    <div className="space-y-4">
-                      <h2 className="text-[14px] font-semibold text-[#101828] dark:text-[#F5F7FA] px-1">People you may know</h2>
-                      <div className="flex flex-col gap-0">
-                        {suggestions.map(p => renderProfileCard(p, 'suggestion'))}
+                    <div className="mb-[16px]">
+                      <h2 className="text-[14px] font-[600] text-[#101828] dark:text-[#F5F7FA] mb-[8px] px-1">
+                        Suggested for you
+                      </h2>
+                      <div className="flex flex-col gap-[6px]">
+                        {suggestions.map(p => (
+                          <CompactUserRow key={p.id} user={p} context="none" />
+                        ))}
                       </div>
                     </div>
                   )}
                   
                   {incomingRequests.length === 0 && outgoingRequests.length === 0 && suggestions.length === 0 && (
-                    <div className="text-center py-16">
-                      <div className="w-12 h-12 bg-white dark:bg-[#11161B] rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-[#EAECF0] dark:border-white/5">
-                        <UserPlus className="w-5 h-5 text-[#A7AFB8]" />
-                      </div>
-                      <h3 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA] mb-1">No pending requests</h3>
-                      <p className="text-[14px] text-[#667085] dark:text-[#A7AFB8]">Use the search bar above to find people.</p>
+                    <div className="text-center py-12">
+                      <UserPlus className="w-[32px] h-[32px] text-[#A7AFB8] mx-auto mb-3" />
+                      <h3 className="text-[14px] font-[600] text-[#F5F7FA] mb-1">No pending requests</h3>
+                      <p className="text-[12px] text-[#A7AFB8]">Use the search bar above to find people.</p>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="animate-in fade-in duration-200">
                   {friendships.length === 0 ? (
-                    <div className="text-center py-16">
-                      <div className="w-12 h-12 bg-white dark:bg-[#11161B] rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-[#EAECF0] dark:border-white/5">
-                        <Users className="w-5 h-5 text-[#A7AFB8]" />
-                      </div>
-                      <h3 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA] mb-1">No friends yet</h3>
-                      <p className="text-[14px] text-[#667085] dark:text-[#A7AFB8] mb-6">Search for people by their unique @username and start connecting.</p>
+                    <div className="text-center py-12">
+                      <Users className="w-[32px] h-[32px] text-[#A7AFB8] mx-auto mb-3" />
+                      <h3 className="text-[14px] font-[600] text-[#F5F7FA] mb-1">No friends yet</h3>
+                      <p className="text-[12px] text-[#A7AFB8]">Search for people by their unique @username.</p>
                     </div>
                   ) : (
-                    <div className="flex flex-col gap-0">
+                    <div className="flex flex-col gap-[6px]">
                       {friendships.map(f => {
                         if (!f.friend) return null;
-                        return (
-                          <div key={f.id} className="w-full flex flex-col p-4 bg-white dark:bg-[#11161B] rounded-[16px] border border-[#EAECF0] dark:border-white/5 hover:shadow-md hover:border-[#8B5CF6]/30 transition-all duration-150 gap-4">
-                            <div 
-                              className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
-                              onClick={() => router.push(`/profile/${f.friend?.username || f.friend?.id}`)}
-                            >
-                              <div className="relative">
-                                <UserAvatar src={f.friend.avatar_url} name={f.friend.display_name} size="lg" className="w-[44px] h-[44px]" />
-                                {f.friend.is_online && (
-                                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#12B76A] border-2 border-white dark:border-[#11141A] rounded-full" />
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-[#101828] dark:text-[#F5F7FA] text-[14px] truncate">{f.friend.display_name}</p>
-                                <p className="text-[13px] text-[#667085] dark:text-[#A7AFB8] truncate">@{f.friend.username}</p>
-                              </div>
-                            </div>
-
-                            <button
-                              onClick={() => handleStartChat(f.friend!)}
-                              disabled={isStartingChat === f.friend.id}
-                              className="w-full py-2 bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.04)] text-[#101828] dark:text-[#F5F7FA] border border-[#EAECF0] dark:border-white/5 rounded-[10px] text-[13px] font-medium flex items-center justify-center gap-2 hover:bg-[#EAECF0] dark:hover:bg-[rgba(255,255,255,0.08)] transition-all shadow-sm"
-                            >
-                              {isStartingChat === f.friend.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4 text-[#8B5CF6]" />}
-                              Message
-                            </button>
-                          </div>
-                        );
+                        return <CompactUserRow key={f.id} user={f.friend} context="friend" />;
                       })}
                     </div>
                   )}
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </div>
