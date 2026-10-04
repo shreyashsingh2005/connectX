@@ -42,12 +42,18 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   const supabase = createClient();
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowMenu(false);
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    // Temporarily removed outside click handling for debugging
   }, []);
+
+  useEffect(() => {
+    console.log("CLEAR_CHAT_MODAL_STATE", showClearModal);
+  }, [showClearModal]);
+
+  const handleOpenClearChat = () => {
+    console.log("CLEAR_CHAT_BUTTON_FIRED");
+    setShowMenu(false);
+    setShowClearModal(true);
+  };
 
   async function handleClearChat() {
     if (isClearing) return;
@@ -174,32 +180,19 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
               </button>
               <div className="h-[1px] w-full bg-gray-100 dark:bg-gray-700" />
               <button 
-                onClick={(e) => { 
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('[CLEAR_CHAT] CLICK', e.type); 
-                  setShowMenu(false); 
-                  console.log('[CLEAR_CHAT] OPEN_CONFIRM');
-                  setShowClearModal(true); 
-                }}
-                onPointerDown={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('[CLEAR_CHAT] POINTER_DOWN', e.type); 
-                  setShowMenu(false); 
-                  console.log('[CLEAR_CHAT] OPEN_CONFIRM');
-                  setShowClearModal(true); 
-                }}
-                className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-              >
-                Clear Chat
-              </button>
+  type="button"
+  onClick={handleOpenClearChat}
+  className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+  style={{ pointerEvents: 'auto', cursor: 'pointer', position: 'relative', zIndex: 60 }}
+>
+  Clear Chat
+</button>
             </div>
           )}
         </div>
         
         {showClearModal && typeof document !== 'undefined' && createPortal(
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
             <div className="bg-white dark:bg-[#151922] w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-[#252A34]">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Clear chat?</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Are you sure you want to clear all messages in this conversation? This will only clear them for you.</p>
