@@ -60,16 +60,16 @@ function ChangePasswordModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
         </div>
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div>
-            <label className="block text-[13px] font-medium text-text-sec mb-1">New Password</label>
+            <label className="block text-[12px] font-medium text-text-sec mb-1">New Password</label>
             <input type="password" value={password} onChange={e=>setPassword(e.target.value)} required className="w-full bg-bg-secondary border border-border-subtle rounded-[10px] px-3 py-2 text-[13px] text-text-main focus:outline-none focus:border-[#8B5CF6]" />
           </div>
           <div>
-            <label className="block text-[13px] font-medium text-text-sec mb-1">Confirm Password</label>
+            <label className="block text-[12px] font-medium text-text-sec mb-1">Confirm Password</label>
             <input type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} required className="w-full bg-bg-secondary border border-border-subtle rounded-[10px] px-3 py-2 text-[13px] text-text-main focus:outline-none focus:border-[#8B5CF6]" />
           </div>
           <div className="pt-2 flex justify-end gap-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-[13px] font-medium text-text-sec">Cancel</button>
-            <button type="submit" disabled={loading} className="px-4 py-2 text-[13px] font-medium text-white bg-brand rounded-[10px] hover:bg-brand-dark disabled:opacity-50">{loading ? 'Saving...' : 'Save'}</button>
+            <button type="button" onClick={onClose} className="px-4 py-2 text-[12px] font-medium text-text-sec">Cancel</button>
+            <button type="submit" disabled={loading} className="px-4 py-2 text-[12px] font-medium text-white bg-brand rounded-[10px] hover:bg-brand-dark disabled:opacity-50">{loading ? 'Saving...' : 'Save'}</button>
           </div>
         </form>
       </div>
@@ -135,7 +135,7 @@ function ManageSessionsModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
               {devices.map(d => (
                 <div key={d.id} className="flex items-center justify-between p-3 bg-bg-secondary rounded-[12px] border border-gray-100 dark:border-[#1F2937]">
                   <div>
-                    <p className="text-[13px] font-medium text-text-main">{d.device_name || 'Unknown Device'}</p>
+                    <p className="text-[12px] font-medium text-text-main">{d.device_name || 'Unknown Device'}</p>
                     <p className="text-[11px] text-text-muted mt-0.5">Last seen: {new Date(d.last_seen_at).toLocaleDateString()}</p>
                   </div>
                   <button onClick={() => handleRevokeDevice(d.id)} className="text-[11px] text-red-500 hover:text-red-600 font-medium px-2 py-1 bg-red-50 dark:bg-red-500/10 rounded">Revoke</button>
@@ -146,7 +146,7 @@ function ManageSessionsModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
           )}
         </div>
         <div className="p-4 border-t border-border-subtle bg-bg-secondary flex-shrink-0">
-          <button onClick={handleSignOutOthers} className="w-full py-2.5 text-[13px] font-medium text-white bg-red-500 hover:bg-red-600 rounded-[10px] transition-colors">
+          <button onClick={handleSignOutOthers} className="w-full py-2.5 text-[12px] font-medium text-white bg-red-500 hover:bg-red-600 rounded-[10px] transition-colors">
             Sign out all other sessions
           </button>
         </div>
@@ -357,7 +357,7 @@ export default function SettingsPage() {
   ] as const;
 
   const BackHeader = ({ title }: { title: string }) => (
-    <div className="flex items-center gap-4 py-4 md:py-6 px-4 md:px-0">
+    <div className="flex items-center gap-4 py-4 md:py-6 ">
       <button onClick={() => setActiveSection('main')} className="p-1 -ml-1 text-text-sec hover:bg-[#EAECF0]/50 dark:hover:bg-[rgba(255,255,255,0.04)] rounded-full transition-colors outline-none">
         <ArrowLeft size={20} strokeWidth={1.75} />
       </button>
@@ -367,33 +367,33 @@ export default function SettingsPage() {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-bg-primary overflow-y-auto no-scrollbar items-center relative">
-      <div className="w-full max-w-[600px] flex flex-col min-h-full">
+      <div className="w-full max-w-[680px] flex flex-col min-h-full px-4 md:px-6">
         
         {/* MAIN OVERVIEW */}
         {activeSection === 'main' && (
-          <div className="flex-1 flex flex-col animate-in fade-in duration-200 px-4 md:px-0 py-6">
+          <div className="flex-1 flex flex-col animate-in fade-in duration-150 py-6">
             <h1 className="text-[22px] font-bold text-text-main mb-6">Settings</h1>
 
             {/* Compact Profile Header */}
-            <div className="flex items-center gap-4 bg-bg-surface rounded-[16px] border border-border-subtle shadow-sm dark:shadow-none p-4 mb-6 cursor-pointer hover:bg-bg-secondary transition-colors" onClick={() => setActiveSection("account")}>
-              <UserAvatar src={profile.avatar_url} name={profile.display_name} size="xl" className="w-[60px] h-[60px]" isOnline={true} />
+            <div className="flex items-center gap-4 bg-bg-surface rounded-[10px] border border-border-subtle h-[68px] px-4 mb-6 cursor-pointer hover:bg-bg-secondary transition-colors" onClick={() => setActiveSection("account")}>
+              <UserAvatar src={profile.avatar_url} name={profile.display_name} size="xl" className="w-[48px] h-[48px]" isOnline={true} />
               <div className="flex-1 min-w-0">
-                <h2 className="text-[17px] font-[600] text-text-main truncate">{profile.display_name}</h2>
+                <h2 className="text-[15px] font-[600] text-text-main truncate">{profile.display_name}</h2>
                 <p className="text-[12px] text-text-sec truncate">@{profile.username}</p>
               </div>
-              <ChevronRight size={18} strokeWidth={1.75} className="text-text-sec" />
+              <ChevronRight size={16} strokeWidth={1.75} className="text-text-sec" />
             </div>
 
             {/* Compact Lists */}
             <div className="flex flex-col gap-6">
               <div>
-                <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-wider mb-1.5 px-4 md:px-1">Preferences</h3>
-                <div className="bg-bg-surface rounded-[16px] border border-border-subtle shadow-sm dark:shadow-none overflow-hidden">
+                <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-[0.06em] mb-1.5 px-6 md:px-2">Preferences</h3>
+                <div className="bg-bg-surface rounded-[10px] border border-border-subtle overflow-hidden w-full">
                   {mainSections.map((item, index) => (
-                    <button key={item.id} onClick={() => setActiveSection(item.id as any)} className={cn("flex items-center justify-between flex items-center justify-between w-full px-4 h-[52px] hover:bg-bg-secondary transition-colors outline-none group", index !== mainSections.length - 1 && "border-b border-border-subtle")}>
+                    <button key={item.id} onClick={() => setActiveSection(item.id as any)} className={cn("flex items-center justify-between w-full px-4 h-[52px] hover:bg-bg-secondary transition-colors outline-none group", index !== mainSections.length - 1 && "border-b border-border-subtle")}>
                       <div className="flex items-center gap-3">
                         <item.icon size={18} strokeWidth={1.75} className="text-text-sec group-hover:text-text-main dark:group-hover:text-text-main transition-colors" />
-                        <span className="text-[14px] font-[500] text-text-main">{item.label}</span>
+                        <span className="text-[14px] font-[600] text-text-main">{item.label}</span>
                       </div>
                       <ChevronRight size={15} strokeWidth={1.75} className="text-text-main dark:text-[#475467] group-hover:text-text-sec dark:group-hover:text-text-sec transition-colors" />
                     </button>
@@ -402,13 +402,13 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-wider mb-1.5 px-4 md:px-1">More</h3>
-                <div className="bg-bg-surface rounded-[16px] border border-border-subtle shadow-sm dark:shadow-none overflow-hidden">
+                <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-[0.06em] mb-1.5 px-6 md:px-2">More</h3>
+                <div className="bg-bg-surface rounded-[10px] border border-border-subtle overflow-hidden w-full">
                   {secondarySections.map((item, index) => (
-                    <button key={item.id} onClick={() => setActiveSection(item.id as any)} className={cn("flex items-center justify-between flex items-center justify-between w-full px-4 h-[52px] hover:bg-bg-secondary transition-colors outline-none group", index !== secondarySections.length - 1 && "border-b border-border-subtle")}>
+                    <button key={item.id} onClick={() => setActiveSection(item.id as any)} className={cn("flex items-center justify-between w-full px-4 h-[52px] hover:bg-bg-secondary transition-colors outline-none group", index !== secondarySections.length - 1 && "border-b border-border-subtle")}>
                       <div className="flex items-center gap-3">
                         <item.icon size={18} strokeWidth={1.75} className="text-text-sec group-hover:text-text-main dark:group-hover:text-text-main transition-colors" />
-                        <span className="text-[14px] font-[500] text-text-main">{item.label}</span>
+                        <span className="text-[14px] font-[600] text-text-main">{item.label}</span>
                       </div>
                       <ChevronRight size={15} strokeWidth={1.75} className="text-text-main dark:text-[#475467] group-hover:text-text-sec dark:group-hover:text-text-sec transition-colors" />
                     </button>
@@ -421,77 +421,69 @@ export default function SettingsPage() {
 
         {/* ACCOUNT SETTINGS */}
         {activeSection === 'account' && (
-          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
+          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-150">
             <BackHeader title="Account" />
             
-            <div className="bg-bg-surface rounded-[24px] border border-transparent border-border-subtle md:border-border-subtle shadow-sm overflow-hidden mt-2 mx-4 md:mx-0 mb-4">
-              <div className="flex items-center gap-5 p-5">
-                <div className="relative group cursor-pointer flex-shrink-0" onClick={() => setShowPhotoEditor(true)}>
-                  <UserAvatar src={profile.avatar_url} name={profile.display_name} size="2xl" className="w-[64px] h-[64px]" />
-                  <div className="absolute inset-0 bg-bg-primary/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Camera size={18} strokeWidth={1.75} className="text-white" />
-                  </div>
-                </div>
-                <div>
-                  <button type="button" onClick={() => setShowPhotoEditor(true)} className="h-[34px] px-3 bg-bg-surface dark:bg-[rgba(255,255,255,0.04)] border border-border-subtle text-text-main hover:bg-bg-secondary transition-colors rounded-[8px] text-[13px] font-medium shadow-sm mb-1.5 outline-none">
-                    Change photo
-                  </button>
-                  <p className="text-[12px] text-text-sec">JPG or PNG. Max 5MB.</p>
+                        <div className="flex flex-col items-center justify-center py-6 mb-2">
+              <div className="relative group cursor-pointer" onClick={() => setShowPhotoEditor(true)}>
+                <UserAvatar src={profile.avatar_url} name={profile.display_name} size="2xl" className="w-[72px] h-[72px] shadow-sm" />
+                <div className="absolute bottom-0 right-0 w-7 h-7 bg-bg-surface border border-border-subtle rounded-full flex items-center justify-center shadow-sm text-text-sec group-hover:text-brand transition-colors">
+                  <Camera size={14} strokeWidth={2} />
                 </div>
               </div>
             </div>
 
-            <div className="bg-bg-surface rounded-[24px] border border-transparent border-border-subtle md:border-border-subtle shadow-sm overflow-hidden mt-2 mx-4 md:mx-0">
-               <div className="flex flex-col p-2">
-                 <button onClick={() => setEditingField("display_name")} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary rounded-[12px] transition-colors group outline-none">
+            <div className="bg-bg-surface rounded-[10px] border border-border-subtle overflow-hidden w-full mb-6">
+               <div className="flex flex-col">
+                 <button onClick={() => setEditingField("display_name")} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors group outline-none">
                    <div className="flex flex-col text-left">
                      <span className="text-[12px] text-text-sec mb-0.5">Display name</span>
-                     <span className="text-[14px] font-[500] text-text-main">{profile.display_name}</span>
+                     <span className="text-[14px] font-[600] text-text-main">{profile.display_name}</span>
                    </div>
                    <ChevronRight size={15} strokeWidth={1.75} className="text-text-sec group-hover:text-text-sec dark:group-hover:text-text-main" />
                  </button>
                  
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
                  
-                 <button onClick={() => setEditingField("username")} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary rounded-[12px] transition-colors group outline-none">
+                 <button onClick={() => setEditingField("username")} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors group outline-none">
                    <div className="flex flex-col text-left">
                      <span className="text-[12px] text-text-sec mb-0.5">Username</span>
-                     <span className="text-[14px] font-[500] text-text-main">@{profile.username}</span>
+                     <span className="text-[14px] font-[600] text-text-main">@{profile.username}</span>
                    </div>
                    <ChevronRight size={15} strokeWidth={1.75} className="text-text-sec group-hover:text-text-sec dark:group-hover:text-text-main" />
                  </button>
 
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
                  
                  <div className="flex items-center justify-between p-3">
                    <div className="flex flex-col">
                      <span className="text-[12px] text-text-sec mb-0.5">Email</span>
-                     <span className="text-[14px] font-[500] text-text-main">{profile.email}</span>
+                     <span className="text-[14px] font-[600] text-text-main">{profile.email}</span>
                    </div>
                    <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#10B981] dark:text-[#32D583]">
                       <CheckCircle2 size={14} strokeWidth={1.75} /> Verified
                    </div>
                  </div>
 
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
                  
-                 <button onClick={() => setEditingField("bio")} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary rounded-[12px] transition-colors group outline-none">
+                 <button onClick={() => setEditingField("bio")} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors group outline-none">
                    <div className="flex flex-col text-left">
                      <span className="text-[12px] text-text-sec mb-0.5">About</span>
-                     <span className="text-[14px] font-[500] text-text-main truncate max-w-[220px]">{profile.bio || 'No bio provided'}</span>
+                     <span className="text-[14px] font-[600] text-text-main truncate max-w-[220px]">{profile.bio || 'No bio provided'}</span>
                    </div>
                    <ChevronRight size={15} strokeWidth={1.75} className="text-text-sec group-hover:text-text-sec dark:group-hover:text-text-main" />
                  </button>
                </div>
             </div>
 
-            <div className="px-4 md:px-0 mt-8">
+            <div className="mt-8">
               <button onClick={handleLogout} className="flex items-center justify-center gap-2 w-full h-[48px] bg-bg-surface border border-border-subtle text-text-main rounded-[12px] text-[14px] font-medium hover:bg-bg-secondary transition-colors shadow-sm">
                 <LogOut size={16} strokeWidth={1.75} /> Sign out
               </button>
             </div>
             
-            <div className="px-4 md:px-0 mt-6">
+            <div className="mt-6">
                <button className="flex items-center justify-center gap-2 w-full h-[48px] border border-[#F97066]/20 bg-[#FEF3F2]/50 dark:bg-[#7A271A]/10 text-[#D92D20] rounded-[12px] text-[14px] font-medium hover:bg-[#FEF3F2] dark:hover:bg-[#F97066]/10 transition-colors">
                   Delete account
                </button>
@@ -501,35 +493,35 @@ export default function SettingsPage() {
 
         {/* APPEARANCE */}
         {activeSection === 'appearance' && (
-          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
-            <div className="flex items-center gap-4 py-4 md:py-6 px-4 md:px-0">
+          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-150">
+            <div className="flex items-center gap-4 py-4 md:py-6 ">
               <button onClick={() => setActiveSection('main')} className="p-1 -ml-1 text-text-sec hover:bg-[#EAECF0]/50 dark:hover:bg-[rgba(255,255,255,0.04)] rounded-full transition-colors outline-none">
                 <ArrowLeft size={20} strokeWidth={1.75} />
               </button>
               <h2 className="text-[18px] font-semibold text-text-main">Appearance</h2>
             </div>
             
-            <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-wider mb-1.5 px-4 md:px-1 mx-4 md:mx-0 mt-2">Theme</h3>
-            <div className="bg-bg-surface rounded-[16px] border border-transparent border-border-subtle md:border-border-subtle shadow-sm overflow-hidden mx-4 md:mx-0 mb-6 p-2">
+            <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-[0.06em] mb-1.5 px-6 md:px-2 w-full mt-6">Theme</h3>
+            <div className="bg-bg-surface rounded-[10px] border border-border-subtle overflow-hidden w-full mb-6 p-2">
               <div className="flex bg-bg-primary rounded-[12px] p-1 border border-border-subtle">
                  {[
                    { id: 'light', icon: Sun, label: 'Light' },
                    { id: 'dark', icon: Moon, label: 'Dark' },
                    { id: 'system', icon: Monitor, label: 'System' },
                  ].map((t) => (
-                   <button key={t.id} onClick={() => setTheme(t.id)} className={cn('flex-1 flex items-center justify-center gap-2 h-[42px] rounded-[10px] transition-all outline-none', theme === t.id ? 'bg-brand/10 text-brand shadow-sm border border-transparent' : 'text-text-sec hover:text-text-main dark:hover:text-text-main')}>
+                   <button key={t.id} onClick={() => setTheme(t.id)} className={cn('flex-1 flex items-center justify-center gap-2 h-[40px] rounded-[10px] transition-all outline-none', theme === t.id ? 'bg-brand/10 text-brand rounded-[10px] shadow-none border-none' : 'text-text-sec hover:text-text-main dark:hover:text-text-main')}>
                      <t.icon size={16} strokeWidth={1.75} />
-                     <span className="text-[13px] font-medium">{t.label}</span>
+                     <span className="text-[12px] font-medium">{t.label}</span>
                    </button>
                  ))}
                </div>
             </div>
 
-            <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-wider mb-1.5 px-4 md:px-1 mx-4 md:mx-0">Chat Appearance</h3>
-            <div className="bg-bg-surface rounded-[16px] border border-transparent border-border-subtle md:border-border-subtle shadow-sm overflow-hidden mx-4 md:mx-0 mb-6">
+            <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-[0.06em] mb-1.5 px-6 md:px-2 w-full">Chat Appearance</h3>
+            <div className="bg-bg-surface rounded-[10px] border border-border-subtle overflow-hidden w-full mb-6">
               <div className="flex flex-col">
                 <button onClick={() => setShowThemePicker(true)} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors w-full text-left outline-none group">
-                  <span className="text-[14px] font-[500] text-text-main">Chat theme</span>
+                  <span className="text-[14px] font-[600] text-text-main">Chat theme</span>
                   <div className="flex items-center gap-2">
                     <span className="text-[13px] text-text-sec capitalize">{globalTheme.themeId === 'connect-purple' ? 'Purple' : globalTheme.themeId}</span>
                     <ChevronRight size={15} strokeWidth={1.75} className="text-text-sec group-hover:text-text-sec dark:group-hover:text-text-main" />
@@ -537,7 +529,7 @@ export default function SettingsPage() {
                 </button>
                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
                 <button onClick={() => setShowThemePicker(true)} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors w-full text-left outline-none group">
-                  <span className="text-[14px] font-[500] text-text-main">Chat background</span>
+                  <span className="text-[14px] font-[600] text-text-main">Chat background</span>
                   <div className="flex items-center gap-2">
                     <span className="text-[13px] text-text-sec capitalize">{globalTheme.backgroundId}</span>
                     <ChevronRight size={15} strokeWidth={1.75} className="text-text-sec group-hover:text-text-sec dark:group-hover:text-text-main" />
@@ -545,7 +537,7 @@ export default function SettingsPage() {
                 </button>
                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
                 <button onClick={() => setShowThemePicker(true)} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors w-full text-left outline-none group">
-                  <span className="text-[14px] font-[500] text-text-main">Message bubbles</span>
+                  <span className="text-[14px] font-[600] text-text-main">Message bubbles</span>
                   <div className="flex items-center gap-2">
                     <span className="text-[13px] text-text-sec capitalize">{globalTheme.accentColor}</span>
                     <ChevronRight size={15} strokeWidth={1.75} className="text-text-sec group-hover:text-text-sec dark:group-hover:text-text-main" />
@@ -560,18 +552,18 @@ export default function SettingsPage() {
 
         {/* PRIVACY */}
         {activeSection === 'privacy' && (
-          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
+          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-150">
             <BackHeader title="Privacy" />
             
-            <div className="bg-bg-surface rounded-[24px] border border-transparent border-border-subtle md:border-border-subtle shadow-sm overflow-hidden mt-2 mx-4 md:mx-0">
-               <div className="flex flex-col p-2">
+            <div className="bg-bg-surface rounded-[10px] border border-border-subtle overflow-hidden w-full mb-6">
+               <div className="flex flex-col">
                   {[
                     { key: 'show_online_status', label: 'Last seen', value: localSettings.show_online_status || 'everyone' },
                     { key: 'profile_visibility', label: 'Profile visibility', value: localSettings.profile_visibility || 'everyone' }
                   ].map((item, i) => (
                     <div key={item.key}>
-                      <div className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary rounded-[12px] transition-colors group">
-                        <span className="text-[14px] font-[500] text-text-main">{item.label}</span>
+                      <div className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors group">
+                        <span className="text-[14px] font-[600] text-text-main">{item.label}</span>
                         <div className="flex items-center gap-2">
                            <select
                              value={item.value}
@@ -588,12 +580,12 @@ export default function SettingsPage() {
                            <ChevronRight size={15} strokeWidth={1.75} className="text-text-sec pointer-events-none" />
                         </div>
                       </div>
-                      <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
+                      <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
                     </div>
                   ))}
 
-                  <div className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary rounded-[12px] transition-colors">
-                    <span className="text-[14px] font-[500] text-text-main">Read receipts</span>
+                  <div className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors">
+                    <span className="text-[14px] font-[600] text-text-main">Read receipts</span>
                     <label className="relative inline-flex items-center cursor-pointer mr-2">
                       <input 
                         type="checkbox" className="sr-only peer" 
@@ -607,10 +599,10 @@ export default function SettingsPage() {
                     </label>
                   </div>
                   
-                  <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
+                  <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
 
-                  <button className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary rounded-[12px] transition-colors group outline-none">
-                    <span className="text-[14px] font-[500] text-text-main">Blocked users</span>
+                  <button className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors group outline-none">
+                    <span className="text-[14px] font-[600] text-text-main">Blocked users</span>
                     <ChevronRight size={15} strokeWidth={1.75} className="text-text-sec group-hover:text-text-sec dark:group-hover:text-text-main" />
                   </button>
                </div>
@@ -620,8 +612,8 @@ export default function SettingsPage() {
 
         {/* NOTIFICATIONS */}
         {activeSection === 'notifications' && (
-          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
-            <div className="flex items-center gap-4 py-4 md:py-6 px-4 md:px-0">
+          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-150">
+            <div className="flex items-center gap-4 py-4 md:py-6 ">
               <button onClick={() => setActiveSection('main')} className="p-1 -ml-1 text-text-sec hover:bg-[#EAECF0]/50 dark:hover:bg-[rgba(255,255,255,0.04)] rounded-full transition-colors outline-none">
                 <ArrowLeft size={20} strokeWidth={1.75} />
               </button>
@@ -632,13 +624,13 @@ export default function SettingsPage() {
             </div>
             
             {/* 1. MESSAGE NOTIFICATIONS */}
-            <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-wider mb-1.5 px-4 md:px-1 mx-4 md:mx-0 mt-2">Message Notifications</h3>
-            <div className="bg-bg-surface rounded-[16px] border border-transparent border-border-subtle md:border-border-subtle shadow-sm overflow-hidden mx-4 md:mx-0 mb-6">
+            <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-[0.06em] mb-1.5 px-6 md:px-2 w-full mt-6">Message Notifications</h3>
+            <div className="bg-bg-surface rounded-[10px] border border-border-subtle overflow-hidden w-full mb-6">
               <div className="flex flex-col">
                 <div className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors">
                   <div className="flex items-center gap-3">
                     <MessageSquare size={18} strokeWidth={1.75} className="text-text-sec" />
-                    <span className="text-[14px] font-[500] text-text-main">Messages</span>
+                    <span className="text-[14px] font-[600] text-text-main">Messages</span>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input 
@@ -649,7 +641,7 @@ export default function SettingsPage() {
                         handleSaveSettings();
                       }}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-border-subtle after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-brand"></div>
+                    <div className="w-[36px] h-[20px] bg-[#EAECF0] dark:bg-[#374151] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-[16px] peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-border-subtle after:border after:rounded-full after:h-[16px] after:w-[16px] after:transition-all peer-checked:bg-brand"></div>
                   </label>
                 </div>
                 
@@ -658,7 +650,7 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors">
                   <div className="flex items-center gap-3">
                     <AtSign size={18} strokeWidth={1.75} className="text-text-sec" />
-                    <span className="text-[14px] font-[500] text-text-main">Group notifications</span>
+                    <span className="text-[14px] font-[600] text-text-main">Group notifications</span>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input 
@@ -669,20 +661,20 @@ export default function SettingsPage() {
                         handleSaveSettings();
                       }}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-border-subtle after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-brand"></div>
+                    <div className="w-[36px] h-[20px] bg-[#EAECF0] dark:bg-[#374151] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-[16px] peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-border-subtle after:border after:rounded-full after:h-[16px] after:w-[16px] after:transition-all peer-checked:bg-brand"></div>
                   </label>
                 </div>
               </div>
             </div>
 
             {/* 2. SOUND & VIBRATION */}
-            <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-wider mb-1.5 px-4 md:px-1 mx-4 md:mx-0">Sound & Vibration</h3>
-            <div className="bg-bg-surface rounded-[16px] border border-transparent border-border-subtle md:border-border-subtle shadow-sm overflow-hidden mx-4 md:mx-0 mb-6">
+            <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-[0.06em] mb-1.5 px-6 md:px-2 w-full">Sound & Vibration</h3>
+            <div className="bg-bg-surface rounded-[10px] border border-border-subtle overflow-hidden w-full mb-6">
               <div className="flex flex-col">
                 <div className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors">
                   <div className="flex items-center gap-3">
                     <Bell size={18} strokeWidth={1.75} className="text-text-sec" />
-                    <span className="text-[14px] font-[500] text-text-main">Notification sound</span>
+                    <span className="text-[14px] font-[600] text-text-main">Notification sound</span>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input 
@@ -693,20 +685,20 @@ export default function SettingsPage() {
                         handleSaveSettings();
                       }}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-border-subtle after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-brand"></div>
+                    <div className="w-[36px] h-[20px] bg-[#EAECF0] dark:bg-[#374151] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-[16px] peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-border-subtle after:border after:rounded-full after:h-[16px] after:w-[16px] after:transition-all peer-checked:bg-brand"></div>
                   </label>
                 </div>
               </div>
             </div>
 
             {/* 3. IN-APP NOTIFICATIONS */}
-            <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-wider mb-1.5 px-4 md:px-1 mx-4 md:mx-0">In-App Notifications</h3>
-            <div className="bg-bg-surface rounded-[16px] border border-transparent border-border-subtle md:border-border-subtle shadow-sm overflow-hidden mx-4 md:mx-0">
+            <h3 className="text-[11px] font-[600] text-text-sec uppercase tracking-[0.06em] mb-1.5 px-6 md:px-2 w-full">In-App Notifications</h3>
+            <div className="bg-bg-surface rounded-[10px] border border-border-subtle overflow-hidden w-full">
               <div className="flex flex-col">
                 <div className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors">
                   <div className="flex items-center gap-3">
                     <Smartphone size={18} strokeWidth={1.75} className="text-text-sec" />
-                    <span className="text-[14px] font-[500] text-text-main">Show notifications while using connectX</span>
+                    <span className="text-[14px] font-[600] text-text-main">Show notifications while using connectX</span>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input 
@@ -717,7 +709,7 @@ export default function SettingsPage() {
                         handleSaveSettings();
                       }}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-border-subtle after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-brand"></div>
+                    <div className="w-[36px] h-[20px] bg-[#EAECF0] dark:bg-[#374151] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-[16px] peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-border-subtle after:border after:rounded-full after:h-[16px] after:w-[16px] after:transition-all peer-checked:bg-brand"></div>
                   </label>
                 </div>
               </div>
@@ -728,38 +720,38 @@ export default function SettingsPage() {
 
         {/* SECURITY */}
         {activeSection === 'security' && (
-          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
+          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-150">
             <BackHeader title="Security" />
             
-            <div className="bg-bg-surface rounded-[24px] border border-transparent border-border-subtle md:border-border-subtle shadow-sm overflow-hidden mt-2 mx-4 md:mx-0">
-               <div className="flex flex-col p-2">
+            <div className="bg-bg-surface rounded-[10px] border border-border-subtle overflow-hidden w-full mb-6">
+               <div className="flex flex-col">
                  <div className="flex items-center justify-between p-3">
-                   <span className="text-[14px] font-[500] text-text-main">Email verification</span>
+                   <span className="text-[14px] font-[600] text-text-main">Email verification</span>
                    <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#10B981] dark:text-[#32D583]">
                       <CheckCircle2 size={14} strokeWidth={1.75} /> Verified
                    </div>
                  </div>
                  
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
                  
                  <div className="flex items-center justify-between p-3">
-                   <span className="text-[14px] font-[500] text-text-main">End-to-end encryption</span>
+                   <span className="text-[14px] font-[600] text-text-main">End-to-end encryption</span>
                    <div className="flex items-center gap-1.5 text-[12px] font-medium text-brand">
                       <CheckCircle2 size={14} strokeWidth={1.75} /> Active
                    </div>
                  </div>
 
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
                  
-                 <button onClick={() => setShowPasswordModal(true)} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary rounded-[12px] transition-colors group outline-none">
-                     <span className="text-[14px] font-[500] text-text-main">Change password</span>
+                 <button onClick={() => setShowPasswordModal(true)} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors group outline-none">
+                     <span className="text-[14px] font-[600] text-text-main">Change password</span>
                    <ChevronRight size={15} strokeWidth={1.75} className="text-text-sec group-hover:text-text-sec dark:group-hover:text-text-main" />
                  </button>
 
-                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-24px)] mx-auto my-1" />
+                 <div className="h-[1px] bg-[#EAECF0] dark:bg-[rgba(255,255,255,0.08)] w-[calc(100%-32px)] mx-auto" />
                  
-                 <button onClick={() => setShowSessionsModal(true)} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary rounded-[12px] transition-colors group outline-none">
-                     <span className="text-[14px] font-[500] text-text-main">Manage sessions</span>
+                 <button onClick={() => setShowSessionsModal(true)} className="flex items-center justify-between px-4 h-[52px] hover:bg-bg-secondary transition-colors group outline-none">
+                     <span className="text-[14px] font-[600] text-text-main">Manage sessions</span>
                    <ChevronRight size={15} strokeWidth={1.75} className="text-text-sec group-hover:text-text-sec dark:group-hover:text-text-main" />
                  </button>
                </div>
@@ -769,10 +761,10 @@ export default function SettingsPage() {
 
         {/* HELP & ABOUT */}
         {(activeSection === 'help' || activeSection === 'about') && (
-          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-200">
+          <div className="flex-1 flex flex-col pb-10 animate-in fade-in slide-in-from-right-4 duration-150">
             <BackHeader title={activeSection === 'help' ? 'Help' : 'About'} />
             
-            <div className="bg-bg-surface rounded-[24px] border border-transparent border-border-subtle md:border-border-subtle shadow-sm overflow-hidden mt-2 mx-4 md:mx-0 p-6 flex flex-col items-center justify-center min-h-[200px]">
+            <div className="bg-bg-surface rounded-[10px] border border-border-subtle overflow-hidden w-full mb-6 p-6 flex flex-col items-center justify-center min-h-[200px]">
                {activeSection === 'about' ? (
                  <>
                    <div className="w-12 h-12 bg-gradient-to-tr from-[#8B5CF6] to-[#EC4899] rounded-[14px] flex items-center justify-center text-white font-bold text-[20px] mb-4 shadow-sm">
@@ -792,7 +784,7 @@ export default function SettingsPage() {
 
       {/* Edit Profile Modal */}
       {editingField && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#000000]/35 backdrop-blur-[2px] animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#000000]/35 backdrop-blur-[2px] animate-in fade-in duration-150">
           <div className="bg-bg-surface w-full sm:max-w-[440px] rounded-t-[24px] sm:rounded-[24px] shadow-2xl border border-transparent border-border-subtle overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4 duration-300">
             <div className="flex items-center justify-between p-5 border-b border-border-subtle">
               <h2 className="text-[16px] font-semibold text-text-main">
@@ -806,12 +798,12 @@ export default function SettingsPage() {
             <form onSubmit={handleUpdateProfile} className="flex-1 overflow-y-auto p-5 space-y-5">
               {editingField === 'display_name' && (
                 <div className="space-y-1.5">
-                  <label className="text-[13px] font-medium text-text-main">Display Name</label>
+                  <label className="text-[12px] font-medium text-text-main">Display Name</label>
                   <div className="relative">
                     <UserRound size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-sec" />
                     <input
                       type="text" required value={editForm.display_name} onChange={e => setEditForm({ ...editForm, display_name: e.target.value })}
-                      className="w-full bg-bg-surface border border-border-subtle rounded-[10px] h-[42px] pl-9 pr-3 text-[14px] text-text-main focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm"
+                      className="w-full bg-bg-surface border border-border-subtle rounded-[10px] h-[40px] pl-9 pr-3 text-[14px] text-text-main focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm"
                     />
                   </div>
                 </div>
@@ -819,13 +811,13 @@ export default function SettingsPage() {
 
               {editingField === 'username' && (
                 <div className="space-y-1.5">
-                  <label className="text-[13px] font-medium text-text-main">Username</label>
+                  <label className="text-[12px] font-medium text-text-main">Username</label>
                   <div className="relative">
                     <AtSign size={16} strokeWidth={1.75} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-sec" />
                     <input
                       type="text" required value={editForm.username} onChange={handleUsernameChange}
                       className={cn(
-                        "w-full bg-bg-surface border rounded-[10px] h-[42px] pl-9 pr-20 text-[14px] text-text-main focus:outline-none focus:ring-1 transition-all shadow-sm",
+                        "w-full bg-bg-surface border rounded-[10px] h-[40px] pl-9 pr-20 text-[14px] text-text-main focus:outline-none focus:ring-1 transition-all shadow-sm",
                         isUsernameAvailable === false 
                           ? "border-[#F97066] focus:border-[#F97066] focus:ring-[#F97066]" 
                           : "border-border-subtle focus:border-[#8B5CF6] focus:ring-[#8B5CF6]"
@@ -848,7 +840,7 @@ export default function SettingsPage() {
 
               {editingField === 'bio' && (
                 <div className="space-y-1.5">
-                  <label className="text-[13px] font-medium text-text-main">About</label>
+                  <label className="text-[12px] font-medium text-text-main">About</label>
                   <textarea
                     value={editForm.bio} onChange={e => setEditForm({ ...editForm, bio: e.target.value })}
                     className="w-full bg-bg-surface border border-border-subtle rounded-[10px] py-2 px-3 text-[14px] text-text-main focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all shadow-sm resize-none"
@@ -858,10 +850,10 @@ export default function SettingsPage() {
               )}
               
               <div className="pt-2 flex gap-3 mt-6">
-                <button type="button" onClick={() => setEditingField(null)} className="flex-1 h-[40px] bg-bg-surface dark:bg-[rgba(255,255,255,0.04)] border border-border-subtle text-text-main rounded-[10px] text-[13px] font-medium hover:bg-bg-secondary transition-colors shadow-sm outline-none">
+                <button type="button" onClick={() => setEditingField(null)} className="flex-1 h-[40px] bg-bg-surface dark:bg-[rgba(255,255,255,0.04)] border border-border-subtle text-text-main rounded-[10px] text-[12px] font-medium hover:bg-bg-secondary transition-colors shadow-sm outline-none">
                   Cancel
                 </button>
-                <button type="submit" disabled={isSaving || isUsernameAvailable === false} className="flex-1 h-[40px] bg-brand text-white rounded-[10px] text-[13px] font-medium hover:bg-brand-dark transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 outline-none">
+                <button type="submit" disabled={isSaving || isUsernameAvailable === false} className="flex-1 h-[40px] bg-brand text-white rounded-[10px] text-[12px] font-medium hover:bg-brand-dark transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 outline-none">
                   {isSaving ? <Loader2 size={16} strokeWidth={2} className="animate-spin" /> : null}
                   Save
                 </button>
