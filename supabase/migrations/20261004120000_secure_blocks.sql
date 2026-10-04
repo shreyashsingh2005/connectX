@@ -1,3 +1,22 @@
+CREATE TABLE IF NOT EXISTS public.blocked_users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  blocker_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  blocked_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(blocker_id, blocked_id)
+);
+
+ALTER TABLE public.blocked_users ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view blocks they are involved in" ON public.blocked_users
+  FOR SELECT USING (auth.uid() = blocker_id OR auth.uid() = blocked_id);
+
+CREATE POLICY "Users can insert their own blocks" ON public.blocked_users
+  FOR INSERT WITH CHECK (auth.uid() = blocker_id);
+
+CREATE POLICY "Users can delete their own blocks" ON public.blocked_users
+  FOR DELETE USING (auth.uid() = blocker_id);
+
 CREATE OR REPLACE FUNCTION public.is_user_blocked_by_any_member(p_sender_id UUID, p_conversation_id UUID)
 RETURNS BOOLEAN
 LANGUAGE sql SECURITY DEFINER AS $$
@@ -10,7 +29,6 @@ LANGUAGE sql SECURITY DEFINER AS $$
   );
 $$;
 
--- Fix messages insert policy to respect blocks
 DROP POLICY IF EXISTS "Users can insert messages to their conversations" ON messages;
 CREATE POLICY "Users can insert messages to their conversations" ON messages FOR INSERT WITH CHECK (
   auth.uid() = sender_id AND 
@@ -18,7 +36,6 @@ CREATE POLICY "Users can insert messages to their conversations" ON messages FOR
   NOT public.is_user_blocked_by_any_member(sender_id, conversation_id)
 );
 
--- Fix direct conversation RPC to respect blocks
 CREATE OR REPLACE FUNCTION public.start_direct_conversation(other_user_id UUID)
 RETURNS UUID
 LANGUAGE plpgsql
@@ -35,7 +52,6 @@ BEGIN
     RAISE EXCEPTION 'Not authenticated';
   END IF;
 
-  -- Check if blocked
   IF EXISTS (
     SELECT 1 FROM blocked_users 
     WHERE (blocker_id = v_current_user_id AND blocked_id = other_user_id)
@@ -44,7 +60,6 @@ BEGIN
     RAISE EXCEPTION 'Cannot start conversation with this user';
   END IF;
 
-  -- Check if direct conversation already exists
   SELECT c.id INTO v_conversation_id
   FROM conversations c
   JOIN conversation_members m1 ON c.id = m1.conversation_id
@@ -58,10 +73,8 @@ BEGIN
     RETURN v_conversation_id;
   END IF;
 
-  -- Create new direct conversation
   INSERT INTO conversations (type) VALUES ('direct') RETURNING id INTO v_conversation_id;
   
-  -- Add members
   INSERT INTO conversation_members (conversation_id, user_id, role)
   VALUES 
     (v_conversation_id, v_current_user_id, 'owner'),

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS public.pinned_messages (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   message_id UUID NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
   conversation_id UUID NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
   pinned_by UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
