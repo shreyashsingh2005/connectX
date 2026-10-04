@@ -69,7 +69,7 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
     <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 p-0 sm:p-4">
       <div className="bg-bg-surface w-full max-w-[440px] rounded-t-[24px] sm:rounded-[24px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle border-border-subtle flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle flex-shrink-0">
           <div>
             <h2 className="text-[14px] font-semibold text-text-main">Chat Theme</h2>
             <p className="text-[11px] text-text-muted">Personalize how your conversations look.</p>
@@ -81,7 +81,7 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
 
         <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
           
-          <div className="rounded-[16px] overflow-hidden border border-border-subtle border-border-subtle h-[180px] relative flex flex-col justify-end p-4 shadow-inner"
+          <div className="rounded-[16px] overflow-hidden border border-border-subtle h-[180px] relative flex flex-col justify-end p-4 shadow-inner"
             style={{
               backgroundColor: resolvedTheme === 'dark' ? (themeColors[previewTheme.themeId]?.dark || '#0B0D12') : (themeColors[previewTheme.themeId]?.light || '#FBFBFD')
             }}
@@ -127,7 +127,7 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
                     "flex flex-col items-center justify-center py-2 px-2 rounded-[12px] border transition-all", 
                     previewTheme.themeId === theme.id 
                       ? "border-[#8B5CF6] bg-brand/5 shadow-sm" 
-                      : "border-border-subtle border-border-subtle hover:bg-bg-secondary"
+                      : "border-border-subtle hover:bg-bg-secondary"
                   )}
                 >
                   <div className="w-full h-8 rounded-[8px] mb-2 border border-border-subtle" 
@@ -169,7 +169,7 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
                     "flex flex-col items-center justify-center py-3 px-2 rounded-[12px] border transition-all", 
                     previewTheme.backgroundId === bg.id 
                       ? "border-[#8B5CF6] bg-brand/5 shadow-sm" 
-                      : "border-border-subtle border-border-subtle hover:bg-bg-secondary"
+                      : "border-border-subtle hover:bg-bg-secondary"
                   )}
                 >
                   <span className={cn("text-[12px] font-medium", previewTheme.backgroundId === bg.id ? "text-brand" : "text-text-main")}>{bg.name}</span>
@@ -179,7 +179,7 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
           </div>
         </div>
 
-        <div className="p-4 border-t border-border-subtle border-border-subtle bg-bg-secondary flex gap-3 flex-shrink-0 safe-area-inset-bottom">
+        <div className="p-4 border-t border-border-subtle bg-bg-secondary flex gap-3 flex-shrink-0 safe-area-inset-bottom">
           {!isGlobal && chatOverrides[conversationId] && (
             <button onClick={handleReset} className="px-4 py-2.5 text-[13px] font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-[10px] transition-colors">
               Reset
