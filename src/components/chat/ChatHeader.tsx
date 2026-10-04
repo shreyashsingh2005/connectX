@@ -50,17 +50,24 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
   async function handleClearChat() {
     if (!profile) return;
     try {
+      const { error } = await supabase.rpc('clear_conversation_for_current_user', {
+        p_conversation_id: conversation.id
+      });
+      if (error) throw error;
+      
+      // Keep local storage as fallback for instant feedback before reload
       const clearedChats = JSON.parse(localStorage.getItem('cleared_chats') || '{}');
       clearedChats[conversation.id] = new Date().toISOString();
       localStorage.setItem('cleared_chats', JSON.stringify(clearedChats));
-      window.dispatchEvent(new Event('chat_cleared'));
       
       useChatStore.getState().setMessages(conversation.id, []);
+      useChatStore.getState().updateConversation(conversation.id, { unread_count: 0 });
       
-      toast.success('Chat cleared for you');
+      toast.success('Chat cleared');
       setShowClearModal(false);
     } catch (error) {
-      toast.error('Failed to clear chat');
+      console.error(error);
+      toast.error("Couldn't clear chat. Please try again.");
     }
   }
 

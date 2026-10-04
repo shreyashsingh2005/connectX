@@ -39,7 +39,7 @@ export function useConversations() {
     try {
       const { data: memberRows } = await supabase
         .from('conversation_members')
-        .select('conversation_id, is_pinned, is_muted, is_archived, last_read_at, role')
+        .select('conversation_id, is_pinned, is_muted, is_archived, last_read_at, role, cleared_at')
         .eq('user_id', profile.id)
         .eq('is_archived', false);
 
@@ -82,7 +82,7 @@ export function useConversations() {
           let lastMsg = Array.isArray(conv.last_message) ? conv.last_message[0] : conv.last_message;
           
           if (lastMsg) {
-             const clearedAt = clearedChats[conv.id];
+             const clearedAt = memberInfo?.cleared_at || clearedChats[conv.id];
              if (deletedLocalIds.includes(lastMsg.id)) {
                lastMsg = undefined;
              } else if (clearedAt && new Date(lastMsg.created_at) <= new Date(clearedAt)) {

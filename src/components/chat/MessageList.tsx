@@ -185,8 +185,15 @@ export function MessageList({ conversationId }: MessageListProps) {
 
       let ordered = [...data].reverse();
       
-      const clearedChats = JSON.parse(localStorage.getItem('cleared_chats') || '{}');
-      const clearTime = clearedChats[conversationId];
+      const conv = useChatStore.getState().conversations.find(c => c.id === conversationId);
+      let clearTime = conv?.cleared_at;
+      try {
+        const clearedChats = JSON.parse(localStorage.getItem('cleared_chats') || '{}');
+        if (clearedChats[conversationId] && (!clearTime || new Date(clearedChats[conversationId]) > new Date(clearTime))) {
+          clearTime = clearedChats[conversationId];
+        }
+      } catch(e){}
+      
       if (clearTime) {
         ordered = ordered.filter(m => new Date(m.created_at).getTime() > new Date(clearTime).getTime());
         // If we filtered out all messages because they were cleared, we should stop fetching older ones

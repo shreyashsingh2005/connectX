@@ -45,11 +45,11 @@ const QUICK_EMOJIS = ['\u{2764}\u{FE0F}', '\u{1F602}', '\u{1F44D}', '\u{1F62E}',
 
 function DeliveryIcon({ status, isEmojiOnly }: { status: Message['status'], isEmojiOnly?: boolean }) {
   const neutralClass = isEmojiOnly ? "text-gray-400" : "text-white/80 drop-shadow-sm";
-  if (status === 'sending') return <Clock className={cn("w-3 h-3", neutralClass)} />;
-  if (status === 'sent') return <Check className={cn("w-[14px] h-[14px]", neutralClass)} />;
-  if (status === 'delivered') return <CheckCheck className={cn("w-[14px] h-[14px]", neutralClass)} />;
-  if (status === 'read') return <CheckCheck className={cn("w-[15px] h-[15px]", isEmojiOnly ? "text-[#38bdf8]" : "text-[#38bdf8] drop-shadow-md brightness-110")} />;
-  if (status === 'failed') return <AlertCircle className="w-[14px] h-[14px] text-red-300 drop-shadow-sm" />;
+  if (status === 'sending') return <Clock strokeWidth={2.5} className={cn("w-3 h-3", neutralClass)} />;
+  if (status === 'sent') return <Check strokeWidth={2.5} className={cn("w-[14px] h-[14px]", neutralClass)} />;
+  if (status === 'delivered') return <CheckCheck strokeWidth={2.5} className={cn("w-[14px] h-[14px]", neutralClass)} />;
+  if (status === 'read') return <CheckCheck strokeWidth={2.5} className={cn("w-[15px] h-[15px]", isEmojiOnly ? "text-[#3B82F6]" : "text-[#3B82F6] drop-shadow-sm")} />;
+  if (status === 'failed') return <AlertCircle strokeWidth={2.5} className="w-[14px] h-[14px] text-red-500" />;
   return null;
 }
 
@@ -351,6 +351,7 @@ export const MessageBubble = memo(function MessageBubble({
     prev.currentUserId === next.currentUserId
   );
 });
+
 
 
 

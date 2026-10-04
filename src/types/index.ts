@@ -45,6 +45,7 @@ export interface Conversation {
   members?: ConversationMember[];
   last_message?: Message;
   unread_count?: number;
+  cleared_at?: string | null;
 }
 
 export interface ConversationMember {
@@ -57,6 +58,7 @@ export interface ConversationMember {
   is_pinned: boolean;
   is_muted: boolean;
   is_archived: boolean;
+  cleared_at?: string | null;
   // Joined
   profile?: Profile;
 }
