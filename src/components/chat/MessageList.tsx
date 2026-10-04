@@ -39,6 +39,10 @@ export function MessageList({ conversationId }: MessageListProps) {
   const typingUsers = allTypingUsers.filter(u => u.conversationId === conversationId && u.userId !== profile?.id);
   const isLoadingMessages = useChatStore(s => s.isLoadingMessages);
   const setMessages = useChatStore(s => s.setMessages);
+  const setPinnedMessageIds = useChatStore(s => s.setPinnedMessageIds);
+  const addPinnedMessageId = useChatStore(s => s.addPinnedMessageId);
+  const removePinnedMessageId = useChatStore(s => s.removePinnedMessageId);
+  const pinnedMessageIds = useChatStore(s => s.pinnedMessageIds);
   const addMessage = useChatStore(s => s.addMessage);
   const updateMessage = useChatStore(s => s.updateMessage);
   const updateConversation = useChatStore(s => s.updateConversation);
@@ -254,6 +258,27 @@ export function MessageList({ conversationId }: MessageListProps) {
       loadMessages();
     });
   }, [conversationId, loadMessages, setMessages]);
+
+  
+  useEffect(() => {
+    if (!conversationId) return;
+    async function loadPins() {
+      const { data } = await supabase.from('pinned_messages').select('message_id').eq('conversation_id', conversationId);
+      if (data) setPinnedMessageIds(conversationId, data.map(d => d.message_id));
+    }
+    loadPins();
+
+    const channel = supabase.channel('pins_' + conversationId)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pinned_messages', filter: 'conversation_id=eq.' + conversationId }, (payload) => {
+        addPinnedMessageId(conversationId, payload.new.message_id);
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'pinned_messages', filter: 'conversation_id=eq.' + conversationId }, (payload) => {
+        removePinnedMessageId(conversationId, payload.old.message_id);
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [conversationId, supabase, setPinnedMessageIds, addPinnedMessageId, removePinnedMessageId]);
 
   const previousLengthRef = useRef(messages.length);
   useEffect(() => {
@@ -497,7 +522,7 @@ export function MessageList({ conversationId }: MessageListProps) {
         const { message, showAvatar, showSender } = item;
         const isOwn = message.sender_id === profile?.id;
         return (
-          <MessageBubble key={message.id} message={message}
+          <MessageBubble key={message.id} message={message} isPinned={!!pinnedMessageIds[conversationId]?.[message.id]}
               isOwn={isOwn} showAvatar={showAvatar} showSender={showSender}
             currentUserId={profile?.id || ''} onReply={setReplyToMessage} onForward={setForwardMessage} onEdit={handleEdit}
             onDelete={handleDeleteClick} onReact={handleReact}

@@ -12,6 +12,7 @@ import { ProfilePhotoEditor } from '@/components/profile/ProfilePhotoEditor';
 import { OnlineIndicator } from '@/components/ui/OnlineIndicator';
 import { cn, formatLastSeen } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import { useChatStore } from '@/store/useChatStore';
 import { X, Bell, BellOff, Archive, Flag, Shield, Image as ImageIcon, FileText, Users, Download } from 'lucide-react';
 
 interface ProfilePanelProps {
@@ -51,6 +52,7 @@ function PinnedMessageItem({ pm, conversationId, removePin }: { pm: any, convers
               const { error } = await supabase.from('pinned_messages').delete().eq('id', pm.id);
               if (error) throw error;
               removePin(pm.id);
+              useChatStore.getState().removePinnedMessageId(conversationId, pm.message_id);
               toast.success('Unpinned message');
             } catch(e: any) {
               toast.error('Failed to unpin');
@@ -188,8 +190,9 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
   }, [conversation.id]);
 
   async function loadMedia() {
-    const { data: pData } = await supabase.from('pinned_messages').select('*, messages(*)').eq('conversation_id', conversation.id).order('created_at', { ascending: false });
-    if (pData) setPinnedMessages(pData);
+    const { data: pData, error: pError } = await supabase.from('pinned_messages').select('*, messages(*)').eq('conversation_id', conversation.id).order('created_at', { ascending: false });
+      if (pError) console.error('[PIN-LOAD] ProfilePanel fetch error:', pError);
+      if (pData) setPinnedMessages(pData);
   
     const { data } = await supabase.from('attachments').select('*').eq('conversation_id', conversation.id).order('created_at', { ascending: false }).limit(20);
     if (data) {

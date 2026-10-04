@@ -58,6 +58,7 @@ function DeliveryIcon({ status, isEmojiOnly }: { status: Message['status'], isEm
 
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
+import { useChatStore } from '@/store/useChatStore';
 
 import { memo } from 'react';
 
@@ -348,28 +349,46 @@ export const MessageBubble = memo(function MessageBubble({
 
             <button
               onClick={async () => {
-                console.log('[PIN-1] CLICK');
+                console.log('[PIN-CLICK] messageId:', message.id, 'current isPinned:', isPinned);
                 try {
                   const supabase = createClient();
-                  const { error } = await supabase.from('pinned_messages').insert({
-                    message_id: message.id,
-                    conversation_id: message.conversation_id,
-                    pinned_by: currentUserId
-                  });
-                  if (error) {
-                    toast.error('Failed to pin: ' + error.message);
-                    return;
+                  
+                  
+                  if (isPinned) {
+                    console.log('[PIN-DELETE] start');
+                    const { error } = await supabase.from('pinned_messages').delete().eq('message_id', message.id);
+                    if (error) throw error;
+                    console.log('[PIN-DELETE] success');
+                    useChatStore.getState().removePinnedMessageId(message.conversation_id, message.id);
+                    toast.success('Message unpinned');
+                  } else {
+                    console.log('[PIN-INSERT] start');
+                    const { error } = await supabase.from('pinned_messages').insert({
+                      message_id: message.id,
+                      conversation_id: message.conversation_id,
+                      pinned_by: currentUserId
+                    });
+                    
+                    if (error) {
+                      if (error.code === '23505') {
+                        console.log('[PIN-INSERT] duplicate key, already pinned');
+                      } else {
+                        throw error;
+                      }
+                    }
+                    console.log('[PIN-INSERT] success');
+                    useChatStore.getState().addPinnedMessageId(message.conversation_id, message.id);
+                    toast.success('Message pinned');
                   }
-                  toast.success('Message pinned');
                 } catch (e: any) {
                   console.error('[PIN] Exception:', e);
-                  toast.error(e.message || 'Failed to pin message');
+                  toast.error(e.message || 'Failed to toggle pin');
                 }
               }}
               className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
-              title="Pin Message"
+              title={isPinned ? "Unpin Message" : "Pin Message"}
             >
-              <Pin className="w-3.5 h-3.5" />
+              <Pin className={cn("w-3.5 h-3.5", isPinned && "fill-current text-gray-900 dark:text-white")} />
             </button>
 
         </div>

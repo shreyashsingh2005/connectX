@@ -31,6 +31,10 @@ function mergeMessage(existing: Message, incoming: Partial<Message>): Message {
 interface ChatState {
   conversations: Conversation[];
   activeConversationId: string | null;
+  pinnedMessageIds: Record<string, Record<string, boolean>>;
+  setPinnedMessageIds: (conversationId: string, ids: string[]) => void;
+  addPinnedMessageId: (conversationId: string, messageId: string) => void;
+  removePinnedMessageId: (conversationId: string, messageId: string) => void;
   messages: Record<string, Message[]>;
   typingUsers: TypingUser[];
   isLoadingConversations: boolean;
@@ -61,6 +65,10 @@ interface ChatState {
 export const useChatStore = create<ChatState>()(set => ({
   conversations: [],
   activeConversationId: null,
+  pinnedMessageIds: {},
+  setPinnedMessageIds: (conversationId, ids) => set((state) => { const map: Record<string, boolean> = {}; ids.forEach(id => map[id] = true); return { pinnedMessageIds: { ...state.pinnedMessageIds, [conversationId]: map } }; }),
+  addPinnedMessageId: (conversationId, messageId) => set((state) => ({ pinnedMessageIds: { ...state.pinnedMessageIds, [conversationId]: { ...(state.pinnedMessageIds[conversationId] || {}), [messageId]: true } } })),
+  removePinnedMessageId: (conversationId, messageId) => set((state) => { const map = { ...(state.pinnedMessageIds[conversationId] || {}) }; delete map[messageId]; return { pinnedMessageIds: { ...state.pinnedMessageIds, [conversationId]: map } }; }),
   messages: {},
   typingUsers: [],
   isLoadingConversations: false,

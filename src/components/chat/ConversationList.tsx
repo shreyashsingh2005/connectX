@@ -59,6 +59,7 @@ export function ConversationList() {
   const [filter, setFilter] = useState<'all' | 'unread' | 'pinned'>('all');
   const profile = useAuthStore(s => s.profile);
   const activeId = useChatStore(s => s.activeConversationId);
+  const pinnedMessageIds = useChatStore(s => s.pinnedMessageIds);
   const { conversations, isLoadingConversations } = useConversations();
   const setShowNewChatModal = useUIStore(s => s.setShowNewChatModal);
   const setShowGroupModal = useUIStore(s => s.setShowGroupModal);
@@ -85,9 +86,9 @@ export function ConversationList() {
       });
     }
     if (filter === 'unread') list = list.filter(c => (c.unread_count || 0) > 0);
-    if (filter === 'pinned') list = list.filter(c => (c as Conversation & { is_pinned?: boolean }).is_pinned);
+    if (filter === 'pinned') list = list.filter(c => Object.keys(pinnedMessageIds[c.id] || {}).length > 0);
     return list;
-  }, [conversations, searchQuery, filter, clearedChats, activeId]);
+  }, [conversations, searchQuery, filter, clearedChats, activeId, pinnedMessageIds]);
 
   function getConversationName(conv: Conversation) {
     return conv.type === 'direct' ? (conv.other_member?.display_name || 'Unknown') : (conv.name || 'Group');
