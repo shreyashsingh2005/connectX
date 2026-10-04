@@ -114,7 +114,7 @@ export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { atta
     return (
       <div className="flex items-center gap-2 min-w-[180px]">
         <Music className="w-4 h-4 text-[var(--chat-outgoing-bg)]" />
-        <audio controls className="flex-1" style={{ height: 32 }}>
+        <audio controls preload="metadata" className="flex-1" style={{ height: 32 }}>
           <source src={objectUrl} type={attachment.mime_type} />
         </audio>
       </div>

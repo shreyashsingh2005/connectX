@@ -117,7 +117,26 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      
+      let mimeType = '';
+      const types = [
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/mp4',
+        'audio/mp4;codecs=mp4a.40.2',
+        'audio/ogg;codecs=opus'
+      ];
+      
+      for (const type of types) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          mimeType = type;
+          break;
+        }
+      }
+      
+      const mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      const actualMimeType = mediaRecorder.mimeType || mimeType || 'audio/webm';
+      
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -128,8 +147,30 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const audioFile = new File([audioBlob], `Voice_Note_${Date.now()}.webm`, { type: 'audio/webm' });
+        // Force calculation of duration locally if needed, but we already have recordingDuration state
+        const duration = useChatStore.getState().recordingDuration || 1; // Or fallback
+        
+        const audioBlob = new Blob(audioChunksRef.current, { type: actualMimeType });
+        
+        // Development diagnostics
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[VOICE_RECORDING_DEBUG]', {
+            size: audioBlob.size,
+            mimeType: actualMimeType,
+            chunkCount: audioChunksRef.current.length
+          });
+        }
+
+        if (audioChunksRef.current.length === 0 || audioBlob.size === 0) {
+          toast.error('Recording was empty.');
+          stream.getTracks().forEach(track => track.stop());
+          if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+          setIsRecording(false);
+          return;
+        }
+
+        const ext = actualMimeType.includes('mp4') ? 'mp4' : actualMimeType.includes('ogg') ? 'ogg' : 'webm';
+        const audioFile = new File([audioBlob], `Voice_Note_${Date.now()}.${ext}`, { type: actualMimeType });
         
         setAttachments([{
           id: uuidv4(),
@@ -152,7 +193,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
       }, 1000);
     } catch (error) {
       console.error('Microphone access denied:', error);
-      toast.error('Microphone access denied or unsupported.');
+      toast.error('Microphone permission is required.');
       setIsRecording(false);
     }
   };
