@@ -43,9 +43,9 @@ export function AppBootScreen() {
 
         {/* Loading indicator */}
         <div className="mt-8 flex items-center gap-1.5 animate-in fade-in duration-500 fill-mode-both" style={{ animationDelay: '300ms' }}>
-          <div className="w-1.5 h-1.5 rounded-full bg-brand opacity-30 animate-[pulseOpacity_900ms_ease-in-out_infinite]" />
-          <div className="w-1.5 h-1.5 rounded-full bg-brand opacity-30 animate-[pulseOpacity_900ms_ease-in-out_infinite]" style={{ animationDelay: '300ms' }} />
-          <div className="w-1.5 h-1.5 rounded-full bg-brand opacity-30 animate-[pulseOpacity_900ms_ease-in-out_infinite]" style={{ animationDelay: '600ms' }} />
+          <div className="w-[6px] h-[6px] rounded-full bg-brand animate-splash-dot" />
+          <div className="w-[6px] h-[6px] rounded-full bg-brand animate-splash-dot" style={{ animationDelay: '150ms' }} />
+          <div className="w-[6px] h-[6px] rounded-full bg-brand animate-splash-dot" style={{ animationDelay: '300ms' }} />
         </div>
       </div>
     </div>
