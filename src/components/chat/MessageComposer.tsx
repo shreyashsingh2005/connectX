@@ -148,7 +148,7 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
 
       mediaRecorder.onstop = () => {
         // Force calculation of duration locally if needed, but we already have recordingDuration state
-        const duration = useChatStore.getState().recordingDuration || 1; // Or fallback
+        
         
         const audioBlob = new Blob(audioChunksRef.current, { type: actualMimeType });
         
