@@ -58,15 +58,15 @@ export default function ResetPasswordPage() {
     }
   }
 
-  const inputClass = "w-full bg-[#FAFAFC] dark:bg-[#11131A] border border-[#E6E4EC] dark:border-[#2A2E3B] rounded-[10px] h-[44px] px-[14px] text-text-main text-[14px] placeholder-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand/30 transition-all";
+  const inputClass = "w-full bg-bg-surface dark:bg-[#0B0D12] border border-border-subtle rounded-[10px] h-[44px] px-[14px] text-text-main text-[14px] placeholder-text-muted focus:outline-none focus:border-brand focus:ring-[1px] focus:ring-brand/30 transition-all shadow-sm";
 
   return (
     <AuthLayout>
       <div className="w-full flex flex-col">
-        <h2 className="text-[30px] md:text-[32px] font-[700] text-text-main leading-tight tracking-tight mb-2">
+        <h2 className="text-[28px] md:text-[32px] font-[650] md:font-[700] text-text-main leading-tight tracking-tight mb-2">
           New password
         </h2>
-        <p className="text-[14px] text-text-sec mb-8">
+        <p className="text-[14px] md:text-[15px] text-text-muted mb-8">
           Please enter your new password.
         </p>
 

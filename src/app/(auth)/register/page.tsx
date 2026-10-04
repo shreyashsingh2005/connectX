@@ -95,15 +95,15 @@ export default function RegisterPage() {
     }
   }
 
-  const inputClass = "w-full bg-[#FAFAFC] dark:bg-[#11131A] border border-[#E6E4EC] dark:border-[#2A2E3B] rounded-[10px] h-[44px] px-[14px] text-text-main text-[14px] placeholder-text-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand/30 transition-all";
+  const inputClass = "w-full bg-bg-surface dark:bg-[#0B0D12] border border-border-subtle rounded-[10px] h-[44px] px-[14px] text-text-main text-[14px] placeholder-text-muted focus:outline-none focus:border-brand focus:ring-[1px] focus:ring-brand/30 transition-all shadow-sm";
 
   return (
     <AuthLayout>
       <div className="w-full flex flex-col pt-8 md:pt-0">
-        <h2 className="text-[30px] md:text-[32px] font-[700] text-text-main leading-tight tracking-tight mb-2">
+        <h2 className="text-[28px] md:text-[32px] font-[650] md:font-[700] text-text-main leading-tight tracking-tight mb-2">
           Create your account
         </h2>
-        <p className="text-[14px] text-text-sec mb-8">
+        <p className="text-[14px] md:text-[15px] text-text-muted mb-8">
           Join connectX and start connecting.
         </p>
 
@@ -172,7 +172,7 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <button onClick={handleGoogleLogin} disabled={loading} className="w-full h-[44px] bg-white dark:bg-[#1A1D27] border border-[#E6E4EC] dark:border-[#2A2E3B] text-[14px] font-[500] text-text-main rounded-[10px] hover:bg-[#F9FAFB] dark:hover:bg-[#202430] transition-colors flex items-center justify-center gap-3 disabled:opacity-50">
+        <button onClick={handleGoogleLogin} disabled={loading} className="w-full h-[44px] bg-bg-surface dark:bg-transparent border border-border-subtle text-[14px] font-[500] text-text-main rounded-[10px] hover:bg-bg-secondary transition-colors flex items-center justify-center gap-3 disabled:opacity-50 shadow-sm">
           <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>

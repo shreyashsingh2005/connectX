@@ -9,11 +9,12 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-[100dvh] w-full flex flex-col md:flex-row bg-bg-surface overflow-hidden">
       
       {/* Mobile Top Brand Section */}
-      <div className="md:hidden flex flex-col items-center justify-center py-10 px-6 bg-[#0B0D14] text-white">
-        <div className="w-[48px] h-[48px] bg-brand text-white rounded-[14px] flex items-center justify-center mb-4 shadow-lg shadow-brand/20">
-          <ConnectXLogo size={28} />
+      <div className="md:hidden flex flex-col items-center justify-center py-8 px-5 bg-[#0B0D14] text-white">
+        <div className="w-[40px] h-[40px] bg-brand text-white rounded-[12px] flex items-center justify-center mb-3 shadow-md shadow-brand/20">
+          <ConnectXLogo size={24} />
         </div>
-        <h1 className="text-[24px] font-bold tracking-tight">connectX</h1>
+        <h1 className="text-[22px] font-bold tracking-tight mb-1">connectX</h1>
+        <p className="text-[14px] text-[#A7ADBA] text-center font-medium">A private, simple and secure way to stay connected.</p>
       </div>
 
       {/* Desktop Left Brand Panel */}
@@ -32,8 +33,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           <h1 className="text-[42px] font-bold leading-[1.1] tracking-tight mb-6">
             Connect.<br />Chat.<br />Share.
           </h1>
-          <p className="text-[15px] text-[#A7ADBA] max-w-[280px] leading-relaxed font-medium">
-            Connect with friends, start conversations and share moments.
+          <p className="text-[15px] text-[#A7ADBA] max-w-[320px] leading-relaxed font-medium">
+            A private, simple and secure way to stay connected.
           </p>
         </div>
 
@@ -61,8 +62,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Right Auth Panel */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 bg-bg-surface relative z-10">
-        <div className="w-full max-w-[400px] animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="flex-1 flex flex-col items-center justify-center px-5 py-8 md:p-12 bg-bg-surface relative z-10">
+        <div className="w-full max-w-[440px] animate-in fade-in slide-in-from-bottom-4 duration-300">
           {children}
         </div>
       </div>
