@@ -215,7 +215,7 @@ export default function ContactsPage() {
     reqId?: string;
   }) => {
     return (
-      <div className="flex items-center gap-[10px] w-full min-h-[60px] h-[60px] px-[10px] py-[8px] bg-[rgba(255,255,255,0.035)] border border-[rgba(255,255,255,0.07)] rounded-[10px] hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+      <div className="flex items-center gap-[10px] w-full min-h-[60px] h-[60px] px-[10px] py-[8px] border-b border-[#EAECF0] dark:border-[rgba(255,255,255,0.06)] bg-white dark:bg-transparent last:border-b-0 hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.02)] transition-colors duration-150">
         
         {/* Identity Section */}
         <div 
@@ -259,7 +259,7 @@ export default function ContactsPage() {
                   fetchAllData();
                   if (query) performSearch(query);
                 }}
-                className="h-[30px] px-3 bg-[#8B5CF6] text-white rounded-[8px] text-[12px] font-medium hover:bg-[#7C3AED] transition-colors"
+                className="h-[30px] px-3 bg-[#8B5CF6] text-white rounded-[8px] text-[12px] font-medium hover:bg-[#7C3AED] transition-colors shadow-sm dark:shadow-none"
               >
                 Accept
               </button>
@@ -269,7 +269,7 @@ export default function ContactsPage() {
                   fetchAllData();
                   if (query) performSearch(query);
                 }}
-                className="h-[30px] px-3 bg-[rgba(255,255,255,0.06)] text-[#A7AFB8] hover:bg-[rgba(255,255,255,0.1)] rounded-[8px] text-[12px] font-medium transition-colors border border-white/5"
+                className="h-[30px] px-3 bg-white dark:bg-[rgba(255,255,255,0.06)] text-[#667085] dark:text-[#A7AFB8] hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.1)] rounded-[8px] text-[12px] font-medium transition-colors border border-[#EAECF0] dark:border-white/5 shadow-sm dark:shadow-none"
               >
                 Decline
               </button>
@@ -283,7 +283,7 @@ export default function ContactsPage() {
                 fetchAllData();
                 if (query) performSearch(query);
               }}
-              className="h-[30px] px-3 bg-[rgba(240,68,56,0.1)] text-[#F04438] hover:bg-[rgba(240,68,56,0.2)] rounded-[8px] text-[12px] font-medium transition-colors"
+              className="h-[30px] px-3 bg-[#FEF3F2] dark:bg-[rgba(240,68,56,0.1)] text-[#F04438] hover:bg-[#FEE4E2] dark:hover:bg-[rgba(240,68,56,0.2)] rounded-[8px] text-[12px] font-medium transition-colors"
             >
               Cancel
             </button>
@@ -297,7 +297,7 @@ export default function ContactsPage() {
                 if (query) performSearch(query);
                 else setRelationshipMap(prev => ({...prev, [user.id]: 'outgoing_request'}));
               }}
-              className="h-[30px] px-3 bg-[#8B5CF6] text-white rounded-[8px] text-[12px] font-medium hover:bg-[#7C3AED] transition-colors"
+              className="h-[30px] px-3 bg-[#8B5CF6] text-white rounded-[8px] text-[12px] font-medium hover:bg-[#7C3AED] transition-colors shadow-sm dark:shadow-none"
             >
               Add
             </button>
@@ -308,7 +308,7 @@ export default function ContactsPage() {
   };
 
   return (
-    <div className="flex flex-col flex-1 z-10 overflow-hidden relative bg-white dark:bg-[#0B0F12]">
+    <div className="flex flex-col flex-1 z-10 overflow-hidden relative bg-[#F8FAFC] dark:bg-[#0B0F12]">
       <div className="flex-1 overflow-y-auto no-scrollbar">
         {/* 1. MAIN CONTAINER (max-width 680px, compact padding) */}
         <div className="w-full max-w-[680px] mx-auto px-[20px] py-[24px]">
@@ -326,7 +326,7 @@ export default function ContactsPage() {
               placeholder="Search people..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full bg-[rgba(255,255,255,0.035)] border border-[rgba(255,255,255,0.07)] rounded-[10px] h-[40px] pl-[36px] pr-[12px] text-[13px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#A7AFB8] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all"
+              className="w-full bg-[#F1F5F9] dark:bg-[rgba(255,255,255,0.035)] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.07)] rounded-[10px] h-[40px] pl-[36px] pr-[12px] text-[13px] text-[#101828] dark:text-[#F5F7FA] placeholder-[#667085] dark:placeholder-[#A7AFB8] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all"
             />
             {isSearching && (
               <div className="absolute right-[12px] top-1/2 -translate-y-1/2">
@@ -337,13 +337,13 @@ export default function ContactsPage() {
 
           {query.trim() ? (
             <div className="mb-[24px]">
-              <h2 className="text-[14px] font-[600] text-[#101828] dark:text-[#F5F7FA] mb-[8px] px-1">Search Results</h2>
+              <h2 className="text-[13px] font-[600] text-[#101828] dark:text-[#F5F7FA] mt-[16px] mb-[8px] px-1">Search Results</h2>
               {searchResults.length === 0 && !isSearching ? (
                 <div className="text-center py-6">
                   <p className="text-[13px] text-[#A7AFB8]">No users found for "{query}"</p>
                 </div>
               ) : (
-                <div className="flex flex-col gap-[6px]">
+                <div className="flex flex-col bg-white dark:bg-[rgba(255,255,255,0.025)] border border-[#EAECF0] dark:border-[rgba(255,255,255,0.06)] rounded-[12px] overflow-hidden">
                   {searchResults.map(p => {
                     let ctx: any = 'none';
                     const st = relationshipMap[p.id];
@@ -358,19 +358,19 @@ export default function ContactsPage() {
           ) : (
             <>
               {/* 4. TABS */}
-              <div className="flex p-[3px] bg-[rgba(255,255,255,0.04)] rounded-[10px] h-[38px] mb-[16px] border border-white/5">
+              <div className="flex p-[3px] bg-[#F1F5F9] dark:bg-[rgba(255,255,255,0.04)] rounded-[10px] h-[40px] mb-[16px] border border-[#E2E8F0] dark:border-white/5">
                 <button 
                   onClick={() => setActiveTab('requests')}
                   className={cn(
-                    "flex-1 h-[30px] text-[13px] font-[600] rounded-[8px] transition-all flex items-center justify-center gap-2",
+                    "flex-1 h-[34px] text-[13px] font-[600] rounded-[8px] transition-all duration-150 flex items-center justify-center gap-2",
                     activeTab === 'requests' 
-                      ? "bg-[rgba(255,255,255,0.08)] text-[#F5F7FA] shadow-sm" 
-                      : "text-[#A7AFB8] hover:text-[#F5F7FA]"
+                      ? "bg-white dark:bg-[rgba(255,255,255,0.09)] text-[#101828] dark:text-[#F5F7FA] border border-[#EAECF0] dark:border-[rgba(255,255,255,0.08)] shadow-[0_1px_2px_rgba(0,0,0,0.05)]" 
+                      : "bg-transparent text-[#667085] dark:text-[#98A2B3]"
                   )}
                 >
                   Requests
                   {incomingRequests.length > 0 && (
-                    <span className="w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold bg-[#8B5CF6] text-white">
+                    <span className="w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold bg-[rgba(139,92,246,0.14)] text-[#A78BFA]">
                       {incomingRequests.length}
                     </span>
                   )}
@@ -378,15 +378,17 @@ export default function ContactsPage() {
                 <button 
                   onClick={() => setActiveTab('friends')}
                   className={cn(
-                    "flex-1 h-[30px] text-[13px] font-[600] rounded-[8px] transition-all flex items-center justify-center gap-2",
+                    "flex-1 h-[34px] text-[13px] font-[600] rounded-[8px] transition-all duration-150 flex items-center justify-center gap-2",
                     activeTab === 'friends' 
-                      ? "bg-[rgba(255,255,255,0.08)] text-[#F5F7FA] shadow-sm" 
-                      : "text-[#A7AFB8] hover:text-[#F5F7FA]"
+                      ? "bg-white dark:bg-[rgba(255,255,255,0.09)] text-[#101828] dark:text-[#F5F7FA] border border-[#EAECF0] dark:border-[rgba(255,255,255,0.08)] shadow-[0_1px_2px_rgba(0,0,0,0.05)]" 
+                      : "bg-transparent text-[#667085] dark:text-[#98A2B3]"
                   )}
                 >
                   My Friends
                   {friendships.length > 0 && (
-                    <span className="text-[12px] opacity-70">({friendships.length})</span>
+                    <span className="w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold bg-[rgba(139,92,246,0.14)] text-[#A78BFA]">
+                      {friendships.length}
+                    </span>
                   )}
                 </button>
               </div>
@@ -396,10 +398,10 @@ export default function ContactsPage() {
                   {/* Incoming */}
                   {incomingRequests.length > 0 && (
                     <div className="mb-[16px]">
-                      <h2 className="text-[14px] font-[600] text-[#101828] dark:text-[#F5F7FA] mb-[8px] px-1 flex items-center gap-2">
-                        <UserPlus className="w-4 h-4 text-[#8B5CF6]" /> Incoming
+                      <h2 className="text-[13px] font-[600] text-[#101828] dark:text-[#F5F7FA] mt-[16px] mb-[8px] px-1 flex items-center gap-2">
+                        Friend requests
                       </h2>
-                      <div className="flex flex-col gap-[6px]">
+                      <div className="flex flex-col bg-white dark:bg-[rgba(255,255,255,0.025)] border border-[#EAECF0] dark:border-[rgba(255,255,255,0.06)] rounded-[12px] overflow-hidden">
                         {incomingRequests.map(req => (
                           <CompactUserRow key={req.id} user={req.sender!} context="incoming" reqId={req.id} />
                         ))}
@@ -410,10 +412,10 @@ export default function ContactsPage() {
                   {/* Outgoing */}
                   {outgoingRequests.length > 0 && (
                     <div className="mb-[16px]">
-                      <h2 className="text-[14px] font-[600] text-[#101828] dark:text-[#F5F7FA] mb-[8px] px-1 flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-[#8B5CF6]" /> Sent
+                      <h2 className="text-[13px] font-[600] text-[#101828] dark:text-[#F5F7FA] mt-[16px] mb-[8px] px-1 flex items-center gap-2">
+                        Sent requests
                       </h2>
-                      <div className="flex flex-col gap-[6px]">
+                      <div className="flex flex-col bg-white dark:bg-[rgba(255,255,255,0.025)] border border-[#EAECF0] dark:border-[rgba(255,255,255,0.06)] rounded-[12px] overflow-hidden">
                         {outgoingRequests.map(req => (
                           <CompactUserRow key={req.id} user={req.receiver!} context="outgoing" reqId={req.id} />
                         ))}
@@ -424,10 +426,10 @@ export default function ContactsPage() {
                   {/* Suggestions */}
                   {suggestions.length > 0 && (
                     <div className="mb-[16px]">
-                      <h2 className="text-[14px] font-[600] text-[#101828] dark:text-[#F5F7FA] mb-[8px] px-1">
+                      <h2 className="text-[13px] font-[600] text-[#101828] dark:text-[#F5F7FA] mt-[16px] mb-[8px] px-1">
                         Suggested for you
                       </h2>
-                      <div className="flex flex-col gap-[6px]">
+                      <div className="flex flex-col bg-white dark:bg-[rgba(255,255,255,0.025)] border border-[#EAECF0] dark:border-[rgba(255,255,255,0.06)] rounded-[12px] overflow-hidden">
                         {suggestions.map(p => (
                           <CompactUserRow key={p.id} user={p} context="none" />
                         ))}
@@ -437,9 +439,9 @@ export default function ContactsPage() {
                   
                   {incomingRequests.length === 0 && outgoingRequests.length === 0 && suggestions.length === 0 && (
                     <div className="text-center py-12">
-                      <UserPlus className="w-[32px] h-[32px] text-[#A7AFB8] mx-auto mb-3" />
-                      <h3 className="text-[14px] font-[600] text-[#F5F7FA] mb-1">No pending requests</h3>
-                      <p className="text-[12px] text-[#A7AFB8]">Use the search bar above to find people.</p>
+                      <UserPlus className="w-[32px] h-[32px] text-[#667085] dark:text-[#A7AFB8] mx-auto mb-3" />
+                      <h3 className="text-[14px] font-[600] text-[#101828] dark:text-[#F5F7FA] mb-1">No pending requests</h3>
+                      <p className="text-[12px] text-[#667085] dark:text-[#A7AFB8]">When someone sends you a friend request, it will appear here.</p>
                     </div>
                   )}
                 </div>
@@ -447,12 +449,12 @@ export default function ContactsPage() {
                 <div className="animate-in fade-in duration-200">
                   {friendships.length === 0 ? (
                     <div className="text-center py-12">
-                      <Users className="w-[32px] h-[32px] text-[#A7AFB8] mx-auto mb-3" />
-                      <h3 className="text-[14px] font-[600] text-[#F5F7FA] mb-1">No friends yet</h3>
-                      <p className="text-[12px] text-[#A7AFB8]">Search for people by their unique @username.</p>
+                      <Users className="w-[32px] h-[32px] text-[#667085] dark:text-[#A7AFB8] mx-auto mb-3" />
+                      <h3 className="text-[14px] font-[600] text-[#101828] dark:text-[#F5F7FA] mb-1">No friends yet</h3>
+                      <p className="text-[12px] text-[#667085] dark:text-[#A7AFB8]">Search for people by their unique @username.</p>
                     </div>
                   ) : (
-                    <div className="flex flex-col gap-[6px]">
+                    <div className="flex flex-col bg-white dark:bg-[rgba(255,255,255,0.025)] border border-[#EAECF0] dark:border-[rgba(255,255,255,0.06)] rounded-[12px] overflow-hidden">
                       {friendships.map(f => {
                         if (!f.friend) return null;
                         return <CompactUserRow key={f.id} user={f.friend} context="friend" />;
