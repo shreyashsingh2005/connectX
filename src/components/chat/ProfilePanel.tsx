@@ -6,6 +6,7 @@ import { Conversation, Attachment } from '@/types';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useUIStore } from '@/store/useUIStore';
 import { createClient } from '@/lib/supabase/client';
+import { useE2EE } from '@/hooks/useE2EE';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { ProfilePhotoEditor } from '@/components/profile/ProfilePhotoEditor';
 import { OnlineIndicator } from '@/components/ui/OnlineIndicator';
@@ -17,10 +18,43 @@ interface ProfilePanelProps {
   conversation: Conversation;
 }
 
+function DecryptedMediaThumbnail({ attachment }: { attachment: Attachment }) {
+  const [url, setUrl] = useState<string | null>(null);
+  const { isReady, decryptAttachment } = useE2EE(attachment.conversation_id);
+  const supabase = createClient();
+
+  useEffect(() => {
+    if (!isReady || !attachment.storage_path) return;
+    let objectUrl: string | null = null;
+    
+    async function load() {
+      try {
+        const { data, error } = await supabase.storage.from('attachments').download(attachment.storage_path);
+        if (error || !data) return;
+        const decrypted = await decryptAttachment(data, attachment.mime_type);
+        objectUrl = URL.createObjectURL(decrypted);
+        setUrl(objectUrl);
+      } catch (e) {
+        console.error('Thumbnail decrypt failed', e);
+      }
+    }
+    load();
+    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
+  }, [isReady, attachment.storage_path]);
+
+  if (!url) return <div className="w-full h-full bg-gray-200 dark:bg-gray-800 animate-pulse" />;
+  
+  if (attachment.mime_type.startsWith('video/')) {
+    return <video src={url} className="w-full h-full object-cover" />;
+  }
+  return <img src={url} alt={attachment.file_name} className="w-full h-full object-cover hover:scale-105 transition-transform" />;
+}
+
 export function ProfilePanel({ conversation }: ProfilePanelProps) {
   const [mediaAttachments, setMediaAttachments] = useState<Attachment[]>([]);
   const [fileAttachments, setFileAttachments] = useState<Attachment[]>([]);
-  const [activeTab, setActiveTab] = useState<'media' | 'files'>('media');
+  const [activeTab, setActiveTab] = useState<'media' | 'files' | 'pinned'>('media');
+  const [pinnedMessages, setPinnedMessages] = useState<any[]>([]);
   const [isMuted, setIsMuted] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const supabase = createClient();
@@ -42,6 +76,9 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
   }, [conversation.id]);
 
   async function loadMedia() {
+    const { data: pData } = await supabase.from('pinned_messages').select('*, messages(*)').eq('conversation_id', conversation.id).order('created_at', { ascending: false });
+    if (pData) setPinnedMessages(pData);
+  
     const { data } = await supabase.from('attachments').select('*').eq('conversation_id', conversation.id).order('created_at', { ascending: false }).limit(20);
     if (data) {
       setMediaAttachments(data.filter((a: Attachment) => a.mime_type.startsWith('image/') || a.mime_type.startsWith('video/')));
@@ -130,7 +167,7 @@ export function ProfilePanel({ conversation }: ProfilePanelProps) {
           </div>
           <div className="p-4">
             <div className="flex gap-1 mb-3 bg-[#F9FAFB] dark:bg-[#11141A] rounded-xl p-1">
-              {(['media', 'files'] as const).map(tab => (
+              {(['media', 'files', 'pinned'] as const).map(tab => (
                 <button key={tab} onClick={() => setActiveTab(tab)} className={cn('flex-1 py-1.5 rounded-lg text-xs font-medium capitalize transition-all', activeTab === tab ? 'bg-[#8B5CF6] text-white' : 'text-gray-500')}>{tab}</button>
               ))}
             </div>

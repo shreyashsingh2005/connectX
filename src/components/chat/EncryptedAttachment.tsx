@@ -84,12 +84,23 @@ export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { atta
 
         {isFullscreen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 md:p-8" onClick={() => setIsFullscreen(false)}>
-            <button 
-              className="absolute top-4 right-4 md:top-8 md:right-8 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
-              onClick={() => setIsFullscreen(false)}
-            >
-              <X className="w-6 h-6" />
-            </button>
+            <div className="absolute top-4 right-4 md:top-8 md:right-8 flex gap-3">
+              <a 
+                href={objectUrl}
+                download={attachment.file_name}
+                onClick={(e) => e.stopPropagation()}
+                className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors flex items-center justify-center"
+                title="Download"
+              >
+                <Download className="w-6 h-6" />
+              </a>
+              <button 
+                className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors flex items-center justify-center"
+                onClick={() => setIsFullscreen(false)}
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
             <img 
               src={objectUrl} 
               alt={attachment.file_name} 
