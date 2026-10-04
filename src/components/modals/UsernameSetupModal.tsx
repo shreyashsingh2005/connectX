@@ -22,7 +22,7 @@ export function UsernameSetupModal() {
 
   useEffect(() => {
     // If we have a profile but no username, force them to set it.
-    if (profile && (!profile.username || profile.username.trim() === '')) {
+    if (profile && (!profile.username || profile.username.trim() === '' || profile.username.startsWith('user_'))) {
       setIsOpen(true);
     } else {
       setIsOpen(false);

@@ -26,8 +26,9 @@ export function useAuth() {
         const newProfile = {
           id: user.id,
           username: user.user_metadata?.username || `user_${user.id.substring(0, 8)}`,
-          display_name: user.user_metadata?.display_name || 'New User',
+          display_name: user.user_metadata?.display_name || user.user_metadata?.full_name || user.user_metadata?.name || 'New User',
           email: user.email || '',
+            avatar_url: user.user_metadata?.avatar_url || null,
         };
         // Insert profile
         const insertRes = await supabase.from('profiles').insert(newProfile).select().single();

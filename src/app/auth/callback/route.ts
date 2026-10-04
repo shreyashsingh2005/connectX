@@ -31,8 +31,28 @@ export async function GET(request: NextRequest) {
       }
     );
     
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
+    const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(code);
+    
+    if (!error && session) {
+      // Safely ensure profile exists
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', session.user.id)
+        .single();
+        
+      if (!profile) {
+        const newProfile = {
+          id: session.user.id,
+          username: `user_${session.user.id.substring(0, 8)}`,
+          display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'New User',
+          email: session.user.email || '',
+          avatar_url: session.user.user_metadata?.avatar_url || null,
+        };
+        await supabase.from('profiles').insert(newProfile);
+        await supabase.from('user_settings').insert({ user_id: session.user.id });
+      }
+
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

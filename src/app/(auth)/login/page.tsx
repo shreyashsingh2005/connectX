@@ -17,6 +17,7 @@ function LoginContent() {
   const [needsVerification, setNeedsVerification] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resending, setResending] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -85,7 +86,9 @@ function LoginContent() {
     }
   }
 
-  async function handleGoogleLogin() {
+    async function handleGoogleLogin() {
+    if (loading || googleLoading) return;
+    setGoogleLoading(true);
     setAuthError(null);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -95,9 +98,15 @@ function LoginContent() {
         },
       });
       if (error) throw error;
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Google login failed';
-      setAuthError(message);
+      // redirecting to google...
+    } catch (error: any) {
+      setGoogleLoading(false);
+      const msg = error?.message?.toLowerCase() || '';
+      if (msg.includes('cancel') || msg.includes('user closed')) {
+        setAuthError('Google sign-in was cancelled.');
+      } else {
+        setAuthError('Google sign-in failed. Please try again.');
+      }
     }
   }
 
@@ -195,6 +204,7 @@ function LoginContent() {
 
         <button
           onClick={handleGoogleLogin}
+            disabled={loading || googleLoading}
           className="w-full h-[48px] bg-white dark:bg-[#151922] border border-gray-200 dark:border-[#252A34] text-[15px] text-gray-700 dark:text-gray-200 rounded-[14px] font-medium hover:bg-gray-50 dark:hover:bg-[#1A1F2B] transition-all active:scale-[0.98] flex items-center justify-center gap-3 shadow-sm focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-gray-200 dark:focus-visible:ring-gray-700"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
