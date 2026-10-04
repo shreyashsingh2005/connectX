@@ -90,7 +90,14 @@ export function AppSidebar() {
   }
 
   return (
-    <aside className={cn("md:flex flex-row md:flex-col items-center justify-between md:justify-start w-[calc(100%-24px)] mx-[12px] md:mx-0 md:w-[68px] h-[58px] md:h-full bg-bg-surface/90 dark:bg-[rgba(20,25,30,0.82)] backdrop-blur-[18px] border md:border-t-0 md:border-r border-border-subtle border-border-subtle py-1.5 md:py-6 flex-shrink-0 z-[100] fixed bottom-[12px] md:bottom-0 left-0 md:relative px-4 md:px-0 transition-transform duration-150 rounded-[20px] md:rounded-none shadow-lg dark:shadow-none", hideOnMobile ? "translate-y-full md:translate-y-0 hidden md:flex" : "translate-y-0 flex")}>
+    <aside className={cn(
+        "flex-shrink-0 z-[100] transition-transform duration-150",
+        // Desktop: static flex child of the grid column
+        "md:relative md:w-full md:h-full md:flex md:flex-col md:items-center md:py-6 md:bg-bg-surface md:border-r md:border-border-subtle md:rounded-none md:shadow-none md:translate-y-0",
+        // Mobile: fixed bottom nav
+        "fixed bottom-[12px] left-[12px] right-[12px] h-[58px] flex flex-row items-center justify-between px-4 rounded-[20px] bg-bg-surface/90 dark:bg-[rgba(20,25,30,0.82)] backdrop-blur-[18px] border border-border-subtle shadow-lg",
+        hideOnMobile ? "translate-y-[150%] hidden md:flex" : "translate-y-0 flex"
+      )}>
       {/* Logo */}
       <Link href="/chat" className="hidden md:flex mb-6 transition-transform hover:opacity-80" aria-label="connectX home">
         <ConnectXLogo size={28} />

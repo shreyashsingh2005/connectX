@@ -121,7 +121,7 @@ export function ConversationList() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-bg-surface border-r border-border-subtle border-border-subtle w-full md:w-[320px] flex-shrink-0">
+    <div className="flex flex-col h-full w-full bg-bg-surface flex-shrink-0">
       {/* Header */}
       <div className="px-4 pt-5 pb-3">
         <div className="flex items-center justify-between mb-4">

@@ -18,29 +18,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { profile, isLoaded, updateOnlineStatus } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const isMobileChatView = pathname.startsWith('/chat/') && pathname.length > 6;
-  const isSettingsView = pathname.startsWith('/settings');
-  const hideOnMobile = isMobileChatView || isSettingsView;
   const showNewChatModal = useUIStore(s => s.showNewChatModal);
   const showGroupModal = useUIStore(s => s.showGroupModal);
 
+  const isMobileChatView = pathname.startsWith('/chat/') && pathname.length > 6;
+  const isSettingsView = pathname.startsWith('/settings');
+  const hideOnMobile = isMobileChatView || isSettingsView;
+
   useEffect(() => {
-    // If auth is loaded but we still don't have a profile after 2 seconds, 
-    // we don't automatically redirect if there's a session to avoid infinite loops.
-    // Instead we let the UI show an error state if needed.
+    // Wait for auth to settle
   }, [isLoaded, profile, router]);
 
-  // Update online status
   useEffect(() => {
     if (!profile) return;
     updateOnlineStatus(true);
     
-    const handleVisibilityChange = () => {
-      updateOnlineStatus(!document.hidden);
-    };
-    const handleBeforeUnload = () => {
-      updateOnlineStatus(false);
-    };
+    const handleVisibilityChange = () => updateOnlineStatus(!document.hidden);
+    const handleBeforeUnload = () => updateOnlineStatus(false);
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -58,13 +52,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (!profile) {
     return (
-      <div className="h-screen w-screen bg-bg-surface flex items-center justify-center p-4 text-center">
+      <div className="h-[100dvh] w-full bg-bg-surface flex items-center justify-center p-4 text-center">
         <div className="max-w-md space-y-4">
           <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
           </div>
           <h2 className="text-[18px] font-bold text-text-main">Profile Setup Failed</h2>
-          <p className="text-text-sec text-[13px]">We couldn't load your profile. This usually happens if the database triggers didn't run properly during signup, or Row Level Security is blocking access.</p>
+          <p className="text-text-sec text-[13px]">We couldn't load your profile. This usually happens if the database triggers didn't run properly during signup.</p>
           <button 
             onClick={async () => {
               const { createClient } = await import('@/lib/supabase/client');
@@ -72,7 +66,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               await supabase.auth.signOut();
               window.location.href = '/login';
             }}
-            className="mt-6 px-6 py-2 bg-gray-200 dark:bg-[rgba(255,255,255,0.04)] hover:bg-gray-300 dark:bg-[#374151] text-text-main rounded-[12px] transition-colors"
+            className="mt-6 px-6 py-2 bg-bg-secondary text-text-main rounded-[12px] transition-colors"
           >
             Log Out & Try Again
           </button>
@@ -81,18 +75,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // The requested canonical app shell structure:
+  // Desktop: 3 columns grid -> AppNav (72px) | ChatSidebar (340px) | Main Content (remaining)
+  // Mobile: 1 column grid -> Main Content (remaining). AppNav floats fixed at bottom.
+
   return (
-    <div className="h-[100dvh] w-screen flex flex-col-reverse md:flex-row overflow-hidden bg-bg-surface">
-      {/* Navigation sidebar (Bottom on mobile, left on desktop) */}
+    <div className="h-[100dvh] w-full overflow-hidden bg-bg-surface md:grid md:grid-cols-[72px_340px_minmax(0,1fr)]">
+      {/* COLUMN 1: App Navigation */}
       <AppSidebar />
 
-      {/* Conversation list - hidden on mobile when chat is open */}
-      <div className="hidden md:flex page-transition-enter" style={{ animationDelay: "50ms" }}>
+      {/* COLUMN 2: Conversation Sidebar (Hidden on mobile) */}
+      <div className="hidden md:flex flex-col h-[100dvh] overflow-hidden min-w-0 border-r border-border-subtle bg-bg-surface">
         <ConversationList />
       </div>
 
-      {/* Main content */}
-      <main key={pathname} className={cn("flex-1 flex flex-col min-w-0 overflow-hidden md:pb-0 page-transition-enter", hideOnMobile ? "pb-0" : "pb-[80px]")}>
+      {/* COLUMN 3: Main Content */}
+      <main key={pathname} className={cn(
+        "flex flex-col min-w-0 min-h-0 h-[100dvh] overflow-hidden relative",
+        hideOnMobile ? "pb-0" : "pb-[80px] md:pb-0"
+      )}>
         {children}
       </main>
 
@@ -104,4 +105,3 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
