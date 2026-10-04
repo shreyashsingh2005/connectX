@@ -509,7 +509,7 @@ export default function SettingsPage() {
                    { id: 'dark', icon: Moon, label: 'Dark' },
                    { id: 'system', icon: Monitor, label: 'System' },
                  ].map((t) => (
-                   <button key={t.id} onClick={() => setTheme(t.id)} className={cn('flex-1 flex items-center justify-center gap-2 h-[40px] rounded-[10px] transition-all outline-none', theme === t.id ? 'bg-brand/10 text-brand rounded-[10px] shadow-none border-none' : 'text-text-sec hover:text-text-main dark:hover:text-text-main')}>
+                   <button key={t.id} onClick={() => setTheme(t.id)} className={cn('flex-1 flex items-center justify-center gap-1.5 md:gap-2 h-[40px] rounded-[10px] transition-all outline-none', theme === t.id ? 'bg-brand/10 text-brand rounded-[10px] shadow-none border-none' : 'text-text-sec hover:text-text-main dark:hover:text-text-main')}>
                      <t.icon size={16} strokeWidth={1.75} />
                      <span className="text-[12px] font-medium">{t.label}</span>
                    </button>

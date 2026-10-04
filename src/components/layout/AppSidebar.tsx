@@ -96,7 +96,7 @@ export function AppSidebar() {
         // Desktop: static flex child of the grid column
         "md:static md:w-full md:h-full md:flex md:flex-col md:items-center md:pt-5 md:pb-6 md:bg-bg-surface md:border-r md:border-border-subtle md:rounded-none md:shadow-none md:translate-y-0 md:inset-auto",
         // Mobile: fixed bottom nav
-        "fixed bottom-[12px] left-[12px] right-[12px] h-[58px] flex flex-row items-center justify-between px-4 rounded-[20px] bg-bg-surface/90 dark:bg-[rgba(20,25,30,0.82)] backdrop-blur-[18px] border border-border-subtle shadow-lg",
+        "fixed bottom-[calc(12px+env(safe-area-inset-bottom))] left-[12px] right-[12px] h-[58px] flex flex-row items-center justify-between px-4 rounded-[20px] bg-bg-surface/90 dark:bg-[rgba(20,25,30,0.82)] backdrop-blur-[18px] border border-border-subtle shadow-lg",
         hideOnMobile ? "translate-y-[150%] hidden md:flex" : "translate-y-0 flex"
       )}>
       {/* Logo */}
@@ -109,11 +109,10 @@ export function AppSidebar() {
         {navItems.map(({ href, icon: Icon, label }) => {
           const isActive = pathname.startsWith(href);
           return (
-            <TooltipProvider delayDuration={150}>
+            <TooltipProvider key={href} delayDuration={150}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-              key={href}
               href={href}
               aria-label={label}
               
@@ -139,9 +138,7 @@ export function AppSidebar() {
               )}
               
               {/* Tooltip */}
-              <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-[#17151F] dark:bg-white text-white dark:text-[#17151F] text-[12px] font-medium rounded-[6px] px-2.5 py-1.5 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-[9999] shadow-sm translate-x-[-4px] group-hover:translate-x-0 min-w-max border border-transparent dark:border-border-subtle">
-                {label}
-              </span>
+              
             </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right" sideOffset={12} className="hidden md:block">
@@ -170,40 +167,49 @@ export function AppSidebar() {
 
       {/* Bottom: Settings + Profile (Desktop) */}
       <div className="hidden md:flex flex-col items-center gap-2 md:mb-2">
-        <Link
-          href="/settings"
-          aria-label="Settings"
-          
-          className={cn(
-            'relative group w-[42px] h-[42px] rounded-[12px] flex items-center justify-center transition-all duration-150',
-            pathname.startsWith('/settings')
-              ? 'text-brand bg-brand-soft'
-              : 'text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.06)]'
-          )}
-        >
-          <Settings size={18} strokeWidth={2} />
-          <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-[#17151F] dark:bg-white text-white dark:text-[#17151F] text-[12px] font-medium rounded-[6px] px-2.5 py-1.5 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-[9999] shadow-sm translate-x-[-4px] group-hover:translate-x-0 min-w-max border border-transparent dark:border-border-subtle">
-            Settings
-          </span>
-        </Link>
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/settings"
+                aria-label="Settings"
+                className={cn(
+                  'relative group w-[42px] h-[42px] rounded-[12px] flex items-center justify-center transition-all duration-150',
+                  pathname.startsWith('/settings')
+                    ? 'text-brand bg-brand-soft'
+                    : 'text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.06)]'
+                )}
+              >
+                <Settings size={18} strokeWidth={2} />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={12} className="hidden md:block">
+              Settings
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
-        <button
-          onClick={handleLogout}
-          aria-label="Logout"
-          
-          className="relative group w-[42px] h-[42px] rounded-[12px] flex items-center justify-center text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.06)] transition-all duration-150"
-        >
-          <LogOut size={18} strokeWidth={2} />
-          <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-[#17151F] dark:bg-white text-white dark:text-[#17151F] text-[12px] font-medium rounded-[6px] px-2.5 py-1.5 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-[9999] shadow-sm translate-x-[-4px] group-hover:translate-x-0 min-w-max border border-transparent dark:border-border-subtle">
-            Logout
-          </span>
-        </button>
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={handleLogout}
+                aria-label="Logout"
+                className="relative group w-[42px] h-[42px] rounded-[12px] flex items-center justify-center text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.06)] transition-all duration-150"
+              >
+                <LogOut size={18} strokeWidth={2} />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={12} className="hidden md:block">
+              Logout
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         {/* Profile avatar (Desktop) */}
         <Link
           href="/settings"
           aria-label="Settings"
-          
           className="mt-2 relative group transition-opacity duration-150 hover:opacity-80"
         >
           <UserAvatar

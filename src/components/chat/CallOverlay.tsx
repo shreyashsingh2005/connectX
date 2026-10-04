@@ -107,13 +107,13 @@ export function CallOverlay() {
 
         {/* Local Video Picture-in-Picture */}
         {localStream && (
-          <div className="absolute top-safe right-4 top-4 w-32 h-48 bg-gray-900 rounded-[12px] overflow-hidden shadow-2xl border-2 border-gray-800 z-10">
+          <div className="absolute top-[calc(1rem+env(safe-area-inset-top))] right-4 w-32 h-48 bg-gray-900 rounded-[12px] overflow-hidden shadow-2xl border-2 border-gray-800 z-10">
             <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover scale-x-[-1]" />
           </div>
         )}
 
         {/* Controls Overlay */}
-        <div className="absolute bottom-safe bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-gray-900/80 backdrop-blur-md px-6 py-4 rounded-full border border-white/10 z-10">
+        <div className="absolute bottom-[calc(2rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 flex items-center gap-4 bg-gray-900/80 backdrop-blur-md px-6 py-4 rounded-full border border-white/10 z-10">
           <button onClick={() => setIsMuted(!isMuted)} className={cn("w-12 h-12 rounded-full flex items-center justify-center transition-colors", isMuted ? "bg-bg-surface/20 text-white" : "bg-gray-700 hover:bg-gray-600 text-white")}>
             {isMuted ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
           </button>

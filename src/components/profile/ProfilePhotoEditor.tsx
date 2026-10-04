@@ -226,7 +226,7 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-bg-surface border border-border-subtle border-border-subtle w-full max-w-[400px] rounded-[20px] shadow-2xl overflow-hidden flex flex-col">
+      <div className="bg-bg-surface border border-border-subtle w-[calc(100vw-32px)] md:w-full max-w-[400px] max-h-[calc(100dvh-32px)] md:max-h-[85vh] rounded-[20px] shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle border-border-subtle">
           <h2 className="text-[14px] font-semibold text-text-main">Profile Photo</h2>
@@ -261,7 +261,7 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
             <div className="w-full flex flex-col items-center gap-6">
               <p className="text-[11px] font-medium text-text-muted uppercase tracking-wider self-start">Position & Crop</p>
               
-              <div className="relative w-[280px] h-[280px] bg-gray-100 dark:bg-black rounded-full overflow-hidden cursor-move border border-border-subtle border-border-subtle shadow-inner"
+              <div className="relative w-[240px] h-[240px] md:w-[280px] md:h-[280px] bg-gray-100 dark:bg-black rounded-full overflow-hidden cursor-move border border-border-subtle border-border-subtle shadow-inner"
                 onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
                 onTouchStart={handleMouseDown} onTouchMove={handleMouseMove} onTouchEnd={handleMouseUp}
               >

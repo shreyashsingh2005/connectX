@@ -483,8 +483,8 @@ export function MessageList({ conversationId }: MessageListProps) {
           </div>
         )}
       {deleteModalMsg && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-          <div className="bg-bg-surface w-full max-w-sm rounded-[16px] p-6 shadow-xl border border-border-subtle border-border-subtle">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 animate-in fade-in duration-150">
+          <div className="bg-bg-surface w-[calc(100vw-32px)] md:w-full max-w-sm rounded-[18px] p-6 shadow-xl border border-border-subtle animate-in zoom-in-[0.98] duration-150 ease-out">
             <h3 className="text-[16px] font-semibold text-text-main mb-2">Delete message?</h3>
             <p className="text-[13px] text-text-muted mb-6">Are you sure you want to delete this message?</p>
             <div className="flex flex-col gap-2">

@@ -6,7 +6,7 @@ import { MessageSquare } from 'lucide-react';
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-[100dvh] w-full flex flex-col md:flex-row bg-bg-surface overflow-hidden">
+    <div className="min-h-[100dvh] w-full flex flex-col md:flex-row bg-bg-surface overflow-x-hidden md:overflow-hidden">
       
       {/* Mobile Top Brand Section */}
       <div className="md:hidden flex flex-col items-center justify-center py-8 px-5 bg-[#0B0D14] text-white">
@@ -62,7 +62,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Right Auth Panel */}
-      <div className="flex-1 flex flex-col items-center justify-center px-5 py-8 md:p-12 bg-bg-surface relative z-10">
+      <div className="flex-1 flex flex-col items-center justify-center px-5 py-8 md:p-12 bg-bg-surface relative z-10 overflow-y-auto">
         <div className="w-full max-w-[440px] animate-in fade-in slide-in-from-bottom-4 duration-300">
           {children}
         </div>

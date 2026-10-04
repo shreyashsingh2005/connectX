@@ -125,7 +125,7 @@ export const MessageBubble = memo(function MessageBubble({
         ) : (!isOwn && <div className="w-[28px] flex-shrink-0" />)}
         
         <div className={cn(
-          'max-w-[82%] md:max-w-[74%] rounded-[14px] px-4 py-3 text-[13px] border flex items-center gap-3',
+          'max-w-[90%] sm:max-w-[85%] md:max-w-[78%] lg:max-w-[72%] rounded-[14px] px-4 py-3 text-[13px] border flex items-center gap-3',
           isOwn ? 'border-[var(--chat-outgoing-border)] bg-black/10 dark:bg-bg-surface/10 text-[var(--chat-outgoing-text)]' : 'border-[var(--chat-incoming-border)] bg-black/5 dark:bg-bg-surface/5 text-[var(--chat-incoming-text)]'
         )}>
           <Lock size={16} className="opacity-70 flex-shrink-0" /> 
@@ -142,7 +142,7 @@ export const MessageBubble = memo(function MessageBubble({
           <div className="w-8 flex-shrink-0" />
         )}
         <div className={cn(
-          'max-w-[82%] md:max-w-[74%] rounded-[14px] px-4 py-2.5 italic text-text-muted text-[13px] border',
+          'max-w-[90%] sm:max-w-[85%] md:max-w-[78%] lg:max-w-[72%] rounded-[14px] px-4 py-2.5 italic text-text-muted text-[13px] border',
           isOwn ? 'border-[#2A2F45]' : 'border-border-subtle border-border-subtle',
           'bg-gray-100 dark:bg-bg-surface'
         )}>
@@ -185,7 +185,7 @@ export const MessageBubble = memo(function MessageBubble({
       )}
       {!isOwn && !showAvatar && <div className="w-7 flex-shrink-0" />}
 
-      <div className={cn('flex flex-col max-w-[82%] md:max-w-[74%]', isOwn ? 'items-end' : 'items-start')}>
+      <div className={cn('flex flex-col max-w-[90%] sm:max-w-[85%] md:max-w-[78%] lg:max-w-[72%]', isOwn ? 'items-end' : 'items-start')}>
         {/* Sender name (group) */}
         {showSender && !isOwn && (
           <span className="text-[11px] font-medium text-[var(--chat-outgoing-bg)] mb-1 ml-1">
@@ -227,7 +227,7 @@ export const MessageBubble = memo(function MessageBubble({
               </div>
             ) : (
               <p className={cn(
-                isEmojiOnly ? 'text-[36px] leading-tight' : 'text-[14px] leading-[20px] whitespace-pre-wrap break-words',
+                isEmojiOnly ? 'text-[36px] leading-tight' : 'text-[14px] leading-[20px] whitespace-pre-wrap break-words [word-break:break-word]',
                 displayContent?.startsWith('[Unable') && "italic opacity-80 text-[13px]"
               )}>
                 {displayContent}

@@ -80,7 +80,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // Mobile: 1 column grid -> Main Content (remaining). AppNav floats fixed at bottom.
 
   return (
-    <div className="h-[100dvh] w-full overflow-hidden bg-bg-surface md:grid md:grid-cols-[72px_340px_minmax(0,1fr)] box-border">
+    <div className="h-[100dvh] w-full overflow-hidden bg-bg-surface md:grid md:grid-cols-[72px_320px_minmax(0,1fr)] lg:grid-cols-[72px_340px_minmax(0,1fr)] box-border">
       {/* COLUMN 1: App Navigation */}
       <div className="md:col-start-1 md:col-end-2 w-full md:h-[100dvh] min-w-0 min-h-0 relative z-[50]"><AppSidebar /></div>
 
@@ -93,7 +93,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main key={pathname} className={cn(
         "md:col-start-3 md:col-end-4",
         "flex flex-col min-w-0 min-h-0 h-[100dvh] overflow-hidden relative",
-        hideOnMobile ? "pb-0" : "pb-[80px] md:pb-0"
+        hideOnMobile ? "pb-0" : "pb-[calc(70px+env(safe-area-inset-bottom))] md:pb-0"
       )}>
         {children}
       </main>

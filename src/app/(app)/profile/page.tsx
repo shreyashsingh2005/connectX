@@ -117,7 +117,7 @@ export default function ProfilePage() {
     <div className="flex-1 flex flex-col h-full bg-[#F7F8FA] dark:bg-bg-primary overflow-y-auto items-center">
       <div className="w-full max-w-[600px] flex flex-col min-h-full pb-10">
         
-        <div className="flex items-center justify-between py-6 px-4 md:px-0">
+        <div className="flex items-center justify-between py-6 px-4 md:px-6">
           <div className="flex items-center gap-4">
             <button onClick={() => router.push('/settings')} className="p-1 -ml-1 text-text-sec hover:bg-[#EAECF0]/50 dark:hover:bg-[rgba(255,255,255,0.04)] rounded-full transition-colors outline-none">
               <ArrowLeft size={20} strokeWidth={1.75} />
@@ -126,7 +126,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="px-4 md:px-0">
+        <div className="px-4 md:px-6">
           <div className="bg-bg-surface rounded-[20px] border border-border-subtle p-6 shadow-sm">
             <form onSubmit={handleUpdateProfile} className="space-y-6">
               

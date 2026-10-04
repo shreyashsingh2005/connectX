@@ -73,7 +73,7 @@ export function GroupChatModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowGroupModal(false)} />
-      <div className="relative w-full max-w-md bg-bg-surface dark:bg-bg-elevated rounded-[18px] shadow-xl border border-border-subtle overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-[0.98] duration-150 ease-out">
+      <div className="relative w-[calc(100vw-32px)] md:w-full max-w-md bg-bg-surface dark:bg-bg-elevated rounded-[18px] shadow-xl border border-border-subtle overflow-hidden flex flex-col max-h-[calc(100dvh-32px)] md:max-h-[85vh] animate-in zoom-in-[0.98] duration-150 ease-out">
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-brand" />
