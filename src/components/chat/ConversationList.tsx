@@ -65,6 +65,18 @@ export function ConversationList() {
 
   const filtered = useMemo(() => {
     let list = conversations;
+    
+    // Hide cleared conversations unless they are currently active
+    list = list.filter(c => {
+      if (c.id === activeId) return true;
+      const clearedAt = clearedChats[c.id];
+      // If it has a clearedAt timestamp, and the last message is older than or equal to clearedAt, hide it
+      if (clearedAt && c.last_message_at && new Date(c.last_message_at) <= new Date(clearedAt)) {
+        return false;
+      }
+      return true;
+    });
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter(c => {
@@ -75,7 +87,7 @@ export function ConversationList() {
     if (filter === 'unread') list = list.filter(c => (c.unread_count || 0) > 0);
     if (filter === 'pinned') list = list.filter(c => (c as Conversation & { is_pinned?: boolean }).is_pinned);
     return list;
-  }, [conversations, searchQuery, filter]);
+  }, [conversations, searchQuery, filter, clearedChats, activeId]);
 
   function getConversationName(conv: Conversation) {
     return conv.type === 'direct' ? (conv.other_member?.display_name || 'Unknown') : (conv.name || 'Group');
