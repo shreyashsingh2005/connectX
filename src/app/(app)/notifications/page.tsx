@@ -148,10 +148,10 @@ export default function NotificationsPage() {
   const getIcon = (type: string) => {
     switch (type) {
       case 'message': return <MessageSquare size={16} className="text-[#EC4899]" />;
-      case 'call': return <Phone size={16} className="text-[#8B5CF6]" />;
+      case 'call': return <Phone size={16} className="text-brand" />;
       case 'system': return <Info size={16} className="text-[#F59E0B]" />;
       case 'friend_accept': return <Check size={16} className="text-[#10B981]" />;
-      default: return <Bell size={16} className="text-[#667085] dark:text-[#A7AFB8]" />;
+      default: return <Bell size={16} className="text-text-sec" />;
     }
   };
 
@@ -174,13 +174,13 @@ export default function NotificationsPage() {
         className={cn(
           "flex items-start gap-3 p-3 h-auto min-h-[64px] rounded-[14px] border transition-all cursor-pointer group relative",
           isUnread 
-            ? "bg-white dark:bg-[rgba(255,255,255,0.06)] border-[#8B5CF6]/30 dark:border-[#8B5CF6]/30 shadow-sm" 
-            : "bg-transparent border-transparent hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.02)] hover:border-[#EAECF0] dark:hover:border-white/5"
+            ? "bg-bg-surface border-[#8B5CF6]/30 dark:border-[#8B5CF6]/30 shadow-sm" 
+            : "bg-transparent border-transparent hover:bg-bg-secondary hover:border-border-subtle dark:hover:border-white/5"
         )}
       >
         <div className="flex-shrink-0 relative mt-1">
           {isUnread && (
-            <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#8B5CF6] border-2 border-white dark:border-[#151922] z-10" />
+            <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-brand border-2 border-white dark:border-[#151922] z-10" />
           )}
           {hasAvatar ? (
             <UserAvatar 
@@ -190,7 +190,7 @@ export default function NotificationsPage() {
               className="w-[36px] h-[36px]" 
             />
           ) : (
-            <div className="w-[36px] h-[36px] bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.06)] rounded-full border border-[#EAECF0] dark:border-white/5 flex items-center justify-center">
+            <div className="w-[36px] h-[36px] bg-bg-primary rounded-full border border-border-subtle border-border-subtle flex items-center justify-center">
               {getIcon(n.type)}
             </div>
           )}
@@ -199,11 +199,11 @@ export default function NotificationsPage() {
         <div className="flex-1 min-w-0 flex flex-col justify-center">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <h3 className={cn("text-[13px] font-semibold truncate", isUnread ? "text-[#101828] dark:text-[#F5F7FA]" : "text-[#344054] dark:text-[#F5F7FA]")}>
+              <h3 className={cn("text-[13px] font-semibold truncate", isUnread ? "text-text-main" : "text-text-main")}>
                 {n.title}
               </h3>
               {n.body && (
-                <p className={cn("text-[13px] leading-snug mt-0.5", isUnread ? "text-[#344054] dark:text-[#F5F7FA]" : "text-[#667085] dark:text-[#A7AFB8]")}>
+                <p className={cn("text-[13px] leading-snug mt-0.5", isUnread ? "text-text-main" : "text-text-sec")}>
                   {n.body}
                 </p>
               )}
@@ -211,7 +211,7 @@ export default function NotificationsPage() {
             
             <div className="flex flex-col items-end gap-1 flex-shrink-0">
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-medium text-[#A7AFB8]">
+                <span className="text-[11px] font-medium text-text-sec">
                   {formatDistanceToNow(new Date(n.created_at), { addSuffix: false }).replace('about ', '')}
                 </span>
                 
@@ -222,13 +222,13 @@ export default function NotificationsPage() {
                       e.stopPropagation();
                       setActiveMenu(activeMenu === n.id ? null : n.id);
                     }}
-                    className="p-1 -mr-1 text-[#A7AFB8] hover:text-[#344054] dark:hover:text-[#F5F7FA] hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.08)] rounded-full transition-colors outline-none"
+                    className="p-1 -mr-1 text-text-sec hover:text-[#344054] dark:hover:text-text-main hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.08)] rounded-full transition-colors outline-none"
                   >
                     <MoreHorizontal size={18} strokeWidth={2} />
                   </button>
                   
                   {activeMenu === n.id && (
-                    <div className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-[rgba(255,255,255,0.06)] border border-[#EAECF0] dark:border-white/5 rounded-[10px] shadow-lg overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100">
+                    <div className="absolute right-0 top-full mt-1 w-36 bg-bg-surface border border-border-subtle border-border-subtle rounded-[10px] shadow-lg overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100">
                       <button 
                         onClick={(e) => handleDelete(n.id, e)}
                         className="w-full flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-[#F04438] hover:bg-[#FEF3F2] dark:hover:bg-[#F04438]/10 transition-colors outline-none"
@@ -248,13 +248,13 @@ export default function NotificationsPage() {
             <div className="flex items-center gap-2 mt-3 mb-1">
               <button 
                 onClick={(e) => handleRequestAction(n, 'accepted', e)}
-                className="flex-1 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-[13px] font-medium py-1.5 px-3 rounded-[8px] transition-colors outline-none shadow-sm"
+                className="flex-1 bg-brand hover:bg-brand-dark text-white text-[13px] font-medium py-1.5 px-3 rounded-[8px] transition-colors outline-none shadow-sm"
               >
                 Accept
               </button>
               <button 
                 onClick={(e) => handleRequestAction(n, 'declined', e)}
-                className="flex-1 bg-white dark:bg-[rgba(255,255,255,0.06)] border border-[#EAECF0] dark:border-white/5 text-[#344054] dark:text-[#F5F7FA] hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.08)] text-[13px] font-medium py-1.5 px-3 rounded-[8px] transition-colors outline-none shadow-sm"
+                className="flex-1 bg-bg-surface border border-border-subtle border-border-subtle text-text-main hover:bg-bg-secondary text-[13px] font-medium py-1.5 px-3 rounded-[8px] transition-colors outline-none shadow-sm"
               >
                 Decline
               </button>
@@ -295,12 +295,12 @@ export default function NotificationsPage() {
   const earlier = visibleNotifications.filter(n => !isToday(new Date(n.created_at)) && !isYesterday(new Date(n.created_at)));
 
   return (
-    <div className="flex flex-col flex-1 z-10 overflow-hidden relative bg-white dark:bg-[#0B0F12]">
+    <div className="flex flex-col flex-1 z-10 overflow-hidden relative bg-bg-surface">
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-[720px] mx-auto px-4 md:px-8 py-6 md:py-10">
           <div className="mb-8">
-            <h1 className="text-[24px] md:text-[28px] font-bold text-[#101828] dark:text-[#F5F7FA] tracking-tight">Notifications</h1>
-            <p className="text-[14px] text-[#667085] dark:text-[#A7AFB8] mt-1">Stay up to date with your activity.</p>
+            <h1 className="text-[24px] md:text-[28px] font-bold text-text-main tracking-tight">Notifications</h1>
+            <p className="text-[14px] text-text-sec mt-1">Stay up to date with your activity.</p>
           </div>
 
           {isLoading ? (
@@ -308,24 +308,24 @@ export default function NotificationsPage() {
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <AlertCircle className="w-8 h-8 text-[#F97066] mb-3" strokeWidth={1.5} />
-              <p className="text-[14px] font-medium text-[#101828] dark:text-[#F5F7FA] mb-1">Couldn't load notifications</p>
-              <button onClick={loadNotifications} className="text-[13px] font-medium text-[#8B5CF6] hover:text-[#7C3AED] transition-colors outline-none">
+              <p className="text-[14px] font-medium text-text-main mb-1">Couldn't load notifications</p>
+              <button onClick={loadNotifications} className="text-[13px] font-medium text-brand hover:text-[#7C3AED] transition-colors outline-none">
                 Try again
               </button>
             </div>
           ) : visibleNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in zoom-in-95 duration-300">
-              <div className="w-12 h-12 bg-white dark:bg-[#11161B] rounded-full flex items-center justify-center mb-4 border border-[#EAECF0] dark:border-white/5 shadow-sm">
-                <Bell className="w-5 h-5 text-[#A7AFB8]" strokeWidth={1.75} />
+              <div className="w-12 h-12 bg-bg-surface rounded-full flex items-center justify-center mb-4 border border-border-subtle border-border-subtle shadow-sm">
+                <Bell className="w-5 h-5 text-text-sec" strokeWidth={1.75} />
               </div>
-              <h3 className="text-[16px] font-semibold text-[#101828] dark:text-[#F5F7FA] mb-1">You're all caught up</h3>
-              <p className="text-[13px] text-[#667085] dark:text-[#A7AFB8]">No new notifications right now.</p>
+              <h3 className="text-[16px] font-semibold text-text-main mb-1">You're all caught up</h3>
+              <p className="text-[13px] text-text-sec">No new notifications right now.</p>
             </div>
           ) : (
             <div className="space-y-6 pb-10">
               {today.length > 0 && (
                 <section className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                  <h2 className="text-[12px] font-bold text-[#A7AFB8] uppercase tracking-wider mb-2 ml-1">Today</h2>
+                  <h2 className="text-[12px] font-bold text-text-sec uppercase tracking-wider mb-2 ml-1">Today</h2>
                   <div className="space-y-1">
                     {today.map(n => <NotificationCard key={n.id} n={n} />)}
                   </div>
@@ -334,7 +334,7 @@ export default function NotificationsPage() {
               
               {yesterday.length > 0 && (
                 <section className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-75">
-                  <h2 className="text-[12px] font-bold text-[#A7AFB8] uppercase tracking-wider mb-2 ml-1">Yesterday</h2>
+                  <h2 className="text-[12px] font-bold text-text-sec uppercase tracking-wider mb-2 ml-1">Yesterday</h2>
                   <div className="space-y-1">
                     {yesterday.map(n => <NotificationCard key={n.id} n={n} />)}
                   </div>
@@ -343,7 +343,7 @@ export default function NotificationsPage() {
               
               {earlier.length > 0 && (
                 <section className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-150">
-                  <h2 className="text-[12px] font-bold text-[#A7AFB8] uppercase tracking-wider mb-2 ml-1">Earlier</h2>
+                  <h2 className="text-[12px] font-bold text-text-sec uppercase tracking-wider mb-2 ml-1">Earlier</h2>
                   <div className="space-y-1">
                     {earlier.map(n => <NotificationCard key={n.id} n={n} />)}
                   </div>

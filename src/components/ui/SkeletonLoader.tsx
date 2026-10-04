@@ -35,7 +35,7 @@ export function MessageSkeleton({ isOwn = false }: { isOwn?: boolean }) {
     <div className={cn('flex gap-2.5 mb-4', isOwn ? 'flex-row-reverse' : 'flex-row')}>
       {!isOwn && <Skeleton className="w-8 h-8 rounded-full flex-shrink-0" />}
       <div className={cn('space-y-1', isOwn ? 'items-end' : 'items-start', 'flex flex-col')}>
-        <Skeleton className={cn('h-10 rounded-2xl', isOwn ? 'w-48' : 'w-64')} />
+        <Skeleton className={cn('h-10 rounded-[16px]', isOwn ? 'w-48' : 'w-64')} />
         <Skeleton className="h-3 w-16" />
       </div>
     </div>
@@ -50,12 +50,12 @@ export function ProfilePanelSkeleton() {
         <Skeleton className="h-5 w-32" />
         <Skeleton className="h-4 w-20" />
       </div>
-      <Skeleton className="h-16 w-full rounded-xl" />
+      <Skeleton className="h-16 w-full rounded-[12px]" />
       <div className="space-y-2">
         <Skeleton className="h-4 w-24" />
         <div className="grid grid-cols-3 gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-square rounded-lg" />
+            <Skeleton key={i} className="aspect-square rounded-[10px]" />
           ))}
         </div>
       </div>

@@ -60,11 +60,11 @@ export function CallOverlay() {
   // 1. INCOMING CALL RINGING
   if (callStatus === 'incoming_ringing') {
     return (
-      <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[200] bg-white dark:bg-[rgba(255,255,255,0.04)] shadow-2xl rounded-2xl border border-gray-200 dark:border-white/5 p-4 flex items-center gap-4 w-[90%] max-w-sm animate-fade-in">
+      <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[200] bg-bg-surface shadow-2xl rounded-[16px] border border-border-subtle border-border-subtle p-4 flex items-center gap-4 w-[90%] max-w-sm animate-fade-in">
         <UserAvatar src={avatarUrl || undefined} name={displayName || 'User'} size="md" className="animate-pulse" />
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-gray-900 dark:text-white truncate">{displayName}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Incoming {isVideo ? 'video' : 'audio'} call...</p>
+          <p className="font-semibold text-text-main truncate">{displayName}</p>
+          <p className="text-[13px] text-text-muted">Incoming {isVideo ? 'video' : 'audio'} call...</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => endCall('rejected')} className="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors">
@@ -100,24 +100,24 @@ export function CallOverlay() {
               />
             </div>
 
-            <h2 className="text-white text-2xl font-bold">{displayName}</h2>
-            <p className="text-gray-300 mt-2 capitalize">{callStatus === 'connected' ? formatDuration(duration) : callStatus.replace('_', ' ') + '...'}</p>
+            <h2 className="text-white text-[22px] font-bold">{displayName}</h2>
+            <p className="text-text-muted mt-2 capitalize">{callStatus === 'connected' ? formatDuration(duration) : callStatus.replace('_', ' ') + '...'}</p>
           </div>
         )}
 
         {/* Local Video Picture-in-Picture */}
         {localStream && (
-          <div className="absolute top-safe right-4 top-4 w-32 h-48 bg-gray-900 rounded-xl overflow-hidden shadow-2xl border-2 border-gray-800 z-10">
+          <div className="absolute top-safe right-4 top-4 w-32 h-48 bg-gray-900 rounded-[12px] overflow-hidden shadow-2xl border-2 border-gray-800 z-10">
             <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover scale-x-[-1]" />
           </div>
         )}
 
         {/* Controls Overlay */}
         <div className="absolute bottom-safe bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-gray-900/80 backdrop-blur-md px-6 py-4 rounded-full border border-white/10 z-10">
-          <button onClick={() => setIsMuted(!isMuted)} className={cn("w-12 h-12 rounded-full flex items-center justify-center transition-colors", isMuted ? "bg-white/20 text-white" : "bg-gray-700 hover:bg-gray-600 text-white")}>
+          <button onClick={() => setIsMuted(!isMuted)} className={cn("w-12 h-12 rounded-full flex items-center justify-center transition-colors", isMuted ? "bg-bg-surface/20 text-white" : "bg-gray-700 hover:bg-gray-600 text-white")}>
             {isMuted ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
           </button>
-          <button onClick={() => setIsVideoOff(!isVideoOff)} className={cn("w-12 h-12 rounded-full flex items-center justify-center transition-colors", isVideoOff ? "bg-white/20 text-white" : "bg-gray-700 hover:bg-gray-600 text-white")}>
+          <button onClick={() => setIsVideoOff(!isVideoOff)} className={cn("w-12 h-12 rounded-full flex items-center justify-center transition-colors", isVideoOff ? "bg-bg-surface/20 text-white" : "bg-gray-700 hover:bg-gray-600 text-white")}>
             {isVideoOff ? <VideoOff className="w-6 h-6" /> : <Video className="w-6 h-6" />}
           </button>
           <button onClick={() => endCall()} className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-lg">
@@ -147,15 +147,15 @@ export function CallOverlay() {
           />
         </div>
 
-        <h2 className="text-white text-3xl font-bold mb-2">{displayName}</h2>
-        <p className="text-gray-400 capitalize">{callStatus === 'connected' ? formatDuration(duration) : callStatus.replace('_', ' ')}</p>
+        <h2 className="text-white text-[28px] font-bold mb-2">{displayName}</h2>
+        <p className="text-text-muted capitalize">{callStatus === 'connected' ? formatDuration(duration) : callStatus.replace('_', ' ')}</p>
       </div>
       
       {/* Hidden audio tags */}
       {remoteStream && <audio ref={remoteVideoRef as any} autoPlay playsInline className="hidden" />}
 
       <div className="flex items-center gap-6">
-        <button onClick={() => setIsMuted(!isMuted)} className={cn("w-14 h-14 rounded-full flex items-center justify-center transition-colors", isMuted ? "bg-white text-gray-900" : "bg-gray-800 hover:bg-gray-700 text-white")}>
+        <button onClick={() => setIsMuted(!isMuted)} className={cn("w-14 h-14 rounded-full flex items-center justify-center transition-colors", isMuted ? "bg-bg-surface text-text-main" : "bg-gray-800 hover:bg-gray-700 text-white")}>
           {isMuted ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
         </button>
         <button onClick={() => endCall()} className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-xl">

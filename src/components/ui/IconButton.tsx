@@ -10,9 +10,9 @@ export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
 }
 
 const variantStyles = {
-  default: 'bg-gray-100 dark:bg-[rgba(255,255,255,0.04)] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#374151]',
-  ghost: 'bg-transparent text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-[#1F2937]',
-  active: 'bg-[#8B5CF6] text-white shadow-md shadow-[#8B5CF6]/20',
+  default: 'bg-gray-100 dark:bg-[rgba(255,255,255,0.04)] text-text-sec hover:bg-gray-200 dark:hover:bg-[#374151]',
+  ghost: 'bg-transparent text-text-muted hover:text-text-main dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-[#1F2937]',
+  active: 'bg-brand text-white shadow-md shadow-[#8B5CF6]/20',
   destructive: 'bg-transparent text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10',
 };
 
@@ -35,7 +35,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
         ref={ref}
         disabled={disabled}
         className={cn(
-          'inline-flex items-center justify-center rounded-xl transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6] disabled:opacity-50 disabled:pointer-events-none active:scale-95',
+          'inline-flex items-center justify-center rounded-[12px] transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6] disabled:opacity-50 disabled:pointer-events-none active:scale-95',
           variantStyles[variant],
           sizeStyles[size],
           className
@@ -53,7 +53,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
         <Tooltip>
           <TooltipTrigger asChild>{button}</TooltipTrigger>
           <TooltipContent side="top" align="center" sideOffset={8}>
-            <p className="text-xs font-medium">{tooltip}</p>
+            <p className="text-[11px] font-medium">{tooltip}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

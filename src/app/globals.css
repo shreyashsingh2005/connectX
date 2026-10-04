@@ -1,108 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @theme {
-  --color-brand-light: #A78BFA;
+  --color-bg-primary: #F7F7FB;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-secondary: #FAFAFD;
+  --color-border-subtle: #E9E7F0;
+  --color-text-main: #17151F;
+  --color-text-sec: #6F6A7B;
+  --color-text-muted: #9A96A5;
   --color-brand: #8B5CF6;
   --color-brand-dark: #7C3AED;
+  --color-brand-soft: #F1ECFF;
   
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-@variant dark (&:where(.dark, .dark *));
+/* Dark mode theme overrides */
+.dark {
+  --color-bg-primary: #0B0D12;
+  --color-bg-surface: #11141A;
+  --color-bg-secondary: #171A21;
+  --color-border-subtle: #252936;
+  --color-text-main: #F5F7FA;
+  --color-text-sec: #A7ADBA;
+  --color-text-muted: #747B89;
+  --color-brand: #A78BFA;
+  --color-brand-dark: #8B5CF6;
+  --color-brand-soft: rgba(167, 139, 250, 0.12);
+}
 
 :root {
-  /* LIGHT MODE (Clean equivalent) */
-  --bg-primary: #F6F7F9;
-  --bg-secondary: #F0F2F5;
-  --bg-surface: #FFFFFF;
-  --bg-elevated: #FFFFFF;
-  --bg-hover: #F0F2F5;
-  
-  --border-color: #E6E8EC;
-  --border-light: rgba(0, 0, 0, 0.05);
-  
-  --text-primary: #101828;
-  --text-secondary: #667085;
-  --text-muted: #98A2B3;
-  
-  --color-brand: #8B5CF6;
-  --color-brand-hover: #7C3AED;
-  --color-brand-subtle: #F3F0FF;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-main);
 }
 
-.dark {
-  /* PREMIUM DARK MODE */
-  --bg-primary: #0B0F12;
-  --bg-secondary: #11161B;
-  --bg-surface: rgba(255, 255, 255, 0.045);
-  --bg-elevated: rgba(255, 255, 255, 0.07);
-  --bg-hover: rgba(255, 255, 255, 0.06);
-  
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-light: rgba(255, 255, 255, 0.04);
-  
-  --text-primary: #F5F7FA;
-  --text-secondary: #A7AFB8;
-  --text-muted: #737C86;
-  
-  --color-brand: #A78BFA;
-  --color-brand-hover: #C4B5FD;
-  --color-brand-subtle: rgba(167, 139, 250, 0.15);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-html, body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: 'Inter', system-ui, sans-serif;
+html, body, #__next, main {
+  height: 100%;
+}
+
+html {
+  overflow: hidden;
+}
+
+body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Base custom styles */
-.glass-panel {
-  background: var(--bg-surface);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid var(--border-color);
-}
-
-.glass-elevated {
-  background: var(--bg-elevated);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-}
-
-.chat-bg {
-  background: radial-gradient(circle at top right, rgba(167, 139, 250, 0.05), transparent 40%), var(--bg-primary);
-}
-
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
-}
-
-:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-brand-subtle); }
-
+/* Hide scrollbar but keep functionality */
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -111,13 +64,22 @@ html, body {
   display: none;
 }
 
-@keyframes skeletonPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+/* Base interactive focus */
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
 }
 
-.skeleton {
-  animation: skeletonPulse 1.5s ease-in-out infinite;
-  background-color: var(--border-color);
-  border-radius: 8px;
+/* Animations */
+@keyframes messageSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.message-animate {
+  animation: messageSlideIn 0.15s ease-out;
+}
+
+/* Chat bg texture (Subtle) */
+.chat-bg {
+  background-image: none;
 }

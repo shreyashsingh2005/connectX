@@ -41,17 +41,17 @@ export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { atta
   }, [isReady, attachment.storage_path]);
 
   if (error) {
-    return <div className="text-xs opacity-70 p-2 border border-red-500/20 rounded">Unable to decrypt attachment</div>;
+    return <div className="text-[11px] opacity-70 p-2 border border-red-500/20 rounded">Unable to decrypt attachment</div>;
   }
 
   if (!objectUrl) {
     if (messageStatus === 'failed') {
       return (
-        <div className="flex flex-col items-center gap-2 p-3 border border-red-500/20 rounded-xl bg-red-500/5">
-          <span className="text-xs text-red-400 font-medium">Photo couldn't be sent</span>
+        <div className="flex flex-col items-center gap-2 p-3 border border-red-500/20 rounded-[12px] bg-red-500/5">
+          <span className="text-[11px] text-red-400 font-medium">Photo couldn't be sent</span>
           <button 
             onClick={() => window.dispatchEvent(new CustomEvent('retry-message', { detail: attachment }))}
-            className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg text-xs font-semibold transition-colors"
+            className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-[10px] text-[11px] font-semibold transition-colors"
           >
             Retry
           </button>
@@ -59,8 +59,8 @@ export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { atta
       );
     }
     return (
-      <div className="flex items-center justify-center min-w-[120px] min-h-[80px] bg-white/5 rounded-xl">
-        <div className="flex items-center gap-2 px-3 py-2 text-xs opacity-70">
+      <div className="flex items-center justify-center min-w-[120px] min-h-[80px] bg-bg-surface/5 rounded-[12px]">
+        <div className="flex items-center gap-2 px-3 py-2 text-[11px] opacity-70">
           <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white/80 animate-spin" />
         </div>
       </div>
@@ -71,12 +71,12 @@ export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { atta
     return (
       <>
         <div 
-          className="relative rounded-xl overflow-hidden max-w-xs cursor-pointer hover:opacity-95 transition-opacity group"
+          className="relative rounded-[12px] overflow-hidden max-w-xs cursor-pointer hover:opacity-95 transition-opacity group"
           onClick={() => setIsFullscreen(true)}
         >
-          <img src={objectUrl} alt={attachment.file_name} className="object-cover rounded-xl" style={{ maxHeight: 300, maxWidth: '100%' }} />
+          <img src={objectUrl} alt={attachment.file_name} className="object-cover rounded-[12px]" style={{ maxHeight: 300, maxWidth: '100%' }} />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-             <div className="bg-black/50 text-white px-3 py-1 rounded-full text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow-xl">
+             <div className="bg-black/50 text-white px-3 py-1 rounded-full text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow-xl">
                View Fullscreen
              </div>
           </div>
@@ -107,7 +107,7 @@ export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { atta
             <img 
               src={objectUrl} 
               alt={attachment.file_name} 
-              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" 
+              className="max-w-full max-h-full object-contain rounded-[10px] shadow-2xl" 
               onClick={(e) => e.stopPropagation()} 
             />
           </div>
@@ -118,7 +118,7 @@ export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { atta
 
   if (attachment.mime_type.startsWith('video/')) {
     return (
-      <video controls className="rounded-xl max-w-xs max-h-48">
+      <video controls className="rounded-[12px] max-w-xs max-h-48">
         <source src={objectUrl} type={attachment.mime_type} />
       </video>
     );
@@ -140,18 +140,18 @@ export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { atta
       href={objectUrl}
       download={attachment.file_name}
       className={cn(
-        'flex items-center gap-3 px-3 py-2 rounded-xl min-w-[180px] transition-colors',
-        isOwn ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-50 dark:bg-[#111827] hover:bg-white dark:bg-[#0B0F19]'
+        'flex items-center gap-3 px-3 py-2 rounded-[12px] min-w-[180px] transition-colors',
+        isOwn ? 'bg-bg-surface/10 hover:bg-bg-surface/20' : 'bg-bg-secondary hover:bg-bg-surface'
       )}
     >
-      <div className="w-8 h-8 rounded-lg bg-[var(--chat-outgoing-bg)]/20 flex items-center justify-center flex-shrink-0">
+      <div className="w-8 h-8 rounded-[10px] bg-[var(--chat-outgoing-bg)]/20 flex items-center justify-center flex-shrink-0">
         <FileText className="w-4 h-4 text-[var(--chat-outgoing-bg)]" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className={cn("text-[13px] font-medium truncate", isOwn ? "text-white" : "text-gray-900 dark:text-gray-100")}>{attachment.file_name}</p>
-        <p className={cn("text-[11px]", isOwn ? "text-white/80" : "text-gray-500 dark:text-gray-400")}>{formatFileSize(attachment.file_size)}</p>
+        <p className={cn("text-[13px] font-medium truncate", isOwn ? "text-white" : "text-text-main dark:text-gray-100")}>{attachment.file_name}</p>
+        <p className={cn("text-[11px]", isOwn ? "text-white/80" : "text-text-muted")}>{formatFileSize(attachment.file_size)}</p>
       </div>
-      <Download className={cn("w-4 h-4", isOwn ? "text-white" : "text-gray-400")} />
+      <Download className={cn("w-4 h-4", isOwn ? "text-white" : "text-text-muted")} />
     </a>
   );
 }

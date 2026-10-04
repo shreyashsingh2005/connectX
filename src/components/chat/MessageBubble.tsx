@@ -46,7 +46,7 @@ interface MessageBubbleProps {
 const QUICK_EMOJIS = ['\u{2764}\u{FE0F}', '\u{1F602}', '\u{1F44D}', '\u{1F62E}', '\u{1F622}', '\u{1F64F}'];
 
 function DeliveryIcon({ status, isEmojiOnly }: { status: Message['status'], isEmojiOnly?: boolean }) {
-  const neutralClass = isEmojiOnly ? "text-gray-400" : "text-white/80 drop-shadow-sm";
+  const neutralClass = isEmojiOnly ? "text-text-muted" : "text-white/80 drop-shadow-sm";
   if (status === 'sending') return <Clock strokeWidth={2.5} className={cn("w-3 h-3", neutralClass)} />;
   if (status === 'sent') return <Check strokeWidth={2.5} className={cn("w-[14px] h-[14px]", neutralClass)} />;
   if (status === 'delivered') return <CheckCheck strokeWidth={2.5} className={cn("w-[14px] h-[14px]", neutralClass)} />;
@@ -101,7 +101,7 @@ export const MessageBubble = memo(function MessageBubble({
       
       return (
         <div className="flex justify-center my-4 w-full">
-          <div className="px-4 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 text-xs font-medium inline-flex items-center gap-1.5 shadow-sm border border-gray-200/50 dark:border-gray-700/50">
+          <div className="px-4 py-1.5 rounded-full bg-bg-secondary/50 text-text-muted text-[11px] font-medium inline-flex items-center gap-1.5 shadow-sm border border-border-subtle/50 dark:border-gray-700/50">
             <Icon className="w-3.5 h-3.5" />
             <span>{text}</span>
           </div>
@@ -110,7 +110,7 @@ export const MessageBubble = memo(function MessageBubble({
     }
     return (
       <div className="flex justify-center my-4 w-full">
-        <div className="px-4 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 text-xs font-medium shadow-sm border border-gray-200/50 dark:border-gray-700/50">
+        <div className="px-4 py-1.5 rounded-full bg-bg-secondary/50 text-text-muted text-[11px] font-medium shadow-sm border border-border-subtle/50 dark:border-gray-700/50">
           {displayContent}
         </div>
       </div>
@@ -126,7 +126,7 @@ export const MessageBubble = memo(function MessageBubble({
         
         <div className={cn(
           'max-w-[80%] md:max-w-[70%] rounded-[16px] px-4 py-3 text-[13px] border flex items-center gap-3',
-          isOwn ? 'border-[var(--chat-outgoing-border)] bg-black/10 dark:bg-white/10 text-[var(--chat-outgoing-text)]' : 'border-[var(--chat-incoming-border)] bg-black/5 dark:bg-white/5 text-[var(--chat-incoming-text)]'
+          isOwn ? 'border-[var(--chat-outgoing-border)] bg-black/10 dark:bg-bg-surface/10 text-[var(--chat-outgoing-text)]' : 'border-[var(--chat-incoming-border)] bg-black/5 dark:bg-bg-surface/5 text-[var(--chat-incoming-text)]'
         )}>
           <Lock size={16} className="opacity-70 flex-shrink-0" /> 
           <span>Unable to decrypt this message</span>
@@ -142,9 +142,9 @@ export const MessageBubble = memo(function MessageBubble({
           <div className="w-8 flex-shrink-0" />
         )}
         <div className={cn(
-          'max-w-[80%] md:max-w-[70%] rounded-[16px] px-4 py-2.5 italic text-gray-500 text-sm border',
-          isOwn ? 'border-[#2A2F45]' : 'border-gray-200 dark:border-white/5',
-          'bg-gray-100 dark:bg-[#11161B]'
+          'max-w-[80%] md:max-w-[70%] rounded-[16px] px-4 py-2.5 italic text-text-muted text-[13px] border',
+          isOwn ? 'border-[#2A2F45]' : 'border-border-subtle border-border-subtle',
+          'bg-gray-100 dark:bg-bg-surface'
         )}>
           {"\u{1F6AB}"} This message was deleted
         </div>
@@ -188,7 +188,7 @@ export const MessageBubble = memo(function MessageBubble({
       <div className={cn('flex flex-col max-w-[80%] md:max-w-[70%]', isOwn ? 'items-end' : 'items-start')}>
         {/* Sender name (group) */}
         {showSender && !isOwn && (
-          <span className="text-xs font-medium text-[var(--chat-outgoing-bg)] mb-1 ml-1">
+          <span className="text-[11px] font-medium text-[var(--chat-outgoing-bg)] mb-1 ml-1">
             {message.sender?.display_name}
           </span>
         )}
@@ -196,8 +196,8 @@ export const MessageBubble = memo(function MessageBubble({
         {/* Reply preview */}
         {message.reply_to && (
           <div className={cn(
-            'flex items-start gap-2 mb-1 px-3 py-1.5 rounded-[12px] text-xs border-l-2 border-[#8B5CF6] max-w-full w-full',
-            'bg-gray-200 dark:bg-[rgba(255,255,255,0.04)] text-gray-600 dark:text-gray-400 cursor-pointer hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors'
+            'flex items-start gap-2 mb-1 px-3 py-1.5 rounded-[12px] text-[11px] border-l-2 border-[#8B5CF6] max-w-full w-full',
+            'bg-gray-200 dark:bg-[rgba(255,255,255,0.04)] text-text-sec cursor-pointer hover:bg-gray-300 dark:hover:bg-[#2A3040] transition-colors'
           )}>
             <div className="min-w-0">
               <span className={cn("font-medium block", isOwn ? 'text-[var(--chat-outgoing-text)] font-semibold' : 'text-[var(--chat-outgoing-bg)]')}>{message.reply_to.sender?.display_name}</span>
@@ -222,12 +222,12 @@ export const MessageBubble = memo(function MessageBubble({
           {message.type === 'text' && message.content && (
             needsDecryption ? (
               <div className="flex flex-col gap-1.5 w-32 py-1 animate-pulse transition-opacity duration-200">
-                <div className={cn("h-2.5 rounded-full", isOwn ? "bg-white/30" : "bg-gray-300 dark:bg-gray-600")}></div>
-                <div className={cn("h-2.5 w-4/5 rounded-full", isOwn ? "bg-white/30" : "bg-gray-300 dark:bg-gray-600")}></div>
+                <div className={cn("h-2.5 rounded-full", isOwn ? "bg-bg-surface/30" : "bg-gray-300 dark:bg-gray-600")}></div>
+                <div className={cn("h-2.5 w-4/5 rounded-full", isOwn ? "bg-bg-surface/30" : "bg-gray-300 dark:bg-gray-600")}></div>
               </div>
             ) : (
               <p className={cn(
-                isEmojiOnly ? 'text-[44px] leading-tight' : 'text-[15px] leading-relaxed whitespace-pre-wrap break-words',
+                isEmojiOnly ? 'text-[44px] leading-tight' : 'text-[14px] leading-relaxed whitespace-pre-wrap break-words',
                 displayContent?.startsWith('[Unable') && "italic opacity-80 text-[13px]"
               )}>
                 {displayContent}
@@ -246,7 +246,7 @@ export const MessageBubble = memo(function MessageBubble({
             {message.is_edited && (
               <span className="text-[10px] opacity-50">edited</span>
             )}
-            <span className={`text-[10px] font-medium tracking-wide ${isEmojiOnly ? 'text-gray-500 dark:text-gray-400' : (isOwn ? 'text-[var(--chat-outgoing-muted)] drop-shadow-sm' : 'text-[var(--chat-incoming-muted)]')}`}>
+            <span className={`text-[10px] font-medium tracking-wide ${isEmojiOnly ? 'text-text-muted' : (isOwn ? 'text-[var(--chat-outgoing-muted)] drop-shadow-sm' : 'text-[var(--chat-incoming-muted)]')}`}>
               {formatMessageTime(message.created_at)}
             </span>
             {isOwn && <DeliveryIcon status={message.status} isEmojiOnly={isEmojiOnly} />}
@@ -260,10 +260,10 @@ export const MessageBubble = memo(function MessageBubble({
               <button
                 key={emoji}
                 onClick={() => onReact?.(message.id, emoji)}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white dark:bg-[#11161B] border border-gray-200 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors text-[10px] font-medium shadow-sm text-gray-700 dark:text-gray-300"
+                className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-bg-surface border border-border-subtle border-border-subtle hover:bg-bg-secondary transition-colors text-[10px] font-medium shadow-sm text-text-sec"
               >
                 <span>{emoji}</span>
-                {count > 1 && <span className="text-gray-600 dark:text-gray-400 text-[10px]">{count}</span>}
+                {count > 1 && <span className="text-text-sec text-[10px]">{count}</span>}
               </button>
             ))}
           </div>
@@ -273,27 +273,27 @@ export const MessageBubble = memo(function MessageBubble({
       {/* Actions (hover) */}
       {showActions && (
         <div className={cn(
-          'flex items-center gap-0.5 self-center transition-opacity bg-white dark:bg-[rgba(255,255,255,0.04)] border border-[#EAECF0] dark:border-white/5 rounded-[10px] shadow-sm p-0.5 z-10',
+          'flex items-center gap-0.5 self-center transition-opacity bg-bg-surface border border-border-subtle border-border-subtle rounded-[10px] shadow-sm p-0.5 z-10',
           isOwn ? 'mr-2 flex-row-reverse' : 'ml-2'
         )}>
           {/* Quick emoji */}
           <div className="relative">
             <button
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              className="w-7 h-7 rounded-[8px] flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+              className="w-7 h-7 rounded-[8px] flex items-center justify-center text-text-muted hover:bg-black/5 dark:hover:bg-bg-surface/5 hover:text-text-main dark:hover:text-white transition-all"
               >
                 {"\u{1F600}"}
               </button>
             {showEmojiPicker && (
               <div className={cn(
-                'absolute bottom-full mb-1 flex gap-1 p-2 bg-white/95 dark:bg-[#11161B]/95 backdrop-blur-[24px] border border-[#EAECF0] dark:border-white/5 rounded-[16px] shadow-xl z-10',
+                'absolute bottom-full mb-1 flex gap-1 p-2 bg-bg-surface/95 dark:bg-bg-surface/95 backdrop-blur-[24px] border border-border-subtle border-border-subtle rounded-[16px] shadow-xl z-10',
                 isOwn ? 'right-0' : 'left-0'
               )}>
                 {QUICK_EMOJIS.map(emoji => (
                   <button
                     key={emoji}
                     onClick={() => { onReact?.(message.id, emoji); setShowEmojiPicker(false); }}
-                    className="text-lg hover:scale-125 transition-transform"
+                    className="text-[16px] hover:scale-125 transition-transform"
                   >
                     {emoji}
                   </button>
@@ -304,7 +304,7 @@ export const MessageBubble = memo(function MessageBubble({
 
           <button
             onClick={() => onReply?.(message)}
-            className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+            className="w-6 h-6 rounded-md flex items-center justify-center text-text-muted hover:bg-black/5 dark:hover:bg-bg-surface/5 hover:text-text-main dark:hover:text-white transition-all"
             title="Reply"
           >
             <Reply className="w-3.5 h-3.5" />
@@ -313,7 +313,7 @@ export const MessageBubble = memo(function MessageBubble({
           {onForward && (
             <button
               onClick={() => onForward(message)}
-              className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+              className="w-6 h-6 rounded-md flex items-center justify-center text-text-muted hover:bg-black/5 dark:hover:bg-bg-surface/5 hover:text-text-main dark:hover:text-white transition-all"
               title="Forward"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 17 20 12 15 7"></polyline><path d="M4 18v-2a4 4 0 0 1 4-4h12"></path></svg>
@@ -324,14 +324,14 @@ export const MessageBubble = memo(function MessageBubble({
             <>
               <button
                 onClick={() => onEdit?.(message)}
-                className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+                className="w-6 h-6 rounded-md flex items-center justify-center text-text-muted hover:bg-black/5 dark:hover:bg-bg-surface/5 hover:text-text-main dark:hover:text-white transition-all"
                 title="Edit"
               >
                 <Edit2 className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => onDelete?.(message.id)}
-                className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-all"
+                className="w-6 h-6 rounded-md flex items-center justify-center text-text-muted hover:bg-red-500/10 hover:text-red-400 transition-all"
                 title="Delete"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -341,7 +341,7 @@ export const MessageBubble = memo(function MessageBubble({
 
           <button
             onClick={() => navigator.clipboard.writeText(displayContent || '')}
-            className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+            className="w-6 h-6 rounded-md flex items-center justify-center text-text-muted hover:bg-black/5 dark:hover:bg-bg-surface/5 hover:text-text-main dark:hover:text-white transition-all"
             title="Copy"
           >
             <Copy className="w-3.5 h-3.5" />
@@ -385,10 +385,10 @@ export const MessageBubble = memo(function MessageBubble({
                   toast.error(e.message || 'Failed to toggle pin');
                 }
               }}
-              className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
+              className="w-6 h-6 rounded-md flex items-center justify-center text-text-muted hover:bg-black/5 dark:hover:bg-bg-surface/5 hover:text-text-main dark:hover:text-white transition-all"
               title={isPinned ? "Unpin Message" : "Pin Message"}
             >
-              <Pin className={cn("w-3.5 h-3.5", isPinned && "fill-current text-gray-900 dark:text-white")} />
+              <Pin className={cn("w-3.5 h-3.5", isPinned && "fill-current text-text-main")} />
             </button>
 
         </div>

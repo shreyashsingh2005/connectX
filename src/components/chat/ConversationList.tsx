@@ -121,23 +121,23 @@ export function ConversationList() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-[#0B0F12] border-r border-[#EAECF0] dark:border-white/5 w-full md:w-[320px] flex-shrink-0">
+    <div className="flex flex-col h-full bg-bg-surface border-r border-border-subtle border-border-subtle w-full md:w-[320px] flex-shrink-0">
       {/* Header */}
       <div className="px-4 pt-5 pb-3">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[20px] font-bold text-gray-900 dark:text-white">Chats</h2>
+          <h2 className="text-[20px] font-bold text-text-main">Chats</h2>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowGroupModal(true)}
               title="New Group"
-              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-gray-500 hover:text-gray-800 dark:text-gray-200 hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)] transition-all"
+              className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-text-muted hover:text-text-main dark:text-gray-200 hover:bg-bg-secondary transition-all"
             >
               <Users className="w-5 h-5" />
             </button>
             <button
               onClick={() => setShowNewChatModal(true)}
               title="New Chat"
-              className="w-[36px] h-[36px] rounded-full flex items-center justify-center bg-[#8B5CF6] text-white hover:bg-[#7C3AED] shadow-sm transition-colors"
+              className="w-[36px] h-[36px] rounded-full flex items-center justify-center bg-brand text-white hover:bg-brand-dark shadow-sm transition-colors"
             >
               <Plus className="w-5 h-5" />
             </button>
@@ -146,7 +146,7 @@ export function ConversationList() {
 
         {/* Search */}
         <div className="relative mt-2">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#667085]" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-sec" />
           <input
             type="text"
             autoComplete="off"
@@ -154,7 +154,7 @@ export function ConversationList() {
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-[#F9FAFB] dark:bg-[#11161B] border border-[#EAECF0] dark:border-white/5 rounded-full py-2 h-[40px] pl-10 pr-4 text-[13px] text-gray-900 dark:text-white placeholder-[#737C86] focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/20 transition-all shadow-sm dark:shadow-none"
+            className="w-full bg-[#F9FAFB] dark:bg-bg-surface border border-border-subtle border-border-subtle rounded-full py-2 h-[40px] pl-10 pr-4 text-[13px] text-text-main placeholder-[#737C86] focus:outline-none focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/20 transition-all shadow-sm dark:shadow-none"
           />
         </div>
 
@@ -167,8 +167,8 @@ export function ConversationList() {
               className={cn(
                 'px-4 py-1.5 text-[13px] rounded-full font-medium transition-all duration-150 capitalize flex items-center justify-center gap-1.5',
                 filter === f
-                  ? 'bg-[#8B5CF6] text-white'
-                  : 'bg-transparent text-[#667085] hover:bg-[#F9FAFB] dark:hover:bg-[rgba(255,255,255,0.04)]'
+                  ? 'bg-brand text-white'
+                  : 'bg-transparent text-text-sec hover:bg-bg-secondary'
               )}
             >
               {f === 'pinned' ? <Pin className="w-3.5 h-3.5" /> : null}
@@ -189,7 +189,7 @@ export function ConversationList() {
               !searchQuery ? (
                 <button
                   onClick={() => setShowNewChatModal(true)}
-                  className="bg-[#8B5CF6] text-white text-[13px] font-medium px-4 py-2 rounded-[8px] hover:bg-[#7C3AED] shadow-sm transition-colors"
+                  className="bg-brand text-white text-[13px] font-medium px-4 py-2 rounded-[8px] hover:bg-brand-dark shadow-sm transition-colors"
                 >
                   Start a conversation
                 </button>
@@ -211,7 +211,7 @@ export function ConversationList() {
               <button
                 key={conv.id}
                 onClick={() => handleSelectConversation(conv)}
-                className={cn('w-full flex items-center gap-3 px-4 py-3 transition-all duration-150 text-left group relative border-b border-[#EAECF0] dark:border-white/5 last:border-0',
+                className={cn('w-full flex items-center gap-3 px-4 py-3 transition-all duration-150 text-left group relative border-b border-border-subtle border-border-subtle last:border-0',
                   isActive ? 'bg-[#F1F3F5] dark:bg-[rgba(255,255,255,0.04)]' : 'hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.02)] bg-transparent'
                 )}
               >
@@ -230,21 +230,21 @@ export function ConversationList() {
                   <div className="flex items-center justify-between gap-2">
                     <span className={cn(
                       'font-bold text-[14px] truncate',
-                      isActive ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-white'
+                      isActive ? 'text-text-main' : 'text-text-main'
                     )}>
                       {name}
                     </span>
-                    <span className={cn("text-[11px] flex-shrink-0", unreadCount > 0 ? "text-[#8B5CF6]" : "text-[#667085] dark:text-[#737C86]")}>{lastMsgTime}</span>
+                    <span className={cn("text-[11px] flex-shrink-0", unreadCount > 0 ? "text-brand" : "text-text-sec")}>{lastMsgTime}</span>
                   </div>
                   <div className="flex items-center justify-between gap-2 mt-0.5">
                     <span className={cn(
                       'text-[12px] truncate',
-                      unreadCount > 0 ? 'text-gray-900 dark:text-[#F5F7FA] font-medium' : 'text-[#667085] dark:text-[#A7AFB8]'
+                      unreadCount > 0 ? 'text-text-main dark:text-text-main font-medium' : 'text-text-sec'
                     )}>
                       {getLastMessagePreview(conv)}
                     </span>
                     {unreadCount > 0 && (
-                      <span className="flex-shrink-0 min-w-[18px] h-[18px] rounded-full bg-[#8B5CF6] text-white text-[10px] font-bold flex items-center justify-center px-1">
+                      <span className="flex-shrink-0 min-w-[18px] h-[18px] rounded-full bg-brand text-white text-[10px] font-bold flex items-center justify-center px-1">
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}

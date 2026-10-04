@@ -37,7 +37,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="bg-white dark:bg-[#0B0F19] text-gray-900 dark:text-gray-100 antialiased transition-colors duration-300">
+      <body className="bg-bg-surface text-text-main dark:text-gray-100 antialiased transition-colors duration-300">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
           <Toaster

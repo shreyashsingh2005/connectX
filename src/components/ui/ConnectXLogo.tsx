@@ -27,8 +27,8 @@ export function ConnectXLogo({ size = 32, className, showText = false }: Connect
         />
       </svg>
       {showText && (
-        <span className="font-bold tracking-tight text-[#101828] dark:text-[#F5F7FA]" style={{ fontSize: size * 0.5 }}>
-          connect<span className="text-[#8B5CF6]">X</span>
+        <span className="font-bold tracking-tight text-text-main" style={{ fontSize: size * 0.5 }}>
+          connect<span className="text-brand">X</span>
         </span>
       )}
     </div>

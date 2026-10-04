@@ -54,42 +54,42 @@ export function NewChatModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B0F12]/80 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-md bg-[#FFFFFF] dark:bg-[#11161B] rounded-[20px] shadow-2xl border border-[#EAECF0] dark:border-white/5 overflow-hidden flex flex-col max-h-[80vh]">
-        <div className="p-6 border-b border-[#EAECF0] dark:border-white/5 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">New Chat / Find Friends</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg-primary/80 backdrop-blur-sm animate-fade-in">
+      <div className="w-full max-w-md bg-[#FFFFFF] dark:bg-bg-surface rounded-[20px] shadow-2xl border border-border-subtle border-border-subtle overflow-hidden flex flex-col max-h-[80vh]">
+        <div className="p-6 border-b border-border-subtle border-border-subtle flex items-center justify-between">
+          <h2 className="text-[18px] font-bold text-text-main">New Chat / Find Friends</h2>
           <button
             onClick={() => setShowNewChatModal(false)}
-            className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white bg-[#F9FAFB] dark:bg-[rgba(255,255,255,0.04)] hover:bg-[#EAECF0] dark:hover:bg-[rgba(255,255,255,0.08)] rounded-full transition-colors"
+            className="p-2 text-text-muted hover:text-text-main dark:hover:text-white bg-[#F9FAFB] dark:bg-[rgba(255,255,255,0.04)] hover:bg-[#EAECF0] dark:hover:bg-[rgba(255,255,255,0.08)] rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-4 border-b border-[#EAECF0] dark:border-white/5">
+        <div className="p-4 border-b border-border-subtle border-border-subtle">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
             <input
               type="text"
               value={query}
               onChange={handleQueryChange}
               placeholder="Search username, e.g. @rahul123"
-              className="w-full bg-[#F9FAFB] dark:bg-[#0B0F12] border border-gray-200 dark:border-white/5 rounded-[12px] py-2.5 h-[44px] pl-10 pr-10 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30 transition-all"
+              className="w-full bg-[#F9FAFB] dark:bg-bg-primary border border-border-subtle border-border-subtle rounded-[12px] py-2.5 h-[44px] pl-10 pr-10 text-text-main placeholder-gray-500 focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30 transition-all"
               autoFocus
             />
             {isSearching && (
-              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 animate-spin" />
+              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted animate-spin" />
             )}
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-2">
           {query.trim() === '' ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-text-muted">
               Type a username or display name to search
             </div>
           ) : results.length === 0 && !isSearching ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-text-muted">
               No connectX user found with that username.
             </div>
           ) : (
@@ -98,7 +98,7 @@ export function NewChatModal() {
                 <button
                   key={user.id}
                   onClick={() => handleSelect(user)}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#1F2937] transition-colors text-left"
+                  className="w-full flex items-center gap-3 p-3 rounded-[12px] hover:bg-bg-secondary transition-colors text-left"
                 >
                   <UserAvatar
                     src={user.avatar_url}
@@ -107,10 +107,10 @@ export function NewChatModal() {
                     isOnline={user.is_online}
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 dark:text-white truncate">
+                    <p className="font-medium text-text-main truncate">
                       {user.display_name}
                     </p>
-                    <p className="text-sm text-gray-500 truncate">@{user.username}</p>
+                    <p className="text-[13px] text-text-muted truncate">@{user.username}</p>
                   </div>
                 </button>
               ))}

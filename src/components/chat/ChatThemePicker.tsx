@@ -67,21 +67,21 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
 
   return (
     <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 p-0 sm:p-4">
-      <div className="bg-white dark:bg-[#11161B] w-full max-w-[440px] rounded-t-[24px] sm:rounded-[24px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-bg-surface w-full max-w-[440px] rounded-t-[24px] sm:rounded-[24px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#EAECF0] dark:border-white/5 flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle border-border-subtle flex-shrink-0">
           <div>
-            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Chat Theme</h2>
-            <p className="text-xs text-gray-500">Personalize how your conversations look.</p>
+            <h2 className="text-[14px] font-semibold text-text-main">Chat Theme</h2>
+            <p className="text-[11px] text-text-muted">Personalize how your conversations look.</p>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors p-2 -mr-2">
+          <button onClick={onClose} className="text-text-muted hover:text-text-main dark:hover:text-white transition-colors p-2 -mr-2">
             <X size={20} />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
           
-          <div className="rounded-[16px] overflow-hidden border border-[#EAECF0] dark:border-white/5 h-[180px] relative flex flex-col justify-end p-4 shadow-inner"
+          <div className="rounded-[16px] overflow-hidden border border-border-subtle border-border-subtle h-[180px] relative flex flex-col justify-end p-4 shadow-inner"
             style={{
               backgroundColor: resolvedTheme === 'dark' ? (themeColors[previewTheme.themeId]?.dark || '#0B0D12') : (themeColors[previewTheme.themeId]?.light || '#FBFBFD')
             }}
@@ -98,7 +98,7 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
             <div className="relative z-10 flex flex-col gap-3">
               <div className="flex items-end gap-2">
                 <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-[rgba(255,255,255,0.08)] flex-shrink-0 shadow-sm" />
-                <div className="max-w-[75%] px-3 py-2 text-[13px] rounded-[14px] rounded-bl-[4px] bg-[#FFFFFF] dark:bg-[#171B23] text-[#101828] dark:text-[#F5F7FA] shadow-sm">
+                <div className="max-w-[75%] px-3 py-2 text-[13px] rounded-[14px] rounded-bl-[4px] bg-[#FFFFFF] dark:bg-[#171B23] text-text-main shadow-sm">
                   Hey! Have you seen the new theme?
                 </div>
               </div>
@@ -114,7 +114,7 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
 
           
           <div>
-            <p className="text-[12px] font-semibold text-[#667085] dark:text-[#A7AFB8] uppercase tracking-wider mb-3">Base Theme</p>
+            <p className="text-[12px] font-semibold text-text-sec uppercase tracking-wider mb-3">Base Theme</p>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
               {[
                 { id: 'connect-purple', name: 'Default' },
@@ -126,21 +126,21 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
                   className={cn(
                     "flex flex-col items-center justify-center py-2 px-2 rounded-[12px] border transition-all", 
                     previewTheme.themeId === theme.id 
-                      ? "border-[#8B5CF6] bg-[#8B5CF6]/5 shadow-sm" 
-                      : "border-[#EAECF0] dark:border-white/5 hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.04)]"
+                      ? "border-[#8B5CF6] bg-brand/5 shadow-sm" 
+                      : "border-border-subtle border-border-subtle hover:bg-bg-secondary"
                   )}
                 >
-                  <div className="w-full h-8 rounded-[8px] mb-2 border border-gray-200 dark:border-gray-800" 
+                  <div className="w-full h-8 rounded-[8px] mb-2 border border-border-subtle" 
                     style={{ backgroundColor: resolvedTheme === 'dark' ? themeColors[theme.id as ThemeId]?.dark : themeColors[theme.id as ThemeId]?.light }} 
                   />
-                  <span className={cn("text-[11px] font-medium", previewTheme.themeId === theme.id ? "text-[#8B5CF6]" : "text-[#101828] dark:text-[#F5F7FA]")}>{theme.name}</span>
+                  <span className={cn("text-[11px] font-medium", previewTheme.themeId === theme.id ? "text-brand" : "text-text-main")}>{theme.name}</span>
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <p className="text-[12px] font-semibold text-[#667085] dark:text-[#A7AFB8] uppercase tracking-wider mb-3">Accent Color</p>
+            <p className="text-[12px] font-semibold text-text-sec uppercase tracking-wider mb-3">Accent Color</p>
             <div className="flex gap-4">
               {['purple', 'blue', 'pink', 'green', 'orange'].map(c => (
                 <button key={c} onClick={() => updatePreview({ accentColor: c as AccentColor })}
@@ -154,7 +154,7 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
           </div>
           
           <div>
-            <p className="text-[12px] font-semibold text-[#667085] dark:text-[#A7AFB8] uppercase tracking-wider mb-3">Chat Background</p>
+            <p className="text-[12px] font-semibold text-text-sec uppercase tracking-wider mb-3">Chat Background</p>
             <div className="grid grid-cols-3 gap-3">
               {[
                 { id: 'solid', name: 'Solid' },
@@ -168,28 +168,28 @@ export function ChatThemePicker({ conversationId, onClose }: ChatThemePickerProp
                   className={cn(
                     "flex flex-col items-center justify-center py-3 px-2 rounded-[12px] border transition-all", 
                     previewTheme.backgroundId === bg.id 
-                      ? "border-[#8B5CF6] bg-[#8B5CF6]/5 shadow-sm" 
-                      : "border-[#EAECF0] dark:border-white/5 hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.04)]"
+                      ? "border-[#8B5CF6] bg-brand/5 shadow-sm" 
+                      : "border-border-subtle border-border-subtle hover:bg-bg-secondary"
                   )}
                 >
-                  <span className={cn("text-[12px] font-medium", previewTheme.backgroundId === bg.id ? "text-[#8B5CF6]" : "text-[#101828] dark:text-[#F5F7FA]")}>{bg.name}</span>
+                  <span className={cn("text-[12px] font-medium", previewTheme.backgroundId === bg.id ? "text-brand" : "text-text-main")}>{bg.name}</span>
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="p-4 border-t border-[#EAECF0] dark:border-white/5 bg-gray-50 dark:bg-[#0B0F12] flex gap-3 flex-shrink-0 safe-area-inset-bottom">
+        <div className="p-4 border-t border-border-subtle border-border-subtle bg-bg-secondary flex gap-3 flex-shrink-0 safe-area-inset-bottom">
           {!isGlobal && chatOverrides[conversationId] && (
             <button onClick={handleReset} className="px-4 py-2.5 text-[13px] font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-[10px] transition-colors">
               Reset
             </button>
           )}
           <div className="flex-1" />
-          <button onClick={onClose} className="px-4 py-2.5 text-[13px] font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[rgba(255,255,255,0.08)] rounded-[10px] transition-colors">
+          <button onClick={onClose} className="px-4 py-2.5 text-[13px] font-medium text-text-sec hover:bg-gray-200 dark:hover:bg-[rgba(255,255,255,0.08)] rounded-[10px] transition-colors">
             Cancel
           </button>
-          <button onClick={handleApply} className="px-6 py-2.5 text-[13px] font-medium text-white bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-[10px] transition-colors shadow-sm">
+          <button onClick={handleApply} className="px-6 py-2.5 text-[13px] font-medium text-white bg-brand hover:bg-brand-dark rounded-[10px] transition-colors shadow-sm">
             Apply
           </button>
         </div>

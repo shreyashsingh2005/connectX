@@ -101,19 +101,19 @@ export function UsernameSetupModal() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="w-full max-w-[400px] bg-white dark:bg-[#11161B] rounded-[20px] shadow-xl border border-gray-200 dark:border-white/5 p-6 text-center animate-in fade-in zoom-in-95 duration-200">
+      <div className="w-full max-w-[400px] bg-bg-surface rounded-[20px] shadow-xl border border-border-subtle border-border-subtle p-6 text-center animate-in fade-in zoom-in-95 duration-200">
         <div className="flex justify-center mb-4">
           <ConnectXLogo size={48} />
         </div>
         
-        <h2 className="text-[22px] font-bold text-gray-900 dark:text-white mb-1">Choose your username</h2>
-        <p className="text-[14px] text-gray-600 dark:text-gray-400 mb-6">
+        <h2 className="text-[22px] font-bold text-text-main mb-1">Choose your username</h2>
+        <p className="text-[14px] text-text-sec mb-6">
           This is how friends will find and add you.
         </p>
 
         <div className="space-y-4">
           <div className="relative text-left">
-            <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
             <input
               type="text"
               value={username}
@@ -121,15 +121,15 @@ export function UsernameSetupModal() {
               placeholder="username"
               maxLength={20}
               className={cn(
-                "w-full bg-white dark:bg-[#0B0F12] border rounded-[10px] h-[44px] pl-10 pr-10 text-[14px] text-gray-900 dark:text-white focus:outline-none transition-all",
+                "w-full bg-bg-surface border rounded-[10px] h-[44px] pl-10 pr-10 text-[14px] text-text-main focus:outline-none transition-all",
                 isAvailable === true ? "border-green-500 focus:ring-1 focus:ring-green-500" :
                 isAvailable === false ? "border-red-500 focus:ring-1 focus:ring-red-500" :
-                "border-gray-200 dark:border-white/5 focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]"
+                "border-border-subtle border-border-subtle focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]"
               )}
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
               {isChecking ? (
-                <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+                <Loader2 className="w-4 h-4 text-text-muted animate-spin" />
               ) : isAvailable === true ? (
                 <Check className="w-4 h-4 text-green-500" />
               ) : isAvailable === false ? (
@@ -139,7 +139,7 @@ export function UsernameSetupModal() {
           </div>
 
           <div className="text-[13px] min-h-[20px] text-left">
-            {isChecking && <span className="text-gray-500">Checking availability...</span>}
+            {isChecking && <span className="text-text-muted">Checking availability...</span>}
             {!isChecking && isAvailable === true && (
               <span className="text-green-600 dark:text-green-500 flex items-center gap-1">
                 ✓ @{username} is available
@@ -151,14 +151,14 @@ export function UsernameSetupModal() {
               </span>
             )}
             {!isChecking && username.length > 0 && username.length < 3 && (
-              <span className="text-gray-500">Username must be at least 3 characters</span>
+              <span className="text-text-muted">Username must be at least 3 characters</span>
             )}
           </div>
 
           <button
             onClick={handleSave}
             disabled={!isAvailable || isSaving || username.length < 3}
-            className="w-full h-[44px] bg-[#8B5CF6] text-white text-[14px] font-medium rounded-[10px] hover:opacity-90 transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full h-[44px] bg-brand text-white text-[14px] font-medium rounded-[10px] hover:opacity-90 transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50 disabled:pointer-events-none"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             {isSaving ? 'Saving...' : 'Confirm Username'}

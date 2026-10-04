@@ -245,7 +245,7 @@ export function useConversations() {
             }
 
             toast.custom((t) => (
-              <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-sm w-full bg-[#111827] shadow-lg rounded-xl pointer-events-auto flex ring-1 ring-black ring-opacity-5 cursor-pointer hover:bg-[#1F2937] transition-colors`}
+              <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-sm w-full bg-[#111827] shadow-lg rounded-[12px] pointer-events-auto flex ring-1 ring-black ring-opacity-5 cursor-pointer hover:bg-[#1F2937] transition-colors`}
                    onClick={() => { toast.dismiss(t.id); window.location.href = `/chat/${conv.id}`; }}>
                 <div className="flex-1 w-0 p-4">
                   <div className="flex items-start">
@@ -253,8 +253,8 @@ export function useConversations() {
                       <UserAvatar src={senderAvatar} name={senderName} size="sm" />
                     </div>
                     <div className="ml-3 flex-1">
-                      <p className="text-sm font-medium text-white">{senderName}</p>
-                      <p className="mt-1 text-xs text-gray-400">New message</p>
+                      <p className="text-[13px] font-medium text-white">{senderName}</p>
+                      <p className="mt-1 text-[11px] text-text-muted">New message</p>
                     </div>
                   </div>
                 </div>

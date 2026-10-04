@@ -17,7 +17,7 @@ export function OnlineIndicator({ isOnline, showText = false, lastSeen, classNam
             isOnline ? 'bg-green-400' : 'bg-gray-500'
           )}
         />
-        <span className={cn('text-xs', isOnline ? 'text-green-400' : 'text-gray-500')}>
+        <span className={cn('text-[11px]', isOnline ? 'text-green-400' : 'text-text-muted')}>
           {isOnline ? 'Active now' : (lastSeen ? lastSeen : 'Offline')}
         </span>
       </div>

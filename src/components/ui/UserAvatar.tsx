@@ -12,10 +12,10 @@ interface UserAvatarProps {
 
 const sizeMap = {
   sm: { container: 'w-[28px] h-[28px]', text: 'text-[11px]', indicator: 'w-2 h-2' },
-  md: { container: 'w-[32px] h-[32px]', text: 'text-xs', indicator: 'w-2 h-2' },
-  lg: { container: 'w-[36px] h-[36px]', text: 'text-sm', indicator: 'w-2.5 h-2.5' },
-  xl: { container: 'w-[48px] h-[48px]', text: 'text-base', indicator: 'w-3 h-3' },
-  '2xl': { container: 'w-[72px] h-[72px]', text: 'text-xl', indicator: 'w-4 h-4' },
+  md: { container: 'w-[32px] h-[32px]', text: 'text-[11px]', indicator: 'w-2 h-2' },
+  lg: { container: 'w-[36px] h-[36px]', text: 'text-[13px]', indicator: 'w-2.5 h-2.5' },
+  xl: { container: 'w-[48px] h-[48px]', text: 'text-[14px]', indicator: 'w-3 h-3' },
+  '2xl': { container: 'w-[72px] h-[72px]', text: 'text-[18px]', indicator: 'w-4 h-4' },
 };
 
 export function UserAvatar({ src, name, size = 'md', isOnline, className }: UserAvatarProps) {
@@ -43,7 +43,7 @@ export function UserAvatar({ src, name, size = 'md', isOnline, className }: User
       ) : (
         <div
           className={cn(
-            'w-full h-full rounded-full flex items-center justify-center font-medium  bg-[#8B5CF6]/10 text-[#8B5CF6] border border-[#EAECF0] dark:border-white/5',
+            'w-full h-full rounded-full flex items-center justify-center font-medium  bg-brand/10 text-brand border border-border-subtle border-border-subtle',
             sizes.text
           )}
           aria-label={`Avatar for ${name}`}

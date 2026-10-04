@@ -226,11 +226,11 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-[#11161B] border border-[#EAECF0] dark:border-white/5 w-full max-w-[400px] rounded-[20px] shadow-2xl overflow-hidden flex flex-col">
+      <div className="bg-bg-surface border border-border-subtle border-border-subtle w-full max-w-[400px] rounded-[20px] shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#EAECF0] dark:border-white/5">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Profile Photo</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle border-border-subtle">
+          <h2 className="text-[14px] font-semibold text-text-main">Profile Photo</h2>
+          <button onClick={onClose} className="text-text-muted hover:text-text-main dark:hover:text-white transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -239,19 +239,19 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
         <div className="p-6 flex flex-col items-center">
           {!previewUrl ? (
             <div className="w-full flex flex-col items-center gap-4">
-              <div className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center bg-gray-50 dark:bg-[rgba(255,255,255,0.04)]">
-                <Camera size={32} className="text-gray-400" />
+              <div className="w-32 h-32 rounded-full border-2 border-dashed border-border-subtle dark:border-gray-700 flex items-center justify-center bg-bg-secondary">
+                <Camera size={32} className="text-text-muted" />
               </div>
-              <p className="text-sm text-gray-500 text-center max-w-[250px]">
+              <p className="text-[13px] text-text-muted text-center max-w-[250px]">
                 Upload a picture to personalize your connectX profile.
               </p>
               <div className="flex flex-col w-full gap-2 mt-2">
-                <label className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] text-white py-2.5 rounded-[12px] font-medium text-sm transition-colors text-center cursor-pointer shadow-sm">
+                <label className="w-full bg-brand hover:bg-brand-dark text-white py-2.5 rounded-[12px] font-medium text-[13px] transition-colors text-center cursor-pointer shadow-sm">
                   Upload Photo
                   <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleFileSelect} />
                 </label>
                 {profile?.avatar_url && (
-                  <button onClick={handleRemovePhoto} disabled={loading} className="w-full py-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-[12px] font-medium text-sm transition-colors flex items-center justify-center gap-2">
+                  <button onClick={handleRemovePhoto} disabled={loading} className="w-full py-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-[12px] font-medium text-[13px] transition-colors flex items-center justify-center gap-2">
                     <Trash2 size={16} /> Remove current photo
                   </button>
                 )}
@@ -259,9 +259,9 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
             </div>
           ) : (
             <div className="w-full flex flex-col items-center gap-6">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider self-start">Position & Crop</p>
+              <p className="text-[11px] font-medium text-text-muted uppercase tracking-wider self-start">Position & Crop</p>
               
-              <div className="relative w-[280px] h-[280px] bg-gray-100 dark:bg-black rounded-full overflow-hidden cursor-move border border-[#EAECF0] dark:border-white/5 shadow-inner"
+              <div className="relative w-[280px] h-[280px] bg-gray-100 dark:bg-black rounded-full overflow-hidden cursor-move border border-border-subtle border-border-subtle shadow-inner"
                 onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
                 onTouchStart={handleMouseDown} onTouchMove={handleMouseMove} onTouchEnd={handleMouseUp}
               >
@@ -269,19 +269,19 @@ export function ProfilePhotoEditor({ onClose, onUpdate }: ProfilePhotoEditorProp
               </div>
 
               <div className="w-full flex items-center gap-3 px-4">
-                <span className="text-xs text-gray-500">-</span>
+                <span className="text-[11px] text-text-muted">-</span>
                 <input 
                   type="range" min="0.5" max="3" step="0.05" value={scale} onChange={e => setScale(parseFloat(e.target.value))}
                   className="flex-1 accent-[#8B5CF6]"
                 />
-                <span className="text-xs text-gray-500">+</span>
+                <span className="text-[11px] text-text-muted">+</span>
               </div>
 
               <div className="w-full flex gap-3 mt-2">
-                <button onClick={() => setPreviewUrl(null)} disabled={loading} className="flex-1 py-2.5 bg-gray-100 dark:bg-[rgba(255,255,255,0.04)] text-gray-700 dark:text-gray-300 rounded-[12px] font-medium text-sm hover:bg-gray-200 dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+                <button onClick={() => setPreviewUrl(null)} disabled={loading} className="flex-1 py-2.5 bg-gray-100 dark:bg-[rgba(255,255,255,0.04)] text-text-sec rounded-[12px] font-medium text-[13px] hover:bg-gray-200 dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors">
                   Cancel
                 </button>
-                <button onClick={handleSave} disabled={loading} className="flex-1 py-2.5 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white rounded-[12px] font-medium text-sm transition-colors shadow-sm flex items-center justify-center gap-2">
+                <button onClick={handleSave} disabled={loading} className="flex-1 py-2.5 bg-brand hover:bg-brand-dark text-white rounded-[12px] font-medium text-[13px] transition-colors shadow-sm flex items-center justify-center gap-2">
                   {loading ? <Loader2 size={16} className="animate-spin" /> : 'Save Photo'}
                 </button>
               </div>

@@ -24,7 +24,7 @@ function DateSeparator({ date }: { date: Date }) {
   return (
     <div className="flex items-center gap-3 my-4 px-4">
       <div className="flex-1 h-px bg-gray-200 dark:bg-[rgba(255,255,255,0.04)]" />
-      <span className="text-xs text-gray-500 font-medium px-2">{label}</span>
+      <span className="text-[11px] text-text-muted font-medium px-2">{label}</span>
       <div className="flex-1 h-px bg-gray-200 dark:bg-[rgba(255,255,255,0.04)]" />
     </div>
   );
@@ -467,16 +467,16 @@ export function MessageList({ conversationId }: MessageListProps) {
                   scrollToBottom('smooth');
                   setHasNewMessages(false);
                 }}
-                className="bg-[var(--chat-outgoing-bg)] text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg hover:opacity-90 transition-all flex items-center gap-2"
+                className="bg-[var(--chat-outgoing-bg)] text-white px-4 py-2 rounded-full text-[13px] font-medium shadow-lg hover:opacity-90 transition-all flex items-center gap-2"
               >
                 New messages
               </button>
             )}
             <button
               onClick={() => scrollToBottom('smooth')}
-              className="w-10 h-10 bg-white dark:bg-[rgba(255,255,255,0.04)] border border-gray-200 dark:border-white/5 rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+              className="w-10 h-10 bg-bg-surface border border-border-subtle border-border-subtle rounded-full flex items-center justify-center shadow-md hover:bg-bg-secondary transition-colors"
             >
-              <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
               </svg>
             </button>
@@ -484,27 +484,27 @@ export function MessageList({ conversationId }: MessageListProps) {
         )}
       {deleteModalMsg && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-          <div className="bg-white dark:bg-[rgba(255,255,255,0.04)] w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-white/5">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Delete message?</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Are you sure you want to delete this message?</p>
+          <div className="bg-bg-surface w-full max-w-sm rounded-[16px] p-6 shadow-xl border border-border-subtle border-border-subtle">
+            <h3 className="text-[16px] font-semibold text-text-main mb-2">Delete message?</h3>
+            <p className="text-[13px] text-text-muted mb-6">Are you sure you want to delete this message?</p>
             <div className="flex flex-col gap-2">
               {deleteModalMsg.sender_id === profile?.id && (
                 <button 
                   onClick={() => confirmDelete(true)}
-                  className="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-colors"
+                  className="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-[12px] font-medium transition-colors"
                 >
                   Delete for everyone
                 </button>
               )}
               <button 
                 onClick={() => confirmDelete(false)}
-                className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-[rgba(255,255,255,0.04)] dark:hover:bg-[#2A3040] text-gray-900 dark:text-white rounded-xl font-medium transition-colors"
+                className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-[rgba(255,255,255,0.04)] dark:hover:bg-[#2A3040] text-text-main rounded-[12px] font-medium transition-colors"
               >
                 Delete for me
               </button>
               <button 
                 onClick={() => setDeleteModalMsg(null)}
-                className="w-full py-2.5 mt-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-xl font-medium transition-colors"
+                className="w-full py-2.5 mt-2 text-text-muted hover:text-text-sec dark:text-text-muted dark:hover:text-text-muted rounded-[12px] font-medium transition-colors"
               >
                 Cancel
               </button>

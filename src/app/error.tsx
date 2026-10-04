@@ -17,15 +17,15 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F12] p-4 text-center">
+    <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-bg-primary p-4 text-center">
       <div className="w-16 h-16 rounded-[16px] bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 flex items-center justify-center mb-6 shadow-sm">
         <AlertTriangle size={28} className="text-red-500" strokeWidth={1.5} />
       </div>
-      <h2 className="text-[20px] font-bold text-[#101828] dark:text-[#F5F7FA] mb-2">Something went wrong</h2>
-      <p className="text-[14px] text-[#667085] dark:text-[#A7AFB8] max-w-sm mb-8 leading-relaxed">
+      <h2 className="text-[20px] font-bold text-text-main mb-2">Something went wrong</h2>
+      <p className="text-[14px] text-text-sec max-w-sm mb-8 leading-relaxed">
         We encountered an unexpected error. Don't worry, your data is safe.
         {error.digest && <span className="block mt-2 text-[12px] opacity-70">Reference: {error.digest}</span>}
-        <div className="mt-4 p-4 bg-red-100 dark:bg-red-900/20 text-left text-xs overflow-auto max-h-[300px] text-red-600 dark:text-red-400 font-mono rounded">
+        <div className="mt-4 p-4 bg-red-100 dark:bg-red-900/20 text-left text-[11px] overflow-auto max-h-[300px] text-red-600 dark:text-red-400 font-mono rounded">
           <p className="font-bold">{error.name}: {error.message}</p>
           <pre className="mt-2">{error.stack}</pre>
         </div>
