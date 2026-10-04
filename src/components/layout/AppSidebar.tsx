@@ -112,7 +112,7 @@ export function AppSidebar() {
               key={href}
               href={href}
               aria-label={label}
-              title={label}
+              
               className={cn(
                 'relative group w-[42px] h-[42px] rounded-[12px] flex items-center justify-center transition-all duration-150',
                 isActive
@@ -135,7 +135,7 @@ export function AppSidebar() {
               )}
               
               {/* Tooltip */}
-              <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-text-main text-bg-surface text-[11px] font-medium rounded-md px-2.5 py-1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50 shadow-sm translate-x-[-4px] group-hover:translate-x-0">
+              <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-[#17151F] dark:bg-white text-white dark:text-[#17151F] text-[12px] font-medium rounded-[6px] px-2.5 py-1.5 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-[9999] shadow-sm translate-x-[-4px] group-hover:translate-x-0 min-w-max border border-transparent dark:border-border-subtle">
                 {label}
               </span>
             </Link>
@@ -146,7 +146,7 @@ export function AppSidebar() {
         <Link
           href="/settings"
           aria-label="Settings"
-          title="Settings"
+          
           className="md:hidden relative group transition-transform duration-150 active:scale-95"
         >
           <UserAvatar
@@ -163,7 +163,7 @@ export function AppSidebar() {
         <Link
           href="/settings"
           aria-label="Settings"
-          title="Settings"
+          
           className={cn(
             'relative group w-[42px] h-[42px] rounded-[12px] flex items-center justify-center transition-all duration-150',
             pathname.startsWith('/settings')
@@ -172,7 +172,7 @@ export function AppSidebar() {
           )}
         >
           <Settings size={18} strokeWidth={2} />
-          <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-text-main text-bg-surface text-[11px] font-medium rounded-md px-2.5 py-1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50 shadow-sm translate-x-[-4px] group-hover:translate-x-0">
+          <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-[#17151F] dark:bg-white text-white dark:text-[#17151F] text-[12px] font-medium rounded-[6px] px-2.5 py-1.5 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-[9999] shadow-sm translate-x-[-4px] group-hover:translate-x-0 min-w-max border border-transparent dark:border-border-subtle">
             Settings
           </span>
         </Link>
@@ -180,11 +180,11 @@ export function AppSidebar() {
         <button
           onClick={handleLogout}
           aria-label="Logout"
-          title="Logout"
+          
           className="relative group w-[42px] h-[42px] rounded-[12px] flex items-center justify-center text-text-sec hover:text-text-main dark:hover:text-text-main hover:bg-[#F1F3F5] dark:hover:bg-[rgba(255,255,255,0.06)] transition-all duration-150"
         >
           <LogOut size={18} strokeWidth={2} />
-          <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-text-main text-bg-surface text-[11px] font-medium rounded-md px-2.5 py-1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50 shadow-sm translate-x-[-4px] group-hover:translate-x-0">
+          <span className="hidden md:block absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-[#17151F] dark:bg-white text-white dark:text-[#17151F] text-[12px] font-medium rounded-[6px] px-2.5 py-1.5 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-[9999] shadow-sm translate-x-[-4px] group-hover:translate-x-0 min-w-max border border-transparent dark:border-border-subtle">
             Logout
           </span>
         </button>
@@ -193,7 +193,7 @@ export function AppSidebar() {
         <Link
           href="/settings"
           aria-label="Settings"
-          title="Settings"
+          
           className="mt-2 relative group transition-opacity duration-150 hover:opacity-80"
         >
           <UserAvatar
