@@ -125,11 +125,17 @@ export default function PublicProfilePage(props: Props) {
     if (!myProfile || !targetProfile) return;
     setIsStartingChat(true);
     try {
-      const { data, error } = await supabase.rpc('get_or_create_direct_conversation', { p_user1_id: myProfile.id, p_user2_id: targetProfile.id });
-      if (error) throw error;
-      router.push('/chat/' + data);
+      const { data: convId, error } = await supabase.rpc('start_direct_conversation', { 
+        other_user_id: targetProfile.id 
+      });
+      if (error) {
+        console.error('RPC Error:', error);
+        throw error;
+      }
+      if (!convId) throw new Error('No conversation ID returned');
+      router.push('/chat/' + convId);
     } catch (error: any) {
-      toast.error(JSON.stringify(error) || error.message || 'Failed to start chat');
+      toast.error('Could not start conversation');
       console.error(error);
     } finally {
       setIsStartingChat(false);

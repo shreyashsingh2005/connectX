@@ -197,49 +197,21 @@ export default function ContactsPage() {
     if (!profile || isStartingChat) return;
     setIsStartingChat(targetProfile.id);
     try {
-      const { data: existingMembers } = await supabase
-        .from('conversation_members')
-        .select('conversation_id')
-        .eq('user_id', profile.id);
-
-      if (existingMembers && existingMembers.length > 0) {
-        const convIds = existingMembers.map(m => m.conversation_id);
-        const { data: shared } = await supabase
-          .from('conversation_members')
-          .select('conversation_id')
-          .eq('user_id', targetProfile.id)
-          .in('conversation_id', convIds);
-
-        if (shared && shared.length > 0) {
-          const { data: convData } = await supabase
-            .from('conversations')
-            .select('type')
-            .eq('id', shared[0].conversation_id)
-            .single();
-
-          if (convData?.type === 'direct') {
-            router.push(`/chat/${shared[0].conversation_id}`);
-            return;
-          }
-        }
+      const { data: convId, error } = await supabase.rpc('start_direct_conversation', { 
+        other_user_id: targetProfile.id 
+      });
+      
+      if (error) {
+        console.error('RPC Error:', error);
+        throw error;
       }
-
-      const { data: newConv, error: convError } = await supabase
-        .from('conversations')
-        .insert([{ type: 'direct' }])
-        .select()
-        .single();
-
-      if (convError || !newConv) throw convError;
-
-      await supabase.from('conversation_members').insert([
-        { conversation_id: newConv.id, user_id: profile.id, role: 'member' },
-        { conversation_id: newConv.id, user_id: targetProfile.id, role: 'member' }
-      ]);
-
-      router.push(`/chat/${newConv.id}`);
-    } catch (error) {
+      if (!convId) throw new Error('No conversation ID returned');
+      
+      router.push(`/chat/${convId}`);
+    } catch (error: any) {
+      console.error('Error starting chat:', error);
       toast.error('Could not start conversation');
+    } finally {
       setIsStartingChat(null);
     }
   }
