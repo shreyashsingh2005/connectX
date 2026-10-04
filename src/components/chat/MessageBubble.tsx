@@ -55,6 +55,10 @@ function DeliveryIcon({ status, isEmojiOnly }: { status: Message['status'], isEm
   return null;
 }
 
+
+import { createClient } from '@/lib/supabase/client';
+import toast from 'react-hot-toast';
+
 import { memo } from 'react';
 
 export const MessageBubble = memo(function MessageBubble({
@@ -344,18 +348,22 @@ export const MessageBubble = memo(function MessageBubble({
 
             <button
               onClick={async () => {
+                console.log('[PIN-1] CLICK');
                 try {
-                  const supabase = require('@/lib/supabase/client').createClient();
+                  const supabase = createClient();
                   const { error } = await supabase.from('pinned_messages').insert({
                     message_id: message.id,
                     conversation_id: message.conversation_id,
                     pinned_by: currentUserId
                   });
-                  if (error) throw error;
-                  require('react-hot-toast').default.success('Message pinned');
+                  if (error) {
+                    toast.error('Failed to pin: ' + error.message);
+                    return;
+                  }
+                  toast.success('Message pinned');
                 } catch (e: any) {
-                  console.error('Failed to pin:', e);
-                  require('react-hot-toast').default.error(e.message || 'Failed to pin message');
+                  console.error('[PIN] Exception:', e);
+                  toast.error(e.message || 'Failed to pin message');
                 }
               }}
               className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-all"
