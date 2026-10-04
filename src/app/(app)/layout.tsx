@@ -82,15 +82,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="h-[100dvh] w-full overflow-hidden bg-bg-surface md:grid md:grid-cols-[72px_340px_minmax(0,1fr)]">
       {/* COLUMN 1: App Navigation */}
-      <AppSidebar />
+      <div className="md:col-start-1 md:col-end-2 w-full md:h-[100dvh]"><AppSidebar /></div>
 
       {/* COLUMN 2: Conversation Sidebar (Hidden on mobile) */}
-      <div className="hidden md:flex flex-col h-[100dvh] overflow-hidden min-w-0 border-r border-border-subtle bg-bg-surface">
+      <div className="hidden md:flex flex-col h-[100dvh] overflow-hidden min-w-0 border-r border-border-subtle bg-bg-surface col-start-2 col-end-3">
         <ConversationList />
       </div>
 
       {/* COLUMN 3: Main Content */}
       <main key={pathname} className={cn(
+        "md:col-start-3 md:col-end-4",
         "flex flex-col min-w-0 min-h-0 h-[100dvh] overflow-hidden relative",
         hideOnMobile ? "pb-0" : "pb-[80px] md:pb-0"
       )}>
