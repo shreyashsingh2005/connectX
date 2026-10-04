@@ -873,6 +873,9 @@ export default function SettingsPage() {
 
     
       {showPhotoEditor && <ProfilePhotoEditor onClose={() => setShowPhotoEditor(false)} />}
+      <ChangePasswordModal isOpen={showPasswordModal} onClose={() => setShowPasswordModal(false)} />
+      <ManageSessionsModal isOpen={showSessionsModal} onClose={() => setShowSessionsModal(false)} />
+
     
       <div data-testid="connectx-build-debug" className="p-4 text-center text-xs text-gray-500 font-mono opacity-50">
         CONNECTX_BUILD_DEBUG: 6c1ca4f

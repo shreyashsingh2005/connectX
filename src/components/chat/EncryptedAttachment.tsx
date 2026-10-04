@@ -89,16 +89,19 @@ export function EncryptedAttachment({ attachment, isOwn, messageStatus }: { atta
                 href={objectUrl}
                 download={attachment.file_name}
                 onClick={(e) => e.stopPropagation()}
-                className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors flex items-center justify-center"
-                title="Download"
+                className="w-[40px] h-[40px] min-w-[40px] flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 border border-white/10 text-white backdrop-blur-md transition-all outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                aria-label="Download photo"
+                title="Download photo"
               >
-                <Download className="w-6 h-6" />
+                <Download size={18} strokeWidth={2} />
               </a>
               <button 
-                className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors flex items-center justify-center"
-                onClick={() => setIsFullscreen(false)}
+                onClick={(e) => { e.stopPropagation(); setIsFullscreen(false); }}
+                className="w-[40px] h-[40px] min-w-[40px] flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 border border-white/10 text-white backdrop-blur-md transition-all outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                aria-label="Close viewer"
+                title="Close"
               >
-                <X className="w-6 h-6" />
+                <X size={18} strokeWidth={2} />
               </button>
             </div>
             <img 
