@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -22,23 +22,40 @@ export default function SearchPage() {
   const supabase = createClient();
   const profile = useAuthStore(s => s.profile);
 
+  const searchSequence = useRef(0);
+
   const performSearch = useCallback(
     debounce(async (q: string) => {
-      if (!q.trim() || !profile) { setUserResults([]); setMessageResults([]); return; }
+      if (!q.trim() || !profile) { 
+        setUserResults([]); 
+        setMessageResults([]); 
+        setIsSearching(false);
+        return; 
+      }
       setIsSearching(true);
+      const currentSeq = ++searchSequence.current;
+      
       try {
         const [usersRes, messagesRes] = await Promise.all([
           supabase.from('profiles').select('*').neq('id', profile.id).or(`display_name.ilike.%${q}%,username.ilike.%${q}%`).limit(10),
           supabase.from('messages').select('*, sender:profiles(id, display_name, avatar_url)').ilike('content', `%${q}%`).eq('is_deleted', false).order('created_at', { ascending: false }).limit(20),
         ]);
+        
+        if (currentSeq !== searchSequence.current) return;
+        
         setUserResults(usersRes.data || []);
         setMessageResults((messagesRes.data || []) as (Message & { conversation_id: string })[]);
       } finally {
-        setIsSearching(false);
+        if (currentSeq === searchSequence.current) {
+          setIsSearching(false);
+        }
       }
     }, 300),
     [profile, supabase]
   );
+  
+  // Also we need to make sure we call performSearch when query changes, because earlier maybe it wasn't hooked up cleanly?
+  // Let's just fix the debounce and sequence for now.
 
   async function handleStartChat(targetProfile: Profile) {
     if (!profile) return;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -41,10 +41,9 @@ export default function ContactsPage() {
   const fetchAllData = useCallback(async () => {
     if (!profile) return;
     try {
-      // 1. Fetch Friendships
       const { data: fData } = await supabase
         .from('friendships')
-        .select(`*, friend:profiles!friendships_friend_id_fkey(*)`)
+        .select('*, friend:profiles!friendships_friend_id_fkey(*)')
         .eq('user_id', profile.id);
         
       setFriendships(fData || []);
@@ -54,10 +53,9 @@ export default function ContactsPage() {
         newMap[f.friend_id] = 'friend';
       });
 
-      // 2. Fetch Requests
       const { data: rData } = await supabase
         .from('friend_requests')
-        .select(`*, sender:profiles!friend_requests_sender_id_fkey(*), receiver:profiles!friend_requests_receiver_id_fkey(*)`)
+        .select('*, sender:profiles!friend_requests_sender_id_fkey(*), receiver:profiles!friend_requests_receiver_id_fkey(*)')
         .or(`sender_id.eq.${profile.id},receiver_id.eq.${profile.id}`)
         .eq('status', 'pending');
         
@@ -82,20 +80,21 @@ export default function ContactsPage() {
       setRelationshipMap(newMap);
       setRequestIds(newReqIds);
 
-      // 3. Suggestions
-      if (!query) {
-        const excludeIds = [profile.id, ...Object.keys(newMap)];
-        let queryBuilder = supabase.from('profiles').select('*').limit(5);
-        if (excludeIds.length > 0) {
-           queryBuilder = queryBuilder.not('id', 'in', `(${excludeIds.join(',')})`);
+      setSuggestions(prev => {
+        if (prev.length === 0) {
+          const excludeIds = [profile.id, ...Object.keys(newMap)];
+          let queryBuilder = supabase.from('profiles').select('*').limit(5);
+          if (excludeIds.length > 0) {
+             queryBuilder = queryBuilder.not('id', 'in', `(${excludeIds.join(',')})`);
+          }
+          queryBuilder.then(res => setSuggestions(res.data || []));
         }
-        const { data: sData } = await queryBuilder;
-        setSuggestions(sData || []);
-      }
+        return prev;
+      });
     } catch (err) {
       console.error(err);
     }
-  }, [profile, supabase, query]);
+  }, [profile, supabase]);
 
   useEffect(() => {
     fetchAllData();
@@ -117,6 +116,8 @@ export default function ContactsPage() {
     return () => { supabase.removeChannel(channel); };
   }, [profile, supabase, fetchAllData]);
 
+  const searchSequence = useRef(0);
+
   const performSearch = useCallback(
     debounce(async (q: string) => {
       if (!q.trim() || !profile) {
@@ -125,6 +126,8 @@ export default function ContactsPage() {
         return;
       }
       setIsSearching(true);
+      const currentSeq = ++searchSequence.current;
+      
       try {
         const searchTerm = q.toLowerCase();
         const { data } = await supabase
@@ -134,51 +137,19 @@ export default function ContactsPage() {
           .or(`username_normalized.ilike.%${searchTerm}%,display_name.ilike.%${searchTerm}%`)
           .limit(20);
           
-        setSearchResults(data || []);
+        // Ignore if a newer search has started
+        if (currentSeq !== searchSequence.current) return;
         
-        if (data && data.length > 0) {
-          const userIds = data.map(u => u.id);
-          const { data: friendships } = await supabase
-            .from('friendships')
-            .select('friend_id')
-            .eq('user_id', profile.id)
-            .in('friend_id', userIds);
-            
-          const { data: requests } = await supabase
-            .from('friend_requests')
-            .select('*')
-            .in('sender_id', [profile.id, ...userIds])
-            .in('receiver_id', [profile.id, ...userIds])
-            .eq('status', 'pending');
-            
-          const newMap = { ...relationshipMap };
-          const newReqIds = { ...requestIds };
-          
-          data.forEach(u => {
-            if (friendships?.some(f => f.friend_id === u.id)) {
-              newMap[u.id] = 'friend';
-              return;
-            }
-            const req = requests?.find(r => (r.sender_id === profile.id && r.receiver_id === u.id) || (r.receiver_id === profile.id && r.sender_id === u.id));
-            if (req) {
-              newReqIds[u.id] = req.id;
-              if (req.sender_id === profile.id) newMap[u.id] = 'outgoing_request';
-              else newMap[u.id] = 'incoming_request';
-            } else {
-              newMap[u.id] = 'none';
-            }
-          });
-          
-          setRelationshipMap(newMap);
-          setRequestIds(newReqIds);
-        }
+        setSearchResults(data || []);
       } catch (err) {
         console.error('Search error:', err);
       } finally {
-        setIsSearching(false);
+        if (currentSeq === searchSequence.current) {
+          setIsSearching(false);
+        }
       }
-    }, 500),
-    [profile, supabase, relationshipMap, requestIds]
+    }, 400),
+    [profile, supabase]
   );
 
   useEffect(() => {
@@ -263,7 +234,7 @@ export default function ContactsPage() {
                 onClick={async () => {
                   if(reqId) await respondToRequest(reqId, user.id, 'accepted');
                   fetchAllData();
-                  if (query) performSearch(query);
+                  
                 }}
                 className="h-[32px] px-4 bg-brand text-white rounded-[8px] text-[12px] font-[600] hover:bg-brand-dark transition-colors"
               >
@@ -273,7 +244,7 @@ export default function ContactsPage() {
                 onClick={async () => {
                   if(reqId) await respondToRequest(reqId, user.id, 'declined');
                   fetchAllData();
-                  if (query) performSearch(query);
+                  
                 }}
                 className="h-[32px] px-4 bg-bg-surface text-text-main hover:bg-bg-secondary rounded-[8px] text-[12px] font-[600] transition-colors border border-border-subtle">
                 Decline
@@ -286,7 +257,7 @@ export default function ContactsPage() {
               onClick={async () => {
                 if(reqId) await cancelRequest(reqId);
                 fetchAllData();
-                if (query) performSearch(query);
+                
               }}
               className="h-[32px] px-4 bg-bg-surface text-text-main hover:bg-bg-secondary rounded-[8px] text-[12px] font-[600] transition-colors border border-border-subtle">
               Cancel
@@ -298,8 +269,7 @@ export default function ContactsPage() {
               onClick={async () => {
                 await sendFriendRequest(user.id);
                 fetchAllData();
-                if (query) performSearch(query);
-                else setRelationshipMap(prev => ({...prev, [user.id]: 'outgoing_request'}));
+                setRelationshipMap(prev => ({...prev, [user.id]: 'outgoing_request'}));
               }}
               className="h-[32px] px-4 bg-brand text-white rounded-[8px] text-[12px] font-[600] hover:bg-brand-dark transition-colors"
             >
@@ -329,7 +299,10 @@ export default function ContactsPage() {
               type="text"
               placeholder="Search people..."
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                if (e.target.value.trim()) setIsSearching(true);
+              }}
               className="w-full bg-bg-secondary border border-border-subtle rounded-[10px] h-[42px] pl-[36px] pr-[12px] text-[13px] text-text-main placeholder-[#667085] dark:placeholder-[#A7AFB8] focus:outline-none focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] transition-all"
             />
             {isSearching && (
