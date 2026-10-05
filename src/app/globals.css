@@ -178,3 +178,15 @@ body {
     opacity: 1 !important;
   }
 }
+
+/* Profile Animations */
+@keyframes ambientDrift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+.animate-ambient { background-size: 200% 200%; animation: ambientDrift 10s ease-in-out infinite; }
+@keyframes profileEntrance { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.profile-enter { animation: profileEntrance 400ms cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+.delay-0 { animation-delay: 0ms; }
+.delay-80 { animation-delay: 80ms; }
+.delay-130 { animation-delay: 130ms; }
+.delay-170 { animation-delay: 170ms; }
+.delay-220 { animation-delay: 220ms; }
+.delay-280 { animation-delay: 280ms; }
