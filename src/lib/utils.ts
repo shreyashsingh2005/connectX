@@ -115,3 +115,10 @@ export function isOnlyEmojis(str: string | null | undefined): boolean {
   const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Extended_Pictographic}|\s)+$/gu;
   return emojiRegex.test(str) && str.trim().length > 0;
 }
+
+
+
+
+export function buildProfileUrl(id: string): string {
+  return `/profile/${id}`;
+}

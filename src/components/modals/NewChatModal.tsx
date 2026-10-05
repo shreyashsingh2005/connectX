@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useUIStore } from '@/store/useUIStore';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { Profile } from '@/types';
-import { debounce } from '@/lib/utils';
+import {  debounce , buildProfileUrl } from '@/lib/utils';
 import { X, Search, Loader2 } from 'lucide-react';
 
 export function NewChatModal() {
@@ -50,7 +50,7 @@ export function NewChatModal() {
 
   function handleSelect(targetProfile: Profile) {
     setShowNewChatModal(false);
-    router.push(`/profile/${targetProfile.username || targetProfile.id}`);
+    router.push(buildProfileUrl(targetProfile.id));
   }
 
   return (

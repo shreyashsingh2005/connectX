@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Profile, Friendship } from '@/types';
-import { cn, debounce } from '@/lib/utils';
+import {  cn, debounce , buildProfileUrl } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { Search, Loader2, MessageSquare, Check, X as XIcon, Clock, UserPlus, Users , MoreHorizontal } from 'lucide-react';
 import { useFriendActions } from '@/hooks/useFriendActions';
@@ -192,7 +192,7 @@ export default function ContactsPage() {
         {/* Identity Section */}
         <div 
           className="flex items-center gap-[10px] cursor-pointer flex-1 min-w-0"
-          onClick={() => router.push(`/profile/${user.username || user.id}`)}
+          onClick={() => router.push(buildProfileUrl(user.id))}
         >
           <div className="relative flex-shrink-0">
             <UserAvatar src={user.avatar_url} name={user.display_name} className="w-[40px] h-[40px] text-[13px]" />

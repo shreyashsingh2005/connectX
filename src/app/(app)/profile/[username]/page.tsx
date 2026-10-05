@@ -41,20 +41,35 @@ export default function PublicProfilePage(props: Props) {
       setLoading(true);
 
       try {
-        let { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('username_normalized', username.toLowerCase())
-          .single();
-          
-        if (!profile) {
-          const { data: profileById } = await supabase
+        
+        let profile = null;
+        
+        // 1. First, check if it's a valid UUID (which is our canonical ID)
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(username);
+        
+        if (isUUID) {
+          const { data, error } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', username)
             .single();
-          profile = profileById;
+            
+          profile = data;
+        } 
+        
+        // 2. If not a UUID (backward compatibility for old username links), or if UUID lookup failed
+        if (!profile) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('username_normalized', username.toLowerCase())
+            .single();
+            
+          profile = data;
+          
+          // If we found them by username, we could canonicalize the URL silently, but for now we just render.
         }
+
 
         setTargetProfile(profile || null);
 
