@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import { type NextRequest } from 'next/server';
@@ -35,43 +34,9 @@ export async function GET(request: NextRequest) {
     const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(code);
     
     if (!error && session) {
-      // Safely ensure profile exists
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', session.user.id)
-        .single();
-        
-      if (!profile) {
-        // Securely generate a temporary username and rely on DB unique constraints
-        let profileCreated = false;
-        let retries = 3;
-        
-        while (!profileCreated && retries > 0) {
-          const tempUsername = `user_${crypto.randomBytes(4).toString('hex')}`;
-          const newProfile = {
-            id: session.user.id,
-            username: tempUsername,
-            username_normalized: tempUsername,
-            display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'New User',
-            email: session.user.email || '',
-            avatar_url: session.user.user_metadata?.avatar_url || null,
-          };
-          
-          const { error: insertError } = await supabase.from('profiles').insert(newProfile);
-          
-          if (!insertError) {
-            profileCreated = true;
-            await supabase.from('user_settings').insert({ user_id: session.user.id });
-          } else if (insertError.code === '23505') { 
-            // 23505 is PostgreSQL unique constraint violation
-            retries--;
-          } else {
-            // Unhandled error
-            break;
-          }
-        }
-      }
+      // Call the secure idempotent profile bootstrap RPC
+      // This will ensure the profile and settings rows are created if missing
+      await supabase.rpc('ensure_profile_for_current_user');
 
       return NextResponse.redirect(`${origin}${next}`);
     }
