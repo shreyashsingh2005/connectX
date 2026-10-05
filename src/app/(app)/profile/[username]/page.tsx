@@ -8,7 +8,7 @@ import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useFriendActions } from '@/hooks/useFriendActions';
 import toast from 'react-hot-toast';
-import { Loader2, ArrowLeft, MessageSquare, UserPlus, Check, X as XIcon, Clock, ShieldAlert, Calendar, Search } from 'lucide-react';
+import { Loader2, ArrowLeft, MessageSquare, UserPlus, Check, X as XIcon, Clock, ShieldAlert, Calendar, Search, MoreHorizontal } from 'lucide-react';
 import { format } from 'date-fns';
 
 type Props = {
@@ -168,111 +168,141 @@ export default function PublicProfilePage(props: Props) {
         </button>
 
         <div className="bg-bg-surface rounded-[24px] border border-border-subtle shadow-sm dark:shadow-none overflow-hidden animate-in fade-in duration-300 relative z-10">
-          <div className="h-28 md:h-40 bg-gradient-to-r from-[#8B5CF6]/10 to-[#EC4899]/10 dark:from-[#8B5CF6]/20 dark:to-[#EC4899]/20 relative">
-             <div className="absolute inset-0 bg-[#F8FAFC]/50 dark:bg-bg-primary/50 backdrop-blur-[2px]"></div>
+          {/* COVER / BANNER */}
+          <div className="h-32 md:h-48 bg-gradient-to-r from-[#8B5CF6]/20 to-[#EC4899]/20 dark:from-[#8B5CF6]/30 dark:to-[#EC4899]/30 relative">
+             <div className="absolute inset-0 bg-[#F8FAFC]/30 dark:bg-bg-primary/30 backdrop-blur-[2px]"></div>
           </div>
           
-          <div className="px-6 md:px-10 pb-8 relative">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 -mt-12 md:-mt-16 mb-6">
-               <div className="relative w-fit">
+          <div className="px-6 md:px-10 pb-10 relative">
+            
+            {/* AVATAR AND INFO ROW */}
+            <div className="flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-6 relative z-20 -mt-12 md:-mt-16">
+               
+               {/* Avatar */}
+               <div className="relative flex-shrink-0">
                   <UserAvatar
                     src={targetProfile.avatar_url || ''}
                     name={targetProfile.display_name || 'User'}
-                    size="xl"
-                    className="w-[72px] h-[72px] ring-4 ring-white dark:ring-[#11161B] shadow-sm bg-[#EAECF0] dark:bg-bg-surface/5"
+                    size="2xl"
+                    className="w-[96px] h-[96px] md:w-[120px] md:h-[120px] ring-[6px] ring-bg-surface shadow-sm bg-[#EAECF0] dark:bg-bg-surface/5"
                   />
                   {targetProfile.is_online && (
-                     <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 w-5 h-5 md:w-6 md:h-6 bg-[#12B76A] border-4 border-white dark:border-[#11141A] rounded-full"></div>
+                     <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 w-6 h-6 md:w-7 md:h-7 bg-[#12B76A] border-4 border-bg-surface rounded-full"></div>
                   )}
                </div>
-
-               {!isMe && (
-                 <div className="flex flex-wrap items-center gap-2">
-                   {relationship === 'none' && (
-                     <button onClick={async () => {
-                         const ok = await sendFriendRequest(targetProfile.id);
-                         if (ok) setRelationship('outgoing_request');
-                       }}
-                       className="flex-1 md:flex-none px-[12px] h-[36px] bg-[#101828] dark:bg-[#F5F7FA] text-white dark:text-text-main rounded-[8px] text-[13px] font-medium flex items-center justify-center gap-2 hover:bg-[#1D2939] dark:hover:bg-bg-surface transition-all shadow-sm">
-                       <UserPlus className="w-4 h-4" /> Add Friend
-                     </button>
-                   )}
-
-                   {relationship === 'outgoing_request' && (
-                     <button disabled className="flex-1 md:flex-none px-[12px] h-[36px] bg-bg-secondary border border-border-subtle text-text-sec rounded-[8px] text-[13px] font-medium flex items-center justify-center gap-2 cursor-not-allowed">
-                       <Clock className="w-4 h-4" /> Request Sent
-                     </button>
-                   )}
-
-                   {relationship === 'incoming_request' && requestId && (
-                     <>
-                       <button onClick={async () => {
-                           const ok = await respondToRequest(requestId, targetProfile.id, 'accepted');
-                           if (ok) setRelationship('friend');
-                         }}
-                         className="flex-1 md:flex-none px-[12px] h-[36px] bg-[#12B76A] text-white rounded-[8px] text-[13px] font-medium flex items-center justify-center gap-2 hover:bg-[#0E9F5D] transition-all shadow-sm">
-                         <Check className="w-4 h-4" /> Accept
-                       </button>
-                       <button onClick={async () => {
-                           const ok = await respondToRequest(requestId, targetProfile.id, 'declined');
-                           if (ok) setRelationship('none');
-                         }}
-                         className="px-[12px] h-[36px] bg-bg-secondary border border-border-subtle text-text-sec rounded-[8px] text-[13px] font-medium hover:bg-[#EAECF0] dark:hover:bg-[rgba(255,255,255,0.08)] transition-all flex items-center justify-center">
-                         <XIcon className="w-4 h-4" />
-                       </button>
-                     </>
-                   )}
-
-                   {relationship === 'friend' && (
-                     <>
-                       <button onClick={handleStartChat} disabled={isStartingChat} className="flex-1 md:flex-none px-[12px] h-[36px] bg-brand text-white rounded-[8px] text-[13px] font-medium flex items-center justify-center gap-2 hover:bg-brand-dark transition-all shadow-sm">
-                         {isStartingChat ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
-                         Message
-                       </button>
-                       <button onClick={async () => {
-                           if (confirm('Remove ' + (targetProfile.display_name || 'this user') + ' from friends?')) {
-                             const ok = await removeFriend(targetProfile.id);
-                             if (ok) setRelationship('none');
-                           }
-                         }}
-                         className="px-[12px] h-[36px] bg-bg-surface border border-[#F04438]/20 text-[#F04438] hover:bg-[#FEF3F2] dark:hover:bg-[#4A1519]/20 rounded-[8px] text-[13px] font-medium transition-all flex items-center justify-center">
-                         Remove
-                       </button>
-                     </>
-                   )}
-                   
-                   <button className="p-2 bg-bg-surface border border-border-subtle text-text-sec hover:text-[#F04438] hover:bg-[#FEF3F2] dark:hover:bg-[#4A1519]/20 rounded-[8px] transition-colors shadow-sm" title="Block User">
-                     <ShieldAlert className="w-4 h-4" />
-                   </button>
-                 </div>
-               )}
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                 <h1 className="text-[18px] font-bold text-text-main tracking-tight break-words line-clamp-2">
+               
+               {/* Name & Username Block */}
+               <div className="flex flex-col flex-1 pb-1 md:pb-2">
+                 <h1 className="text-[22px] md:text-[24px] font-bold text-text-main tracking-tight line-clamp-1">
                    {targetProfile.display_name || 'User'}
                  </h1>
-                 <p className="text-[12px] text-text-sec mt-0.5 truncate">
+                 <p className="text-[14px] text-text-sec mt-0.5">
                    @{targetProfile.username || 'unknown'}
                  </p>
-              </div>
-              
-              <div className="flex flex-wrap items-center gap-4 text-[13px] text-text-sec font-medium">
-                 <div className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4" />
-                    Joined {targetProfile.created_at ? format(new Date(targetProfile.created_at), 'MMMM yyyy') : 'Unknown'}
+                 
+                 <div className="flex items-center gap-2 mt-2.5 text-[13px] text-text-sec font-medium">
+                    {targetProfile.is_online ? (
+                       <div className="flex items-center gap-1.5 text-[#12B76A]">
+                          <div className="w-2 h-2 rounded-full bg-[#12B76A]" />
+                          Online
+                       </div>
+                    ) : (
+                       <div className="flex items-center gap-1.5">
+                          <div className="w-2 h-2 rounded-full bg-[#9A9FAD] dark:bg-border-subtle" />
+                          Offline
+                       </div>
+                    )}
+                    <span>•</span>
+                    <div className="flex items-center gap-1.5">
+                      Joined {targetProfile.created_at ? format(new Date(targetProfile.created_at), 'MMM yyyy') : 'Unknown'}
+                    </div>
                  </div>
-              </div>
-              
-              {targetProfile.bio && (
-                 <div className="pt-5 mt-5 border-t border-border-subtle">
-                    <h3 className="text-[12px] font-semibold text-text-sec uppercase tracking-wider mb-2">About</h3>
-                    <p className="text-[14px] text-text-main whitespace-pre-wrap leading-relaxed">
+               </div>
+               
+               {/* ACTION BUTTONS (Message / More) */}
+               <div className="flex items-center gap-2 mt-4 sm:mt-0 sm:pb-2 w-full sm:w-auto">
+                 {!isMe && (
+                   <>
+                     {relationship === 'none' && (
+                       <button onClick={async () => {
+                           const ok = await sendFriendRequest(targetProfile.id);
+                           if (ok) setRelationship('outgoing_request');
+                         }}
+                         className="flex-1 sm:flex-none px-6 h-[40px] bg-[#101828] dark:bg-[#F5F7FA] text-white dark:text-text-main rounded-[10px] text-[13px] font-[600] flex items-center justify-center gap-2 hover:bg-[#1D2939] dark:hover:bg-bg-surface transition-all shadow-sm">
+                         <UserPlus className="w-4 h-4" /> Add Friend
+                       </button>
+                     )}
+
+                     {relationship === 'outgoing_request' && (
+                       <button disabled className="flex-1 sm:flex-none px-6 h-[40px] bg-bg-secondary border border-border-subtle text-text-sec rounded-[10px] text-[13px] font-[600] flex items-center justify-center gap-2 cursor-not-allowed">
+                         <Clock className="w-4 h-4" /> Request Sent
+                       </button>
+                     )}
+
+                     {relationship === 'incoming_request' && requestId && (
+                       <>
+                         <button onClick={async () => {
+                             const ok = await respondToRequest(requestId, targetProfile.id, 'accepted');
+                             if (ok) setRelationship('friend');
+                           }}
+                           className="flex-1 sm:flex-none px-6 h-[40px] bg-[#12B76A] text-white rounded-[10px] text-[13px] font-[600] flex items-center justify-center gap-2 hover:bg-[#0E9F5D] transition-all shadow-sm">
+                           <Check className="w-4 h-4" /> Accept
+                         </button>
+                         <button onClick={async () => {
+                             const ok = await respondToRequest(requestId, targetProfile.id, 'declined');
+                             if (ok) setRelationship('none');
+                           }}
+                           className="px-3 h-[40px] bg-bg-secondary border border-border-subtle text-text-sec rounded-[10px] text-[13px] font-[600] hover:bg-[#EAECF0] dark:hover:bg-[rgba(255,255,255,0.08)] transition-all flex items-center justify-center">
+                           <XIcon className="w-4 h-4" />
+                         </button>
+                       </>
+                     )}
+
+                     {relationship === 'friend' && (
+                       <button onClick={handleStartChat} disabled={isStartingChat} className="flex-1 sm:flex-none px-8 h-[40px] bg-brand text-white rounded-[10px] text-[14px] font-[600] flex items-center justify-center gap-2 hover:bg-brand-dark transition-all shadow-sm">
+                         {isStartingChat ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-[18px] h-[18px]" />}
+                         Message
+                       </button>
+                     )}
+                     
+                     <button className="w-[40px] h-[40px] flex items-center justify-center bg-bg-surface border border-border-subtle text-text-sec hover:text-text-main hover:bg-bg-secondary rounded-[10px] transition-colors shadow-sm flex-shrink-0" title="More Options">
+                       <MoreHorizontal className="w-[18px] h-[18px]" />
+                     </button>
+                   </>
+                 )}
+                 {isMe && (
+                   <button onClick={() => router.push('/settings')} className="flex-1 sm:flex-none px-6 h-[40px] bg-bg-secondary border border-border-subtle text-text-main rounded-[10px] text-[13px] font-[600] flex items-center justify-center hover:bg-bg-surface transition-all shadow-sm">
+                     Edit Profile
+                   </button>
+                 )}
+               </div>
+            </div>
+            
+            {/* TABS & SECTIONS */}
+            <div className="mt-8 pt-8 border-t border-border-subtle">
+              <div className="space-y-10">
+                {/* About Section */}
+                <div>
+                  <h3 className="text-[15px] font-bold text-text-main mb-2">About</h3>
+                  <div className="h-[2px] w-8 bg-brand rounded-full mb-4"></div>
+                  {targetProfile.bio ? (
+                    <p className="text-[14px] text-text-sec whitespace-pre-wrap leading-relaxed max-w-2xl">
                       {targetProfile.bio}
                     </p>
-                 </div>
-              )}
+                  ) : (
+                    <p className="text-[14px] text-text-muted italic">No bio provided.</p>
+                  )}
+                </div>
+
+                {/* Activity Section */}
+                <div>
+                  <h3 className="text-[15px] font-bold text-text-main mb-2">Activity</h3>
+                  <div className="h-[2px] w-8 bg-brand rounded-full mb-4"></div>
+                  <p className="text-[14px] text-text-muted italic">
+                    No recent activity.
+                  </p>
+                </div>
+              </div>
             </div>
 
           </div>
