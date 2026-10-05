@@ -179,21 +179,3 @@ body {
   }
 }
 
-/* Profile Animations */
-@keyframes profCover { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-@keyframes profAvatar { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
-@keyframes profSlideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes profSlideUp6 { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes profFade { from { opacity: 0; } to { opacity: 1; } }
-
-.anim-cover { animation: profCover 350ms cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
-.anim-avatar { animation: profAvatar 350ms cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; animation-delay: 40ms; }
-.anim-identity { animation: profSlideUp 350ms cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; animation-delay: 80ms; }
-.anim-actions { animation: profSlideUp 350ms cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; animation-delay: 120ms; }
-.anim-tabs { animation: profFade 300ms ease-out forwards; opacity: 0; animation-delay: 160ms; }
-.anim-content { animation: profSlideUp6 350ms cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; animation-delay: 200ms; }
-
-.anim-tab-content { animation: profSlideUp6 200ms cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
-
-@keyframes ambientDrift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-.animate-ambient { background-size: 200% 200%; animation: ambientDrift 10s ease-in-out infinite; }
